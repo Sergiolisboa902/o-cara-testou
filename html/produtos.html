@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produtos &mdash; O Cara Testou</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; padding-top: 3.5rem; }
+  .container { max-width: 960px; margin: 0 auto; padding: 1.5rem; }
+
+  .topnav {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: #1a1a1a; padding: .6rem 2rem; z-index: 150;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topnav-brand { font-weight: 800; color: #fff; font-size: .9rem; }
+  .topnav-brand span { color: #e63946; }
+  .topnav-modes { display: flex; gap: .3rem; }
+  .topnav-btn {
+    background: none; border: none; padding: .4rem 1rem;
+    font-size: .8rem; font-weight: 700; font-family: inherit;
+    color: #666; cursor: pointer; border-radius: 6px;
+    transition: all .2s; text-decoration: none;
+  }
+  .topnav-btn:hover { color: #aaa; }
+  .topnav-btn.active { background: #e63946; color: #fff; }
+
+  .header { text-align: center; margin-bottom: 1.5rem; }
+  .header-msg { font-size: 1.1rem; color: #555; font-weight: 700; }
+  .header-sub { font-size: .8rem; color: #999; margin-top: .2rem; }
+
+  .empty {
+    text-align: center; padding: 3rem; color: #aaa;
+    background: #fff; border-radius: 14px;
+  }
+  .empty a { color: #e63946; font-weight: 700; cursor: pointer; }
+
+  /* product list grid */
+  .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .7rem; }
+  .p-card {
+    background: #fff; border-radius: 12px; padding: 1rem 1.2rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    border-left: 4px solid #e63946; cursor: pointer;
+    transition: box-shadow .2s, transform .2s;
+  }
+  .p-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,.1); transform: translateY(-1px); }
+  .p-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .2rem; }
+  .p-card-nome { font-weight: 700; font-size: .9rem; }
+  .p-card-cat { font-size: .7rem; color: #e63946; font-weight: 600; background: #fff4f4; padding: .15rem .5rem; border-radius: 10px; }
+  .p-card-meta { font-size: .75rem; color: #888; }
+  .p-card-actions { display: flex; gap: .3rem; margin-top: .5rem; }
+  .p-btn {
+    border: none; border-radius: 6px; padding: .3rem .7rem;
+    font-size: .72rem; font-weight: 600; cursor: pointer; font-family: inherit;
+    transition: opacity .2s;
+  }
+  .p-btn:hover { opacity: .8; }
+  .p-btn-edit { background: #eee; color: #555; }
+  .p-btn-del { background: #fee; color: #e63946; }
+
+  /* product detail view */
+  .detail { display: none; }
+  .detail.open { display: block; }
+
+  .detail-header {
+    background: #fff; border-radius: 14px; padding: 1.2rem 1.4rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: 1rem;
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+  }
+  .detail-info { flex: 1; }
+  .detail-nome { font-weight: 800; font-size: 1.2rem; margin-bottom: .2rem; }
+  .detail-tags { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: .4rem; }
+  .detail-tag { font-size: .72rem; font-weight: 600; padding: .2rem .6rem; border-radius: 10px; }
+  .detail-tag.cat { background: #e63946; color: #fff; }
+  .detail-tag.preco { background: #1a1a1a; color: #fff; }
+  .detail-resumo { font-size: .85rem; color: #555; line-height: 1.5; margin-top: .3rem; }
+  .detail-actions { display: flex; flex-direction: column; gap: .3rem; flex-shrink: 0; }
+  .detail-back { background: #eee; border: none; border-radius: 8px; padding: .45rem .9rem; font-weight: 600; font-size: .8rem; cursor: pointer; font-family: inherit; }
+  .detail-back:hover { background: #ddd; }
+
+  /* category card sections */
+  .cat-section {
+    background: #fff; border-radius: 14px; padding: 1rem 1.3rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: .8rem;
+    border-left: 4px solid #ddd;
+  }
+  .cat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
+  .cat-title { font-weight: 700; font-size: .88rem; }
+  .cat-add {
+    background: none; border: 1px dashed #ccc; border-radius: 6px;
+    padding: .2rem .6rem; font-size: .72rem; color: #999; cursor: pointer; font-family: inherit;
+    transition: all .2s;
+  }
+  .cat-add:hover { border-color: #e63946; color: #e63946; }
+  .cat-cards { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .cat-card {
+    background: #f9f9f9; border: 1px solid #eee; border-radius: 8px;
+    padding: .4rem .7rem; font-size: .78rem; color: #333; line-height: 1.3;
+    display: inline-flex; align-items: center; gap: .4rem;
+    transition: all .2s; cursor: default;
+  }
+  .cat-card .rm {
+    background: none; border: none; color: #ccc; cursor: pointer;
+    font-size: .9rem; line-height: 1; padding: 0; font-family: inherit;
+  }
+  .cat-card .rm:hover { color: #e63946; }
+
+  .cat-empty { font-size: .78rem; color: #bbb; font-style: italic; }
+
+  /* modal add card */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.5); z-index: 200;
+    justify-content: center; align-items: center; padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 14px; padding: 1.4rem;
+    width: 100%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,.2);
+    animation: modalIn .2s ease;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
+  .modal h3 { font-size: .95rem; margin-bottom: .8rem; }
+  .modal input {
+    width: 100%; padding: .55rem .7rem; border: 1px solid #ddd; border-radius: 8px;
+    font-size: .85rem; font-family: inherit; outline: none; margin-bottom: .6rem;
+  }
+  .modal input:focus { border-color: #e63946; }
+  .modal-actions { display: flex; gap: .4rem; }
+  .modal-btn {
+    flex: 1; padding: .5rem; border: none; border-radius: 8px;
+    font-weight: 700; font-size: .8rem; cursor: pointer; font-family: inherit;
+  }
+  .modal-btn.primary { background: #e63946; color: #fff; }
+  .modal-btn.primary:hover { opacity: .85; }
+  .modal-btn.secondary { background: #eee; color: #666; }
+  .modal-btn.secondary:hover { background: #ddd; }
+
+  /* new product btn */
+  .add-prod-btn {
+    display: inline-block; background: #e63946; color: #fff; border: none;
+    padding: .5rem 1.2rem; border-radius: 8px; font-weight: 700; font-size: .85rem;
+    cursor: pointer; font-family: inherit; margin-bottom: 1rem;
+  }
+  .add-prod-btn:hover { opacity: .85; }
+
+  @media (max-width: 600px) {
+    .detail-header { flex-direction: column; }
+    .detail-actions { flex-direction: row; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <div class="topnav-brand"><span>O</span> Cara Testou</div>
+  <div class="topnav-modes">
+    <a href="modelo-conteudo.html" class="topnav-btn">MODELO</a>
+    <a class="topnav-btn active">PRODUTOS</a>
+    <a href="roteiros-criados.html" class="topnav-btn">CONTEUDOS</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="header">
+    <p class="header-msg">Produtos</p>
+    <p class="header-sub">Clique em um produto para ver detalhes e gerenciar cards</p>
+  </div>
+
+  <!-- list view -->
+  <div id="listView">
+
+    <div id="listContainer"></div>
+  </div>
+
+  <!-- detail view -->
+  <div class="detail" id="detailView">
+    <div class="detail-header" id="detailHeader"></div>
+    <div id="detailBody"></div>
+  </div>
+</div>
+
+<!-- modal add card -->
+<div class="modal-overlay" id="addCardModal">
+  <div class="modal">
+    <h3 id="addCardTitle">Adicionar card</h3>
+    <input type="text" id="addCardInput" placeholder="Digite o texto do card" maxlength="200">
+    <div class="modal-actions">
+      <button class="modal-btn primary" onclick="confirmAddCard()">Adicionar</button>
+      <button class="modal-btn secondary" onclick="closeAddCardModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
+<script>
+const CATEGORIES = [
+  'Problemas que resolve', 'Benefícios', 'Características importantes', 'Diferenciais',
+  'Possíveis testes', 'Possíveis momentos WOW', 'Público ideal',
+  'Objeções do comprador', 'Respostas às objeções', 'Curiosidades'
+]
+
+let currentViewId = null, addCardTarget = null
+let _prodCache = []
+
+function esc(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+
+async function loadData() { try { _prodCache = await loadProducts() } catch(e) { _prodCache = [] } }
+function getP() { return _prodCache }
+
+function showList() {
+  document.getElementById('listView').style.display = 'block'
+  document.getElementById('detailView').classList.remove('open')
+  currentViewId = null; renderList()
+}
+
+function showDetail(id) {
+  document.getElementById('listView').style.display = 'none'
+  document.getElementById('detailView').classList.add('open')
+  currentViewId = id; renderDetail(id); window.scrollTo({ top: 0 })
+}
+
+function renderList() {
+  const c = document.getElementById('listContainer')
+  const ps = getP()
+  if (!ps.length) { c.innerHTML = '<div class="empty"><p>Nenhum produto cadastrado.</p></div>'; return }
+  c.innerHTML = '<div class="prod-grid">' + ps.map(p => {
+    const tc = (p.cards||[]).reduce((s,x) => s + (x.items||[]).length, 0)
+    return '<div class="p-card" onclick="showDetail(\''+p.id+'\')"><div class="p-card-header"><span class="p-card-nome">'+esc(p.nome)+'</span><span class="p-card-cat">'+esc(p.categoria)+'</span></div><div class="p-card-meta">'+tc+' cards</div>'+(p.preco?'<div class="p-card-meta">R$ '+esc(p.preco)+'</div>':'')+'<div class="p-card-actions" onclick="event.stopPropagation()"><button class="p-btn p-btn-edit" onclick="showDetail(\''+p.id+'\')">Abrir</button><button class="p-btn p-btn-del" onclick="excluirProduto(\''+p.id+'\')">Excluir</button></div></div>'
+  }).join('') + '</div>'
+}
+
+async function excluirProduto(id) {
+  if (!confirm('Excluir?')) return
+  try { await deleteProduct(id); _prodCache = _prodCache.filter(p => p.id !== id); if (currentViewId === id) showList(); else renderList() }
+  catch(e) { alert(e.message) }
+}
+
+async function novoProduto() {
+  const nome = prompt('Nome:')
+  if (!nome) return
+  try {
+    const id = await saveProduct({ nome: nome.trim(), categoria:'Outros', preco:'', link:'', resumo:'', cards:CATEGORIES.map(c=>({cat:c,items:[]})) })
+    _prodCache.unshift({ id, nome:nome.trim(), categoria:'Outros', preco:'', link:'', resumo:'', cards:CATEGORIES.map(c=>({cat:c,items:[]})) })
+    showDetail(id)
+  } catch(e) { alert(e.message) }
+}
+
+function renderDetail(id) {
+  const p = getP().find(x => x.id === id)
+  if (!p) { showList(); return }
+  document.getElementById('detailHeader').innerHTML = '<div class="detail-info"><div class="detail-nome">'+esc(p.nome)+'</div><div class="detail-tags"><span class="detail-tag cat">'+esc(p.categoria)+'</span>'+(p.preco?'<span class="detail-tag preco">R$ '+esc(p.preco)+'</span>':'')+'</div>'+(p.link?'<div style="font-size:.78rem"><a href="'+esc(p.link)+'" target="_blank" style="color:#e63946">'+esc(p.link)+'</a></div>':'')+(p.resumo?'<div class="detail-resumo">'+esc(p.resumo)+'</div>':'')+'</div><div class="detail-actions"><button class="detail-back" onclick="showList()">&larr;</button><button class="p-btn p-btn-edit" onclick="editarProdutoInfo(\''+p.id+'\')">Editar</button><button class="p-btn p-btn-del" onclick="excluirProduto(\''+p.id+'\')">Excluir</button></div>'
+  document.getElementById('detailBody').innerHTML = (p.cards||[]).map(c => '<div class="cat-section"><div class="cat-header"><span class="cat-title">'+esc(c.cat)+'</span><button class="cat-add" onclick="openAddCard(\''+p.id+'\',\''+esc(c.cat)+'\')">+</button></div><div class="cat-cards">'+((c.items||[]).length ? (c.items||[]).map((item,i)=>'<span class="cat-card">'+esc(item)+'<button class="rm" onclick="removerCard(\''+p.id+'\','+i+',\''+esc(c.cat)+'\')">&times;</button></span>').join('') : '<span class="cat-empty">Vazio</span>')+'</div></div>').join('')
+}
+
+async function editarProdutoInfo(id) {
+  const p = getP().find(x => x.id === id)
+  if (!p) return
+  const nome = prompt('Nome:', p.nome); if (!nome) return
+  const cat = prompt('Categoria:', p.categoria); const preco = prompt('Preço:', p.preco); const link = prompt('Link:', p.link); const resumo = prompt('Resumo:', p.resumo)
+  p.nome = nome.trim(); p.categoria = (cat||'').trim(); p.preco = preco||''; p.link = link||''; p.resumo = resumo||''
+  try { await saveProduct(p); renderDetail(id) } catch(e) { alert(e.message) }
+}
+
+function openAddCard(prodId, cat) {
+  addCardTarget = {prodId, cat}
+  document.getElementById('addCardTitle').textContent = cat
+  document.getElementById('addCardInput').value = ''
+  document.getElementById('addCardModal').classList.add('open')
+  setTimeout(()=>document.getElementById('addCardInput').focus(), 100)
+}
+function closeAddCardModal() { document.getElementById('addCardModal').classList.remove('open'); addCardTarget = null }
+
+async function confirmAddCard() {
+  const text = document.getElementById('addCardInput').value.trim()
+  if (!text || !addCardTarget) return
+  const p = getP().find(x => x.id === addCardTarget.prodId)
+  if (!p) return
+  const g = (p.cards||[]).find(c => c.cat === addCardTarget.cat)
+  if (g) { if (!g.items) g.items = []; g.items.push(text) }
+  try { await saveProduct(p); closeAddCardModal(); renderDetail(p.id) } catch(e) { alert(e.message) }
+}
+
+async function removerCard(prodId, idx, cat) {
+  const p = getP().find(x => x.id === prodId)
+  if (!p) return
+  const g = (p.cards||[]).find(c => c.cat === cat)
+  if (g && g.items) g.items.splice(idx, 1)
+  try { await saveProduct(p); renderDetail(prodId) } catch(e) { alert(e.message) }
+}
+
+document.addEventListener('keydown', e => { if (e.key==='Escape') { closeAddCardModal(); if (currentViewId) showList() } })
+
+// init
+window.onAuthReady = async function() { await loadData(); renderList() }
+
+;(async function init() {
+  const session = await getSession()
+  if (!session) injectAuthUI()
+  else { await loadData(); renderList() }
+})()
+</script>
+
+</body>
+</html>

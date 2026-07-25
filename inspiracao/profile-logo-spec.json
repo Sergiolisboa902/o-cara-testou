@@ -1,0 +1,133 @@
+{
+  "type": "profile_logo",
+  "brand_bible_version": "1.0",
+  "style": {
+    "theme": "industrial",
+    "quality": "photorealistic",
+    "lighting": "warm cinematic",
+    "colors": {
+      "primary_palette": {
+        "amarelo_maquina": "#FFC20E",
+        "preto_asfalto": "#111111",
+        "cinza_concreto": "#8C8C8C",
+        "vermelho_brasa": "#E63946",
+        "branco_puro": "#FFFFFF"
+      },
+      "usage": {
+        "background_dominant": "#111111",
+        "action_highlights": "#FFC20E",
+        "text_contrast": "#FFFFFF",
+        "alert_only": "#E63946"
+      }
+    }
+  },
+  "canvas": {
+    "size": "1024x1024",
+    "shape": "circle",
+    "background": "#111111"
+  },
+  "border": {
+    "shape": "circle",
+    "color": "#FFC20E",
+    "thickness": "medium",
+    "inner_outline": "#111111"
+  },
+  "subject": {
+    "position": "center",
+    "expression": "big smile",
+    "pose": "looking at camera",
+    "attire": {
+      "rule_reference": "Fase 06 — Paleta de Roupas: Preto Asfalto, Cinza Chumbo, Branco, Verde Oliva. Proibido vermelho em roupa (reservado para selo CILADA).",
+      "shirt": {
+        "color": "#111111",
+        "style": "basic tee solid no prints"
+      },
+      "apron": {
+        "color": "#111111",
+        "material": "heavy canvas",
+        "style": "worn with grease marks"
+      }
+    }
+  },
+  "left_hand": {
+    "object": {
+      "type": "cordless drill",
+      "brand_reference": "DeWalt style yellow/black",
+      "colors": ["#FFC20E", "#111111"]
+    }
+  },
+  "right_hand": {
+    "object": {
+      "type": "approval badge seal",
+      "shape": "round",
+      "background": "#111111",
+      "border": "#FFC20E",
+      "border_style": "worn stamped",
+      "icon": "yellow checkmark #FFC20E",
+      "text_top": "TESTADO",
+      "text_bottom": "APROVADO",
+      "effect": "carimbo impact stamp"
+    }
+  },
+  "background": {
+    "environment": "workshop garage",
+    "style_reference": "Fase 03 — Backgrounds Ideais",
+    "elements": [
+      "pegboard escuro com ferramentas penduradas",
+      "bancada de madeira maciça envelhecida",
+      "concreto bruto",
+      "churrasqueira com brasa ao fundo",
+      "luz quente direcional spot de garagem",
+      "desfoque profundidade de campo"
+    ]
+  },
+  "typography": {
+    "rule_reference": "Fase 03 — Anton, all caps, tracking -10 a -20, efeito distressed",
+    "position": "bottom center",
+    "main": {
+      "line1": {
+        "text": "O CARA",
+        "color": "#FFFFFF",
+        "font": "Anton",
+        "style": "all caps",
+        "tracking": -15,
+        "effect": "grunge distressed"
+      },
+      "line2": {
+        "text": "TESTOU",
+        "color": "#FFC20E",
+        "font": "Anton",
+        "style": "all caps",
+        "tracking": -15,
+        "effect": "grunge distressed"
+      }
+    },
+    "background": {
+      "type": "black paint brush stroke",
+      "texture_reference": "Fase 03 — Brush Strokes"
+    }
+  },
+  "composition": {
+    "focus": "face and product",
+    "hierarchy": {
+      "1": "rosto expressivo + produto",
+      "2": "texto gigante O CARA TESTOU",
+      "3": "selo TESTADO APROVADO"
+    },
+    "rule_reference": "Fase 03 — Hierarquia Visual de Thumbnails",
+    "depth_of_field": true,
+    "branding": "strong",
+    "social_media_ready": true
+  },
+  "verdict": {
+    "approved": true,
+    "adjustments_made": [
+      "shirt color changed from red to #111111 (preto asfalto)",
+      "yellow corrected from #F4C21D to official #FFC20E",
+      "red removed from wardrobe (reserved for CILADA seal only)",
+      "colors synced with brand bible Fase 03 palette",
+      "typography aligned with Anton rules from Fase 03",
+      "wardrobe aligned with Fase 06 presenter guidelines"
+    ]
+  }
+}

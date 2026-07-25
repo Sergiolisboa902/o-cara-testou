@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meus Roteiros &mdash; O Cara Testou</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; padding: 2rem; padding-top: 3.5rem; }
+  .container { max-width: 900px; margin: 0 auto; }
+
+  /* top nav */
+  .topnav {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: #1a1a1a; padding: .6rem 2rem; z-index: 150;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topnav-brand { font-weight: 800; color: #fff; font-size: .9rem; }
+  .topnav-brand span { color: #e63946; }
+  .topnav-modes { display: flex; gap: .3rem; }
+  .topnav-btn {
+    background: none; border: none; padding: .4rem 1rem;
+    font-size: .8rem; font-weight: 700; font-family: inherit;
+    color: #666; cursor: pointer; border-radius: 6px;
+    transition: all .2s; text-decoration: none;
+  }
+  .topnav-btn:hover { color: #aaa; }
+  .topnav-btn.active { background: #e63946; color: #fff; }
+  .topnav-toggle {
+    background: #333; border: none; padding: .4rem .9rem;
+    font-size: .78rem; font-weight: 600; font-family: inherit;
+    color: #ccc; cursor: pointer; border-radius: 6px; text-decoration: none;
+    transition: all .2s;
+  }
+  .topnav-toggle:hover { background: #e63946; color: #fff; }
+
+  .header { text-align: center; margin-bottom: 2rem; }
+  .header-msg { font-size: 1.1rem; color: #555; font-weight: 700; }
+  .header p { color: #555; margin-top: .3rem; font-size: .95rem; }
+  .header a { color: #2a9d8f; font-weight: 600; font-size: .85rem; }
+
+  .empty {
+    text-align: center; padding: 3rem; color: #aaa;
+    background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .empty p { margin-bottom: .5rem; }
+  .empty a { color: #e63946; font-weight: 700; }
+
+  .card-list { display: flex; flex-direction: column; gap: .7rem; }
+
+  .r-card {
+    background: #fff; border-radius: 12px; padding: 1rem 1.3rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    display: flex; align-items: center; gap: 1rem;
+    transition: box-shadow .2s;
+  }
+  .r-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,.1); }
+
+  .r-info { flex: 1; min-width: 0; }
+  .r-nome { font-weight: 700; font-size: 1rem; margin-bottom: .2rem; }
+  .r-meta { font-size: .78rem; color: #888; }
+  .r-meta span { color: #e63946; font-weight: 600; }
+  .r-actions { display: flex; gap: .4rem; flex-shrink: 0; }
+
+  .r-btn {
+    border: none; border-radius: 8px; padding: .45rem .85rem;
+    font-size: .78rem; font-weight: 600; cursor: pointer; font-family: inherit;
+    transition: opacity .2s;
+  }
+  .r-btn:hover { opacity: .8; }
+  .r-btn-view { background: #1a1a1a; color: #fff; }
+  .r-btn-edit { background: #264653; color: #fff; }
+  .r-btn-copy { background: #2a9d8f; color: #fff; }
+  .r-btn-del { background: #fee; color: #e63946; }
+
+  /* modal de visualização */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.5); z-index: 200;
+    justify-content: center; align-items: center; padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: #fff; border-radius: 16px; width: 100%;
+    max-width: 900px; max-height: 85vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0,0,0,.25);
+    animation: modalIn .2s ease;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
+
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 1.4rem .8rem; border-bottom: 1px solid #eee;
+  }
+  .modal-title { font-size: 1.05rem; font-weight: 800; }
+  .modal-title span { color: #e63946; }
+  .modal-close {
+    background: none; border: none; font-size: 1.4rem; color: #999;
+    cursor: pointer; line-height: 1;
+  }
+  .modal-close:hover { color: #1a1a1a; }
+
+  .modal-body { padding: .8rem 1.4rem 1.2rem; overflow-y: auto; }
+
+  .modal-columns { display: flex; gap: 1.2rem; }
+  .modal-col { flex: 1; min-width: 0; }
+  .modal-col-divider { width: 1px; background: #eee; flex-shrink: 0; }
+
+  .modal-col h4 {
+    font-size: .8rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .05em; color: #999; margin-bottom: .6rem;
+  }
+
+  .modal-body .m-item {
+    display: flex; align-items: flex-start; gap: .5rem;
+    padding: .35rem 0; font-size: .82rem; line-height: 1.4;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .modal-body .m-item:last-child { border-bottom: none; }
+  .modal-body .m-num {
+    font-weight: 700; color: #e63946; min-width: 22px;
+    font-size: .75rem; text-align: right;
+  }
+  .modal-body .m-label { color: #888; min-width: 90px; flex-shrink: 0; font-weight: 600; font-size: .78rem; }
+  .modal-body .m-text { color: #1a1a1a; word-break: break-word; }
+  .modal-body .m-text.na { color: #bbb; font-style: italic; }
+
+  /* produto info inside modal */
+  .prod-info { font-size: .82rem; }
+  .prod-info-header { margin-bottom: .6rem; }
+  .prod-info-nome { font-weight: 700; font-size: .9rem; }
+  .prod-info-meta { color: #888; font-size: .75rem; }
+  .prod-info-meta span { color: #e63946; font-weight: 600; }
+  .prod-cat-section { margin-bottom: .5rem; }
+  .prod-cat-title { font-weight: 600; font-size: .75rem; color: #555; margin-bottom: .2rem; }
+  .prod-cat-cards { display: flex; flex-wrap: wrap; gap: .25rem; }
+  .prod-cat-card {
+    background: #f5f5f5; border-radius: 6px;
+    padding: .2rem .5rem; font-size: .72rem; color: #444;
+    line-height: 1.3;
+  }
+  .prod-empty { color: #bbb; font-style: italic; font-size: .78rem; }
+
+  .modal-footer {
+    padding: 0 1.4rem 1.2rem; display: flex; gap: .5rem;
+  }
+  .modal-btn {
+    flex: 1; padding: .6rem; border: none; border-radius: 8px;
+    font-weight: 700; font-size: .82rem; cursor: pointer; font-family: inherit;
+  }
+  .modal-btn:hover { opacity: .85; }
+  .modal-btn-copy { background: #e63946; color: #fff; }
+
+  /* confirmação exclusão */
+  .confirm-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.5); z-index: 300;
+    justify-content: center; align-items: center;
+  }
+  .confirm-overlay.open { display: flex; }
+  .confirm-box {
+    background: #fff; border-radius: 14px; padding: 1.5rem;
+    max-width: 360px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,.25);
+    animation: modalIn .2s ease;
+  }
+  .confirm-box p { margin-bottom: 1rem; font-size: .95rem; color: #555; }
+  .confirm-box .r-btn { margin: 0 .3rem; }
+
+  @media (max-width: 600px) {
+    .r-card { flex-direction: column; align-items: stretch; }
+    .r-actions { justify-content: flex-end; }
+    .modal-columns { flex-direction: column; }
+    .modal-col-divider { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- top nav -->
+<div class="topnav">
+  <div class="topnav-brand"><span>O</span> Cara Testou</div>
+  <div style="display:flex;align-items:center;gap:.5rem;">
+    <div class="topnav-modes">
+      <a href="modelo-conteudo.html" class="topnav-btn">MODELO</a>
+      <a href="produtos.html" class="topnav-btn">PRODUTOS</a>
+      <a class="topnav-btn active">CONTEUDOS</a>
+    </div>
+    <a href="modelo-conteudo.html" class="topnav-toggle">+ Roteiro</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="header">
+    <p class="header-msg">Meus Roteiros Salvos</p>
+  </div>
+
+  <div id="listContainer"></div>
+</div>
+
+<!-- modal de visualização -->
+<div class="modal-overlay" id="viewModal" onclick="closeViewModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="viewTitle"><span>R</span>oteiro</div>
+      <button class="modal-close" onclick="closeViewModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="viewBody"></div>
+    <div class="modal-footer">
+      <button class="modal-btn modal-btn-copy" onclick="copyViewRoteiro()">Copiar roteiro</button>
+    </div>
+  </div>
+</div>
+
+<!-- confirmação exclusão -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <p>Tem certeza que deseja excluir este roteiro?</p>
+    <div>
+      <button class="r-btn r-btn-copy" onclick="confirmDelete()">Sim, excluir</button>
+      <button class="r-btn r-btn-del" onclick="cancelDelete()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
+<script>
+const SECTIONS = [
+  { id: 'publico',   label: 'Público',         emoji: '👥' },
+  { id: 'tema',      label: 'Tema',            emoji: '📋' },
+  { id: 'tensao',    label: 'Tensão',          emoji: '⚡' },
+  { id: 'objetivo',  label: 'Objetivo',        emoji: '🎯' },
+  { id: 'gancho',    label: 'Gancho',          emoji: '🪝' },
+  { id: 'curiosidade', label: 'Curiosidade',   emoji: '🤔' },
+  { id: 'tema-central', label: 'Tema Central',  emoji: '📌' },
+  { id: 'problema',  label: 'Problema',        emoji: '❌' },
+  { id: 'consequencia', label: 'Consequência', emoji: '💥' },
+  { id: 'solucao',   label: 'Solução',         emoji: '✅' },
+  { id: 'demonstracao', label: 'Demonstração', emoji: '🛠️' },
+  { id: 'wow',       label: 'Momento Wow',     emoji: '😮' },
+  { id: 'transformacao', label: 'Transformação', emoji: '🌟' },
+  { id: 'veredito',  label: 'Veredito',        emoji: '🏆' },
+  { id: 'cta',       label: 'CTA',             emoji: '👇' },
+]
+
+const CAT_EMOJIS = {
+  'Problemas':'❌','Benefícios':'✅','Características':'ℹ️','Diferenciais':'⭐',
+  'Testes':'🔬','WOW':'😮','Público':'🎯','Objeções':'🤷','Respostas':'💬','Curiosidades':'🤔'
+}
+function catEmoji(cat) {
+  for (const k of Object.keys(CAT_EMOJIS)) { if (cat.includes(k)) return CAT_EMOJIS[k]+' ' }
+  return '📌 '
+}
+
+let currentDeleteId = null, currentViewRoteiro = null
+let _roteirosCache = [], _produtosCache = []
+
+async function loadAll() {
+  try { _roteirosCache = await loadScripts(); _produtosCache = await loadProducts() }
+  catch(e) { _roteirosCache = []; _produtosCache = [] }
+}
+
+function escapeHtml(t) { const d=document.createElement('div'); d.textContent=t; return d.innerHTML }
+
+function carregar() {
+  const container = document.getElementById('listContainer')
+  const roteiros = _roteirosCache
+  if (roteiros.length === 0) {
+    container.innerHTML = '<div class="empty"><p>Nenhum roteiro salvo ainda.</p><a href="modelo-conteudo.html">Criar meu primeiro roteiro</a></div>'
+    return
+  }
+  container.innerHTML = '<div class="card-list">' + roteiros.map(r => {
+    const filled = Object.keys(r.selections||{}).length
+    const data = new Date(r.data).toLocaleString('pt-BR')
+    const prod = r.produtoId ? _produtosCache.find(p => p.id === r.produtoId) : null
+    const prodName = prod ? escapeHtml(prod.nome) : null
+    return '<div class="r-card"><div class="r-info"><div class="r-nome">'+escapeHtml(r.nome)+'</div><div class="r-meta">'+data+' &mdash; <span>'+filled+'</span> de '+SECTIONS.length+' etapas'+(prodName?' &middot; '+prodName:'')+'</div></div><div class="r-actions"><button class="r-btn r-btn-view" onclick="verRoteiro(\''+r.id+'\')">Ver</button><button class="r-btn r-btn-edit" onclick="editarRoteiro(\''+r.id+'\')">Editar</button><button class="r-btn r-btn-copy" onclick="copiarRoteiro(\''+r.id+'\')">Copiar</button><button class="r-btn r-btn-del" onclick="pedirExclusao(\''+r.id+'\')">Excluir</button></div></div>'
+  }).join('') + '</div>'
+}
+
+function copiarRoteiro(id) {
+  const r = _roteirosCache.find(x => x.id === id)
+  if (!r) return
+  const lines = []
+  SECTIONS.forEach(s => { const t = r.selections ? r.selections[s.id] : null; if (t) lines.push(s.emoji+' *'+s.label+'* '+t) })
+  if (r.produtoId) {
+    const p = _produtosCache.find(x => x.id === r.produtoId)
+    if (p) {
+      lines.unshift(''); lines.unshift('📦 *Produto:* '+p.nome+(p.preco?' (R$ '+p.preco+')':''))
+      const sc = r.selectedProdCards||{}
+      if (Object.keys(sc).length > 0) {
+        lines.push(''); lines.push('📋 *Cards do Produto*')
+        Object.keys(sc).forEach(cat => {
+          const items = sc[cat]
+          if (items && items.length) { lines.push(catEmoji(cat)+'*'+cat+'*'); items.forEach(item => lines.push('▸ '+item)) }
+        })
+      }
+    }
+  }
+  const text = lines.join('\n')
+  if (!text) { alert('Roteiro vazio.'); return }
+  navigator.clipboard.writeText(text).then(() => alert('✅ Roteiro copiado!'))
+}
+
+function editarRoteiro(id) { window.location.href = 'modelo-conteudo.html?edit=' + id }
+
+function pedirExclusao(id) { deleteTargetId = id; document.getElementById('confirmOverlay').classList.add('open') }
+
+async function confirmDelete() {
+  if (!deleteTargetId) return
+  try { await deleteScript(deleteTargetId); _roteirosCache = _roteirosCache.filter(r => r.id !== deleteTargetId) }
+  catch(e) { alert(e.message) }
+  deleteTargetId = null; document.getElementById('confirmOverlay').classList.remove('open'); carregar()
+}
+
+function cancelDelete() { deleteTargetId = null; document.getElementById('confirmOverlay').classList.remove('open') }
+
+function verRoteiro(id) {
+  const r = _roteirosCache.find(x => x.id === id)
+  if (!r) return
+  currentViewRoteiro = r
+  document.getElementById('viewTitle').innerHTML = '<span>'+escapeHtml(r.nome)+'</span>'
+  let leftHtml = '<h4>📜 Roteiro</h4>' + SECTIONS.map(s => '<div class="m-item"><span class="m-num">'+s.emoji+'</span><span class="m-label">'+s.label+'</span><span class="m-text '+(r.selections[s.id]?'':'na')+'">'+(r.selections[s.id]||'—')+'</span></div>').join('')
+  let rightHtml = '<h4>📦 Produto</h4>'
+  if (r.produtoId) {
+    const p = _produtosCache.find(x => x.id === r.produtoId)
+    if (p) {
+      rightHtml += '<div class="prod-info"><div class="prod-info-header"><div class="prod-info-nome">'+escapeHtml(p.nome)+'</div>'+(p.categoria||p.preco?'<div class="prod-info-meta">'+(p.categoria?'<span>'+escapeHtml(p.categoria)+'</span>':'')+(p.preco?' &middot; R$ '+escapeHtml(p.preco):'')+'</div>':'')+(p.resumo?'<div style="font-size:.78rem;color:#555;margin-top:.15rem;">'+escapeHtml(p.resumo)+'</div>':'')+'</div>'
+      const sc = r.selectedProdCards||{}
+      if (Object.keys(sc).length > 0) {
+        Object.keys(sc).forEach(cat => {
+          const items = sc[cat]
+          if (items && items.length) { rightHtml += '<div class="prod-cat-section"><div class="prod-cat-title">'+escapeHtml(cat)+'</div><div class="prod-cat-cards">'+items.map(i=>'<span class="prod-cat-card">'+escapeHtml(i)+'</span>').join('')+'</div></div>' }
+        })
+      } else { rightHtml += '<div class="prod-empty">Nenhum card selecionado.</div>' }
+      rightHtml += '</div>'
+    } else { rightHtml += '<div class="prod-empty">Produto n&atilde;o encontrado.</div>' }
+  } else { rightHtml += '<div class="prod-empty">Nenhum produto vinculado.</div>' }
+  document.getElementById('viewBody').innerHTML = '<div class="modal-columns"><div class="modal-col">'+leftHtml+'</div><div class="modal-col-divider"></div><div class="modal-col">'+rightHtml+'</div></div>'
+  document.getElementById('viewModal').classList.add('open')
+}
+
+function closeViewModal(e) { if (e && e.target !== e.currentTarget) return; document.getElementById('viewModal').classList.remove('open') }
+
+function copyViewRoteiro() {
+  if (!currentViewRoteiro) return
+  const r = currentViewRoteiro, lines = []
+  SECTIONS.forEach(s => { const t = r.selections ? r.selections[s.id] : null; if (t) lines.push(s.emoji+' *'+s.label+'* '+t) })
+  if (r.produtoId) {
+    const p = _produtosCache.find(x => x.id === r.produtoId)
+    if (p) {
+      lines.unshift(''); lines.unshift('📦 *Produto:* '+p.nome+(p.preco?' (R$ '+p.preco+')':''))
+      const sc = r.selectedProdCards||{}
+      if (Object.keys(sc).length > 0) {
+        lines.push(''); lines.push('📋 *Cards do Produto*')
+        Object.keys(sc).forEach(cat => { const items=sc[cat]; if(items&&items.length){lines.push(catEmoji(cat)+'*'+cat+'*');items.forEach(i=>lines.push('▸ '+i))} })
+      }
+    }
+  }
+  const text = lines.join('\n')
+  if (!text) { alert('Roteiro vazio.'); return }
+  navigator.clipboard.writeText(text).then(() => alert('✅ Roteiro copiado!'))
+}
+
+document.addEventListener('keydown', e => { if (e.key==='Escape') { closeViewModal(); cancelDelete() } })
+
+// init
+window.onAuthReady = async function() { await loadAll(); carregar() }
+
+;(async function init() {
+  const session = await getSession()
+  if (!session) injectAuthUI()
+  else { await loadAll(); carregar() }
+})()
+</script>
+
+</body>
+</html>

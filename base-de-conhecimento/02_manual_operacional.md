@@ -1,0 +1,943 @@
+# MANUAL OPERACIONAL — O CARA TESTOU
+
+[00 Dashboard](../00_dashboard-do-projeto.md) | [Brand Bible](../brand-bible/fase-01-dna-estrategico.md) | [Base de Conhecimento](01_base_de_conhecimento.md) | [Prompt Mestre](03_prompt_mestre.md)
+
+> **Proposito:** Manual de execucao diaria — como produzir conteudo do zero ao ar
+> **Status:** ✅ Concluido
+
+---
+
+## 1. IDENTIDADE
+
+### 1.1 Quem e O Cara Testou
+
+O apresentador e a personificacao do **"Amigo Especialista"** — fusao do arquotipo O Cara Comum (The Everyman) com O Sabio (The Sage).
+
+| Dimensao | Descricao |
+|---|---|
+| **Quem e** | O amigo que todo mundo liga antes de comprar uma furadeira, churrasqueira ou faca. O conhecimento veio da pratica — sujando as maos, errando e consertando. |
+| **A vida antes do REC** | Estava organizando a bancada, afiando uma lamina ou testando o torque de uma parafusadeira nova. Entra no video como alguem que foi interrompido no meio de um projeto para mostrar algo incrivel para um amigo que acabou de chegar. |
+| **O que o move** | Paixao pela eficiencia. Encontrar ferramentas que cumprem o que prometem. Profundo respeito pelo suor do dinheiro de quem assiste. |
+| **O que o incomoda** | Promessas vazias de marketing, "gourmetizacao" de ferramentas simples, produtos frageis que quebram no segundo uso, plastico pintado para parecer metal. |
+| **O pacto com o publico** | "Eu vou gastar meu tempo, arriscar meu projeto e sujar minhas maos para descobrir a verdade. Voce so vai gastar seu dinheiro com o que realmente funciona." |
+
+### 1.2 Como Fala
+
+| Caracteristica | Regra |
+|---|---|
+| **Ritmo e cadencia** | Dinamico, sem afobacao. Pausas dramaticas curtas antes de revelar o veredito. |
+| **Velocidade** | ~150 palavras por minuto — energetico na abertura, compassado nos detalhes tecnicos. |
+| **Tom** | Mensagem de audio no WhatsApp para o melhor amigo, mas com excelente diccao. Nao e texto decorado — e conversa. |
+| **Processamento da informacao** | Traduz "tecniques" para a vida real. NUNCA le ficha tecnica; ele TESTA a ficha tecnica. |
+
+**Tabela de traducao (tecnico -> linguagem do cara):**
+
+| Nao fale | Fale |
+|---|---|
+| "Motor com 5000 RPM e torque de 80 Nm" | "Esse bicho tem forca suficiente pra furar peroba-rosa como se fosse manteiga." |
+| "Alta resistencia a impactos" | "Se cair no pe, quebra o chao." |
+| "Material termoplastico reforcado" | "Plastico que aguenta porrada — nao aquele plastico de brinquedinho." |
+| "Design ergonomico facilita a empunhadura" | "A pegada dessa parada e monstra, nao cansa a mao nem depois de uma hora de trampo." |
+
+**Expressoes faciais por momento:**
+
+| Momento | Expressao |
+|---|---|
+| Boas-vindas | Sorriso aberto — marca registrada |
+| Analise tecnica | Olhos semicerrados, testa franzida — foco e senso critico |
+| Produto ruim | Sorriso de canto de boca — "eu sabia que ia dar ruim" |
+| Apresentacao do veredito | Olho direto na lente, serio, sem sorriso |
+
+**Improvisos e erros:** Nao cortar tropecos genuinos. Se a chave cair da mao, ele abaixa, pega, ri da propria cara e diz: "Isso que da testar antes de tomar cafe." A perfeicao afasta; o erro natural aproxima.
+
+**NUNCA dizer:**
+- "Deixe seu like e se inscreva antes de comecar"
+- "Fala galera do YouTube"
+- Palavras academicas/rebuscadas ("Inobstante", "Outrossim")
+- "Prezado / Caro cliente"
+- "Adquira ja"
+- "Promocao imperdivel"
+- "Mindset" ou jargoes corporativos
+
+### 1.3 Como Age (Postura e Linguagem Corporal)
+
+| Regra | Execucao |
+|---|---|
+| Postura | Ombros largos, base firme. Levemente debrucado sobre a bancada (acao e proximidade). |
+| Postura proibida | Nunca encostado para tras ou com postura de "preguica". |
+| As maos | Grandes, firmes e expressivas durante a fala. Ao pegar o produto, a mao envolve a ferramenta com propriedade. Gira o produto, mostra os veios, as engrenagens. |
+| Contato visual | Introducao e veredito: olho no olho — direto na lente. Analise tecnica: acompanha as maos e o produto -> volta para a camera ao confirmar o ponto. |
+| Como segurar produtos | Faca: pelo cabo, com firmeza — nunca pela ponta dos dedos. Furadeira: como se estivesse prestes a furar a parede — nunca frouxa. |
+| Gestos proibidos | Bracos cruzados defensivamente. Maos escondidas no bolso durante explicacoes. Apontar o dedo indicador direto e agressivamente para a camera. Piscar em excesso. |
+| Humor fisico | Sorrisos abertos apos piada. Tapinha carinhoso em uma maquina resistente. Balancar a cabeca de forma incredula quando o produto promete o impossivel. |
+
+### 1.4 Como Pensa (Filosofia)
+
+**Pragmatismo sem Filtro.** Funciona ou nao funciona. Nao perder tempo com meias-verdades, produtos inuteis ou promessas vazias de marketing.
+
+- **Qualidade acima do Hype:** Uma marca famosa nao importa se o produto nao aguentar o tranco. Testamos na pratica, na garagem e na vida real.
+- **Transparencia de Amigo:** Falamos a verdade nua e crua sobre cada produto, apontando pros e contras, exatamente como faríamos recomendando algo para um parceiro de churrasco.
+- **Inteligencia Pratica:** Valorizamos a solucao inteligente, o custo-beneficio e a facilidade genuina.
+- **Simplicidade e Respeito:** Respeitamos a inteligencia e o dinheiro do nosso publico. Nao usamos jargoes tecnicos para parecer superiores, nem forcamos a barra para vender.
+
+**Frase de posicionamento:** "O filtro definitivo para as coisas que realmente resolvem a sua vida."
+
+**Promessa da marca:** "Se apareceu aqui, passou no teste."
+
+---
+
+## 2. ESTRUTURA OFICIAL DOS VIDEOS
+
+A estrutura obrigatoria de cada video e:
+
+```
+GANCHO -> PROMESSA -> PROBLEMA -> TESTE -> TRANSFORMACAO -> VEREDITO -> CTA
+```
+
+### 2.1 Explicacao de Cada Etapa
+
+#### Gancho (0-3s)
+
+| Item | Descricao |
+|---|---|
+| **O que e** | O primeiro frame. O que prende a atencao e impede o scroll. |
+| **Como fazer** | Nada de "E ai galera". Primeira frame = ferramenta no limite OU produto na mao com texto na tela. Comecar no meio da acao (in media res). Som original da ferramenta estourado. |
+| **Exemplo** | "Disseram que essa faca corta ate prego." / Video ja mostra a faca sendo cravada em uma lata. |
+| **Tempo** | 0-3s |
+
+#### Promessa (2-5s)
+
+| Item | Descricao |
+|---|---|
+| **O que e** | O que o produto promete. O hype que envolve ele. |
+| **Como fazer** | Revelar a promessa com duvida. Nao afirmar como verdade, lancar como desafio. |
+| **Exemplo** | "A internet inteira ta falando disso." / "Prometeram milagre, sera que entrega?" |
+| **Tempo** | 2-5s |
+
+#### Problema (3-7s)
+
+| Item | Descricao |
+|---|---|
+| **O que e** | A dor que o produto supostamente resolve. Conectar com a experiencia do espectador. |
+| **Como fazer** | Usar a "dor compartilhada": "Voce tambem odeia quando [problema]?" |
+| **Exemplo** | "Nada mais irritante que uma furadeira que nao tem forca na hora de furar uma parede." |
+| **Tempo** | 3-7s |
+
+#### Teste (5-50s, varia com duracao)
+
+| Item | Descricao |
+|---|---|
+| **O que e** | A execucao do Protocolo da Vida Real. O produto sendo submetido ao uso real e ao estresse. |
+| **Como fazer** | Comecar facil (uso normal) -> ir para o extremo (O Perrengue). Mostrar falhas se ocorrerem. Nao esconder a sujeira. |
+| **Exemplo** | Faca cortando papel -> cortando couro -> cortando lata -> sendo forçada ate a lamina travar. |
+| **Tempo** | Maior bloco do video. Ocupa 50-70% da duracao total. |
+
+#### Transformacao (5-15s antes do veredito)
+
+| Item | Descricao |
+|---|---|
+| **O que e** | Camera lenta mostrando o resultado. O cerebro respira antes da conclusao. |
+| **Como fazer** | Musica diminui. Close-up no resultado do teste. Mostrar o estado final do produto. |
+| **Exemplo** | "Olha o estado disso depois do que eu fiz." / Close no fio da faca que ficou intacto ou na engrenagem que derreteu. |
+| **Tempo** | 5-15s antes do veredito |
+
+#### Veredito (ultimos 10-15s)
+
+| Item | Descricao |
+|---|---|
+| **O que e** | O evento final. O julgamento. Nao e "entao e isso pessoal". |
+| **Como fazer** | Musica para completamente. Apresentador olha direto para a lente. "Eu compraria com o meu dinheiro?" Escala visual c rava em um dos 4 niveis. Som de carimbo pesado. Selo aplicado (ou rejeitado) na tela. |
+| **Exemplo** | "No fim das contas, se apareceu aqui, passou no teste." [Pausa] "Ferramenta raiz, nao brinquedo de plastico." |
+| **Tempo** | 10-15s finais |
+
+#### CTA (ultimos 3-5s)
+
+| Item | Descricao |
+|---|---|
+| **O que e** | A chamada para acao. Leve, natural, sem pressao. |
+| **Como fazer** | Link na bio, salvar o video, mandar para o amigo. Tom de "quem avisa amigo e". |
+| **Exemplo** | "Cara, o link ta aqui se quiser dar uma olhada." / "Manda pro seu amigo que ta precisando de uma dessas." |
+| **Tempo** | 3-5s finais |
+
+### 2.2 Estrutura por Duracao
+
+#### Video de 15s — TikTok / Reels (Viralidade pura)
+
+| Tempo | Bloco | Acao |
+|---|---|---|
+| 0-3s | Gancho Visceral | Acao imediata. Nada de "E ai galera". Primeira frame = ferramenta no limite OU produto na mao com texto na tela. Som original da ferramenta estourado. |
+| 3-7s | A Prova | Sem enrolacao — a promessa sendo cumprida ou falhando. Cortes rapidos no ritmo da acao. |
+| 7-12s | Veredito do Especialista | Apresentador entra em cena com avental preto. Uma frase de peso. |
+| 12-15s | Fecho | Assinatura visual (Logo Amarelo + Preto). "Se apareceu aqui, passou no teste. Um abraco." |
+
+**Regra:** 3-4 cortes por segundo na acao -> estabiliza no veredito.
+
+#### Video de 30s — TikTok / Reels (Equilibrio perfeito)
+
+| Bloco | Tempo | Conteudo |
+|---|---|---|
+| Gancho e Problema | 0-5s | "Voce tambem odeia quando [problema]? Comprei esse [produto] pra ver se resolve." |
+| O Teste Real | 5-15s | Apresentacao rapida -> acao direta. Som ASMR do metal, motor e textura. |
+| Pausa Mental | 15-22s | Camera lenta mostrando o resultado. O cerebro respira antes da conclusao. |
+| Veredito + Fechamento | 22-30s | "Essa aqui ganhou meu respeito." Pontos fortes e fracos em 2 frases. |
+
+**CTA Recomendado:** "Link na bio" ou "Comenta TESTE que te mando o link".
+
+#### Video de 60s — Reels / YouTube Shorts (Autoridade)
+
+| Bloco | Tempo | Conteudo |
+|---|---|---|
+| A Grande Promessa | 0-5s | "Disseram que essa faca corta ate prego. Eu paguei R$300 e vou testar no limite pra voce nao precisar." |
+| Unboxing Agil | 5-20s | Textura, peso, material. B-rolls macro com fonte Anton em Amarelo Maquina. |
+| Teste Progressivo | 20-40s | Comeca facil -> vai pro extremo. Selos visuais de progresso: "SOBREVIVEU" em vermelho. |
+| Resumo Tecnico | 40-50s | Sem termos chatos, mas com profundidade. "O aco carbono aguentou porque o tratamento termico e honesto." |
+| Veredito Final | 50-60s | "Se apareceu aqui, passou no teste." + CTA para compartilhar. |
+
+#### Video de 90s — YouTube / TikTok Longo (Storytelling completo)
+
+| Bloco | Tempo | Conteudo |
+|---|---|---|
+| Inicio | 0-15s | Contextualizacao: por que estamos testando? Historia do produto ou hype da internet. |
+| Meio | 15-60s | O processo completo: mostrar fracassos, sujeira e suor. Reacoes genuinas de falha. |
+| Climax | 60-75s | O limite absoluto do produto. |
+| Fim | 75-90s | Analise Custo x Beneficio. Graficos simples (Preto, Vermelho, Amarelo). Encerramento: "Um abraco e ate o proximo teste." |
+
+---
+
+## 3. COMO CRIAR GANCHOS
+
+### 3.1 Regra de Ouro dos Primeiros 2s
+
+**Proibido rosto estatico falando.** O video comeca no meio da acao *(in media res)*.
+
+O espectador decide em 0,5s se vai continuar assistindo ou dar scroll. O gancho nao e negociacao — e sequestro de atencao.
+
+### 3.2 Tipos de Gancho
+
+| Tipo | Descricao | Exemplo |
+|---|---|---|
+| **Visual** | Acao fisica imediata. Ferramenta no limite, fogo, faisca, quebra. | Camera abre com serra cortando metal. Faiscas voando. Nenhuma palavra ainda. |
+| **Verbal** | Frase de impacto dita antes ou durante a acao. | "Disseram que essa parada corta ate prego." |
+| **Sonoro** | Som da ferramenta estourado no primeiro frame. Sem musica — som real. | Zoom da furadeira furando concreto. Som alto do motor + impacto. Texto na tela: "VAI AGUENTAR?" |
+
+### 3.3 10 Exemplos de Ganchos (Extraidos da Brand Bible)
+
+1. "Disseram que essa faca corta ate prego. Eu paguei R$300 e vou testar no limite pra voce nao precisar." (Fase 04 — video de 60s)
+2. "A internet inteira ta falando disso. Eu comprei, e vou testar no limite pra voce nao precisar." (Fase 04 — quadro O Cara Testou)
+3. "Prometeram milagre, entregaram lixo. Vem ver isso." (Fase 04 — quadro Brinquedo de Plastico)
+4. "De um lado, R$50. Do outro, R$500. Quem ganha a batalha hoje?" (Fase 04 — quadro Batalha de Gigantes)
+5. "Voce tambem odeia quando [problema]? Comprei esse [produto] pra ver se resolve." (Fase 04 — video de 30s)
+6. "Bora descobrir se isso aqui presta." (Fase 06 — saudacao recomendada)
+7. "Eu tenho isso aqui ha 5 anos. Ja tomou chuva, porrada e continua intacto." (Fase 04 — quadro Vida Util)
+8. "Dinerro bem gasto ou dinheiro jogado fora?" (Fase 02 — bordao oficial)
+9. "Comprei isso aqui porque o @JoaoCarlos do nosso Discord me desafiou." (Fase 07 — co-curadoria)
+10. "Eu paguei R$ [Preco] nisso aqui. E vou te provar por que vale cada centavo." (Fase 04 — quadro Vale Cada Centavo)
+
+---
+
+## 4. COMO CRIAR CTAS
+
+### 4.1 Os 8 CTAs Oficiais
+
+| # | CTA | Tom | Quando usar |
+|---|---|---|---|
+| 1 | "Cara, o link ta aqui se quiser dar uma olhada." | Relaxado, sem pressao | Produtos aprovados, tom casual |
+| 2 | "Achei com um desconto bacana, deixei o link la no perfil." | Compartilhamento de achado | Ofertas e promocoes reais |
+| 3 | "Salva esse video pra nao esquecer quando for comprar a sua." | Utilidade | Reviews de produtos que valem a pena |
+| 4 | "Manda pro seu amigo que ta precisando de uma dessas." | Compartilhamento social | Produtos de nicho que resolvem problema especifico |
+| 5 | "Se curtiu o achado, ja sabe onde clicar." | Confiante, direto | Fechamento de video positivo |
+| 6 | "Deixei o caminho das pedras na bio pra facilitar." | Amigavel, util | Sempre que houver link na bio |
+| 7 | "Quem avisa amigo e. O link ta ai embaixo." | Provérbio popular | Reforco de confianca |
+| 8 | "Da uma olhada la antes que zere o estoque." | Urgencia autentica | Estoque limitante real |
+
+### 4.2 Como Adaptar o CTA para Cada Formato
+
+| Formato | CTA Ideal | Exemplo |
+|---|---|---|
+| Video de 15s | CTA curto, visual | "Link na bio." + seta na tela |
+| Video de 30s | CTA verbal + texto na tela | "Cara, o link ta aqui se quiser dar uma olhada." + link na tela |
+| Video de 60s | CTA elaborado, contextual | "Salva esse video pra nao esquecer quando for comprar a sua. Manda pro seu amigo." |
+| YouTube (90s+) | CTA duplo: engajamento + link | "Deixa o like se esse teste te salvou um trocado. O caminho das pedras ta na descricao." |
+
+### 4.3 10 Exemplos de Uso de CTA
+
+1. Review de parafusadeira aprovada: "Cara, o link ta aqui se quiser dar uma olhada."
+2. Achado da Semana com desconto: "Achei com um desconto bacana, deixei o link la no perfil."
+3. Produto essencial para o dia a dia: "Salva esse video pra nao esquecer quando for comprar a sua."
+4. Ferramenta que resolve problema de um nicho: "Manda pro seu amigo que ta precisando de uma dessas."
+5. Review positivo, fechamento padrao: "Se curtiu o achado, ja sabe onde clicar."
+6. Video com link na bio: "Deixei o caminho das pedras na bio pra facilitar."
+7. Review sincero: "Quem avisa amigo e. O link ta ai embaixo."
+8. Produto com estoque limitado: "Da uma olhada la antes que zere o estoque."
+9. Comentario fixado: "Comenta TESTE que te mando o link."
+10. Fechamento de quadro Batalha de Gigantes: "O vencedor ta na bio. Perdedor? Passa longe."
+
+---
+
+## 5. COMO CRIAR PROBLEMAS (Biblioteca de Dores)
+
+A "dor compartilhada" e o principal gatilho de comentario e engajamento. O espectador precisa sentir: "ISSO JA ACONTECEU COMIGO".
+
+### 5.1 Dores do Nicho de Ferramentas
+
+| Dor | Abordagem no video |
+|---|---|
+| Furadeira que nao tem forca para furar parede | "Nada pior que comprar uma furadeira e ela travar no primeiro furo na parede." |
+| Parafuso espanado porque a chave e ruim | "Ja aconteceu de voce tentar apertar um parafuso e a chave simplesmente comer a cabeca dele?" |
+| Ferramenta que promete ser "profissional" e quebra no primeiro uso | "Fala que e profissional, mas o plastico e tao fino que da pra ver a luz atraves." |
+| Bateria de ferramenta que dura 10 minutos | "Prometeu 2 horas de autonomia. Durou 15 minutos no primeiro uso." |
+| Kit de ferramentas que vem com 100 pecas mas nenhuma presta | "100 pecas por R$50. Adivinha quantas vao sobreviver ao primeiro aperto?" |
+
+### 5.2 Dores do Nicho de Churrasco
+
+| Dor | Abordagem no video |
+|---|---|
+| Grelha que enferruja na primeira chuva | "Nada mais triste que uma grelha nova que parece que tem 10 anos depois de um dia de chuva." |
+| Faca que nao corta nem frango cozido | "Faca cara que nao corta nem um tomate maduro." |
+| Churrasqueira que promete nao fazer fumaca (e faz) | "Disseram que essa churrasqueira nao faz fumaca. Vou testar no meio da sala pra ver se e verdade." |
+| Carvao que acende mas apaga em 5 minutos | "Carvao que acende rapido mas nao mantem a brasa. Ja passei raiva com isso." |
+| Espeto que gira e a carne cai | "Nada como preparar o churrasco inteiro e o espeto soltar a carne no meio do fogo." |
+
+### 5.3 Dores do Nicho de Camping/EDC
+
+| Dor | Abordagem no video |
+|---|---|
+| Barraca que promete ser impermeavel e molha tudo | "Acordar no meio da noite com agua escorrendo na barraca. Nao desejo pra ninguem." |
+| Canivete que nao corta nem barbante | "Canivete 'indestrutivel' que entortou na primeira tentativa de abrir uma lata de tinta." |
+| Lanterna que promete 1000 lumens e ilumina menos que isqueiro | "Mil lumens que parecem 10. Ja comprou uma dessas?" |
+| Mochila d'agua que vaza no meio da trilha | "Mochila de hidratacao que parece mais um chuveiro nas costas." |
+| Kit de sobrevivencia que vem com equipamentos inuteis | "Kit de sobrevivencia que so serve pra encher mochila. Todo item e descartavel." |
+
+### 5.4 Dores do Nicho de Tech Utilitaria
+
+| Dor | Abordagem no video |
+|---|---|
+| Power bank que promete 20.000mAh e carrega um celular uma vez | "Power bank de 20 mil que carrega o celular uma vez e meio. Cadê o resto?" |
+| Fone Bluetooth que promete 8h de bateria e dura 2 | "Fone que promete o dia todo de bateria e morre no meio do expediente." |
+| Carregador veicular que derrete no acendedor de cigarro | "Carregador de carro que promete carregamento rapido e derrete no acendedor." |
+| Cabo USB que diz ser resistente e descasca em uma semana | "Cabo 'blindado' que descasca igual banana na primeira semana." |
+| Suporte de celular para carro que nao segura o aparelho | "Suporte de celular que joga o celular no chao na primeira curva." |
+
+### 5.5 A "Dor Compartilhada" como Gatilho de Comentario
+
+Sempre que possivel, transforme a dor em pergunta no final do video:
+
+- "Qual foi a pior ferramenta que voce ja comprou e quebrou no primeiro dia?"
+- "Ja passou raiva com uma churrasqueira que prometeu nao fazer fumaca?"
+- "Quanto voce pagaria numa lanterna que realmente iluminasse?"
+
+Isso gera comentarios, engajamento e conecta a comunidade.
+
+---
+
+## 6. COMO TESTAR PRODUTOS
+
+### 6.1 Protocolo da Vida Real (PVR) — Checklist Completo
+
+O metodo oficial de teste. 4 fases progressivas. Nenhum produto e avaliado sem passar por todas as fases cabiveis.
+
+```
+FASE 1              FASE 2              FASE 3               FASE 4
+O Encontro     ->   O Trampo       ->   O Perrengue     ->   A Autopsia
+(Unboxing)         (Uso Normal)        (Teste de Limite)     (Inspecao Interna)
+```
+
+#### Fase 1 — O Encontro (Tirando da Caixa)
+
+- [ ] Primeira impressao: a embalagem e honesta ou enganosa?
+- [ ] Qualidade dos materiais a vista: plastico, metal, borracha?
+- [ ] Manual: e claro, mal traduzido, ou nao vem?
+- [ ] Montagem: precisa de ferramenta adicional? E intuitiva?
+- [ ] Peso e dimensoes: bate com o anunciado?
+- [ ] Sensor de "fragilidade": apertar, torcer, sentir folgas
+
+#### Fase 2 — O Trampo (Uso Projetado)
+
+- [ ] Uso exato para o qual o produto foi feito em cenario cotidiano
+- [ ] Teste de funcao principal (ex: furar tijolo com a furadeira, cortar corda com o canivete)
+- [ ] Teste de funcoes secundarias (se houver)
+- [ ] Facilidade de uso: da para usar sem manual?
+- [ ] Conforto ergonomico durante uso prolongado
+
+#### Fase 3 — O Perrengue (Estresse e Limite) — MARCA REGISTRADA
+
+O produto e levado a 150% do seu limite. Simular acidentes comuns:
+
+- [ ] Queda de altura de bancada (~1m)
+- [ ] Exposicao a agua/chuva (se aplicavel)
+- [ ] Uso continuo ate aquecer/falhar
+- [ ] Impacto repetitivo
+- [ ] Sobrecarga de funcao (usar alem do especificado)
+- [ ] Teste em condicao adversa (poeira, barro, temperatura)
+
+> **Resultado esperado:** Aqui vemos se ele entorta, derrete ou arrega.
+
+#### Fase 4 — A Autopsia (O que sobrou)
+
+- [ ] Desmontagem (se possivel) para inspecao interna
+- [ ] Engrenagens de plastico ou metal?
+- [ ] A lamina lascou/perdeu o fio?
+- [ ] A bateria estufou?
+- [ ] Soldas e parafusos: bem feitos ou porcaria?
+- [ ] Joinha interna: o que o olho nao ve na prateleira?
+
+### 6.2 O que Testar em Cada Categoria
+
+| Categoria | Testes Especificos |
+|---|---|
+| **Ferramentas** | Torque real vs. anunciado, RPM, aquecimento apos uso continuo, resistencia a queda, qualidade do cabo/bateria |
+| **Facas / Cutelaria** | Fio de fabrica, retencao de fio apos corte continuo, resistencia da lamina a torcao, ergonomia do cabo |
+| **Churrasco** | Distribuicao de calor, resistencia a ferrugem, facilidade de limpeza, durabilidade a altas temperaturas |
+| **Camping / Barracas** | Impermeabilizacao real, resistencia a vento, qualidade de costuras, peso vs. robustez |
+| **EDC / Canivetes** | Mecanismo de travamento, folga da lamina, resistencia a impacto, facilidade de abrir com uma mao |
+| **Tecnologia / Power Banks** | Capacidade real vs. anunciada, velocidade de carregamento, aquecimento, durabilidade da porta USB |
+| **Automotivo** | Compatibilidade real, resistencia a temperatura do carro, facilidade de instalacao, durabilidade |
+
+### 6.3 O Pentagono do Teste (5 Dimensoes com Pesos)
+
+Cada produto recebe nota de 1 a 10 em 5 dimensoes universais:
+
+```
+               CARCACA
+             (Construcao)
+            /              \
+     PEGADA                FORCA BRUTA
+  (Usabilidade)           (Desempenho)
+            \              /
+       CASCA GROSSA --- PRECO DA BRINCADEIRA
+       (Resistencia)      (Custo-Beneficio)
+```
+
+| Categoria | Peso Sugerido | O que avalia | Teste na pratica |
+|---|---|---|---|
+| **CARCACA** | 20% | Qualidade do material, encaixes, peso, sensacao de fragilidade | Torcer, apertar, inspecionar soldas, plasticos e parafusos |
+| **PEGADA** | 20% | Conforto, ergonomia, clareza dos controles, peso | Teste cego (usar sem manual) + uso com luvas de trabalho |
+| **FORCA BRUTA** | 25% | Desempenho principal — a potencia real bate com a da caixa? | Medido em tempo, cortes, RPM real ou torque |
+| **CASCA GROSSA** | 20% | Resistencia a acidentes cotidianos | Queda de 1 metro + exposicao a poeira/agua (quando aplicavel) |
+| **PRECO DA BRINCADEIRA** | 15% | Vale o que custa em reais hoje? | Comparacao de mercado + relacao com os 4 criterios anteriores |
+
+### 6.4 Medidor de Respeito (Escala Visual)
+
+| Nivel | Nome | Significado | Acao |
+|---|---|---|---|
+| 1 | LIXO CARO | Nao compre de jeito nenhum. Perigoso, mentiroso ou quebra so de olhar. | Selo CILADA, zero link |
+| 2 | QUEBRA-GALHO | Funciona, mas nao espere milagres. Vale apenas se estiver sem grana e usar poucas vezes. | Menco rapida, sem destaque |
+| 3 | HONESTO | Entrega exatamente o que promete pelo preco que cobra. Compra segura e inteligente. | Selo TESTADO E APROVADO |
+| 4 | MONSTRO | Excepcional. Bate de frente com produtos tres vezes mais caros. Entrou para a caixa de ferramentas oficial do canal. | Selo TESTADO E APROVADO + destaque no video |
+
+---
+
+## 7. COMO GRAVAR
+
+### 7.1 Camera
+
+| Item | Especificacao | Regra |
+|---|---|---|
+| Principal | Sony A7IV / FX30 ou iPhone 14/15 Pro Max em ProRes | Apresentador + produto principal |
+| Acao/Backup | GoPro Hero 12 ou DJI Osmo Action 4 | Acoplada as ferramentas, perto de faiscas ou agua |
+| Estabilizacao | MAO (handheld) com leve tremor natural | **PROIBIDO:** gimbal suave demais (estilo casamento). O tremor = urgencia e realidade. |
+
+### 7.2 Enquadramentos
+
+| Plano | Uso | O que comunica |
+|---|---|---|
+| Close-up (Macro) | Textura do metal, fio da faca, faisca | Detalhe tecnico — nos importamos com a construcao |
+| Plano Medio | Veredito do apresentador | Autoridade e conexao humana |
+| POV (Camera no peito) | Uso intenso da ferramenta | O espectador sente que esta segurando |
+| Plano Americano | Thumbnails, abertura | Rosto expressivo, foco nos olhos e sorriso |
+
+### 7.3 Iluminacao
+
+| Elemento | Configuracao | Regra |
+|---|---|---|
+| Estilo | Chiaroscuro (contraste alto) | Sombras dramaticas no rosto e na bancada |
+| Key Light | Forte e direcional | Cria profundidade e textura |
+| Back Light | Luz de recorte amarela ou branca fria | Atras do produto, separa do fundo |
+| Temperatura: Ferramentas e Tech | 5600K (fria) | Luz de oficina |
+| Temperatura: Churrasco e Camping | 3200K (quente) | Luz de brasa e fogao |
+| **PROIBIDO** | Luz flat (iluminacao de novela) | Nunca. Sempre crie sombras. |
+| **PROIBIDO** | Fundo infinito 100% branco | Estilo e-commerce padrao — proibido |
+| **PROIBIDO** | Luz fria/azulada de hospital | Mata a atmosfera da marca |
+
+### 7.4 Audio
+
+| Fonte | Equipamento | Regra |
+|---|---|---|
+| Voz | Lapela sem fio (DJI Mic ou Rode Wireless Go) | Escondido sob o avental. Never visivel. |
+| Acao | Microfone Shotgun direcional | Apontado para a cena. Capturar som real. |
+| Sound Design | Som real da ferramenta | Aumentar 20% na edicao. ASMR rustico dos materiais. |
+| **PROIBIDO** | Trilha sonora abafando o som real | O som da ferramenta e TÃO importante quanto a musica. |
+
+### 7.5 Setup por Cenário
+
+| Cenário | Fundo | Iluminacao | Roupa do Apresentador |
+|---|---|---|---|
+| Garagem / Tech | Bancada de madeira envelhecida + parede de ferramentas + concreto bruto | 5600K direcional com sombras fortes | Camiseta preta + Avental Preto + Jeans |
+| Churrasco | Churrasqueira com fogo real + chapa de aco escovado | 3200K quente, luz de fogo como back light | Camisa henley preta/branca + Avental Preto |
+| Camping / Outdoor | Fundo escuro com elementos naturais, barraca, mato | 5600K suave, simulando luz natural filtrada | Flanela xadrez escura aberta + camiseta basica |
+| Tech / Bancada | Pegboard escuro + ferramentas organizadas | 5600K com key light forte e back light fria | Camiseta cinza chumbo + Avental Preto |
+
+---
+
+## 8. COMO EDITAR
+
+### 8.1 Legendas
+
+| Item | Regra |
+|---|---|
+| Estilo | Legendas DINAMICAS, palavra por palavra (nao bloco por bloco) |
+| Fonte | Inter Bold |
+| Cor | Branco com borda/sombra preta para legibilidade |
+| Posicao | Central inferior, mas com liberdade criativa para posicionar perto de quem fala |
+| Animacao | Palavras destacadas em AMARELO MAQUINA (#FFC20E) |
+| Caixa | Primeira maiuscula, resto minusculo (padrao legivel) |
+
+### 8.2 Zoom e Cortes
+
+| Tecnica | Especificacao |
+|---|---|
+| Jump Cut Punch-in | Zoom de 15% no rosto do apresentador para enfatizar frase de efeito |
+| Ritmo de corte | 1 corte a cada 1,5s a 2,5s. Nunca mais que 3s sem corte. |
+| Tipo de corte | Hard cuts. Secos. Limpos. |
+| Na acao (15s) | 3-4 cortes por segundo. Ritmo frenetico. |
+| No veredito | Estabiliza. Camera fixa. Sem cortes rapidos. Respiro. |
+
+### 8.3 Musicas
+
+| Tipo de Video | Estilo Musical | Playlist Sugerida |
+|---|---|---|
+| Teste intenso / Batalhas | Rock pesado + graves marcados, Phonk rustico, percussao industrial | Drums & Bass pesado, Metal industrial |
+| Achado / Reviews | Lo-Fi com batida pesada (Boom Bap), Blues Rock sujo | Lo-Fi hip hop com batida marcada |
+| Brinquedo de Plastico | Tom ironico, suspense leve, trilha de filme B | Musica tensa de fundo + efeitos sonoros |
+| Vida Util | Tom nostalgico, Blues acustico, Americana | Slide guitar, violao com sujeira |
+| **PROIBIDO** | Musicas fofinhas, ukulele, batida corporativa feliz | Nao usar em hipotese alguma |
+
+### 8.4 Transicoes
+
+| Permitidas | Proibidas |
+|---|---|
+| Hard cuts | Fade to black |
+| Whip pans (chicotes de camera) rapidos | Star wipe |
+| Transicoes fisicas (tapar a lente, virar a camera) | Glitch digital falso |
+| Light leaks quentes (amarelo/laranja queimado) | Cross dissolve |
+| Zoom rapido de entrada/saida | Transicoes de app de edicao (slides) |
+| Sons mecanicos nos cortes (engate de ferramenta, clique de ziper, ignicao de macarico) | Transicoes com shapes graficos genericos |
+
+### 8.5 Efeitos Sonoros Obrigatorios (10)
+
+| # | Som | Quando usar |
+|---|---|---|
+| 1 | Impacto (Boom grave) | Texto grande entrando na tela |
+| 2 | Sizzle (Metal quente) | Transicoes rapidas |
+| 3 | Catraca de chave de boca | Revelar listas ou caracteristicas |
+| 4 | Ziper de mochila tattica | Iniciar "Achado da Semana" |
+| 5 | Impacto de bigorna | Selo "Passou no Teste" aparecendo |
+| 6 | Vidro/plastico quebrando | Produtos reprovados |
+| 7 | Motor acelerando (Rev) | Gancho inicial para ferramentas eletricas |
+| 8 | Fosforo acendendo | Aparecimento da logo / cenas de fogo |
+| 9 | Riser metalico | Tensao antes do produto quebrar |
+| 10 | Whoosh grave | Saidas de cena do apresentador |
+
+### 8.6 Motion Graphics
+
+| Elemento | Execucao |
+|---|---|
+| Abertura (Logo) | O logo NAO aparece em fade — ele CARIMBA a tela com impacto + camera shake sutil. Pinceladas amarelas surgem agressivamente -> texto "O CARA TESTOU" lacra a cena. |
+| Lower Thirds | Fita crepe texturizada amarela OU placa de metal preta parafusada deslizando da lateral esquerda. Nome do produto: Anton Branca/Amarela. Specs: Roboto Mono. |
+| Molduras (PIP) | Borda solida preta/amarela grossa, sem cantos arredondados. Estetica: tela de monitoramento industrial. |
+| Selo "TESTADO APROVADO" | Animacao de carimbo + som de impacto (bigorna). Aparece na tela como um lacre. |
+| Checklists | Dinamicos com caixas marcadas em tempo real + batida metálica. |
+| Cor / LUT | Base Teal & Orange com enfase no Orange/Amarelo. Sombras densas, contraste elevado. Pretos densos (crushed blacks). |
+
+---
+
+## 9. COMO VENDER
+
+### 9.1 Regras da Monetizacao Etica
+
+| Regra | Descricao |
+|---|---|
+| Link de afiliado | SOMENTE para produtos com selo "Testado e Aprovado" ou "Compra Inteligente" |
+| Produtos "Cilada" | Recebem alerta e ZERO link. Nao ganhar comissao em cima de enganacao. |
+| Produto patrocinado | A nota de Custo-Beneficio e calculada com base no preco de mercado para o publico, ignorando links comissionados obscuros. |
+| Marca envia produto | Ela assina termo ciente de que NAO tera aprovacao previa do roteiro e nao vera o video antes de ir ao ar. |
+| Concorrente melhor | Se o concorrente for melhor, nos diremos isso no video do patrocinador. |
+| Publicidade | Todo conteudo patrocinado tem aviso claro nos primeiros 5 segundos. |
+| NUNCA | Vender opiniao, aceitar pagamento para mudar nota, fazer dropshipping oculto, promover bets ou cursos de enriquecimento. |
+
+### 9.2 Quando Usar Link de Afiliado
+
+| Situacao | Acao |
+|---|---|
+| Produto nota MONSTRO | Link na bio + link na descricao + CTA no video |
+| Produto nota HONESTO | Link na descricao, CTA leve |
+| Produto QUEBRA-GALHO | Link opcional, sem destaque |
+| Produto LIXO CARO / CILADA | ZERO link. Alerta de "fuja disso" no video e na descricao. |
+
+### 9.3 Como Falar de Preco sem Parecer Vendedor
+
+| Nao fale | Fale |
+|---|---|
+| "Aproveite essa oferta imperdivel" | "Achei com um desconto bacana, deixei o link la no perfil." |
+| "So hoje com precos especiais" | "Quem avisa amigo e. O link ta ai embaixo." |
+| "Garanta ja o seu" | "Cara, o link ta aqui se quiser dar uma olhada." |
+| "Nao perca essa oportunidade" | "Da uma olhada la antes que zere o estoque." |
+| "Invista em qualidade" | "Tem coisa que e preco, tem coisa que e valor." |
+
+### 9.4 Frases de Venda Autenticas (Extraidas dos CTAs Oficiais)
+
+1. "Cara, o link ta aqui se quiser dar uma olhada."
+2. "Achei com um desconto bacana, deixei o link la no perfil."
+3. "Salva esse video pra nao esquecer quando for comprar a sua."
+4. "Manda pro seu amigo que ta precisando de uma dessas."
+5. "Se curtiu o achado, ja sabe onde clicar."
+6. "Deixei o caminho das pedras na bio pra facilitar."
+7. "Quem avisa amigo e. O link ta ai embaixo."
+8. "Da uma olhada la antes que zere o estoque."
+
+---
+
+## 10. COMO ANALISAR UM PRODUTO
+
+### 10.1 Criterios de Selecao
+
+**Para entrar no canal, o produto PRECISA:**
+- [ ] Resolver um problema real (nada de quinquilharias de "novidade")
+- [ ] Ter alta demanda ou alta promessa
+- [ ] Estar disponivel para compra no Brasil (varejo local ou importacao direta acessivel)
+
+**Eliminacao imediata:**
+- [ ] Produtos "As Seen on TV" absurdos
+- [ ] Projetos de Crowdfunding (Kickstarter/Indiegogo) sem producao em massa
+- [ ] Clones de clones sem marca rastreavel
+
+### 10.2 O que Entra no Video e o que Fica de Fora
+
+| Entra no video | Fica de fora |
+|---|---|
+| O problema que o produto resolve | Adjetivos vagos ("incrivel", "revolucionario") |
+| O teste principal + o teste de estresse | Toda ficha tecnica decorada |
+| O ponto mais forte e o ponto mais fraco | Opiniao de terceiros que nao testaram |
+| O preco real pago (nao o "de" falso) | Comparacao com produto que o publico nao conhece |
+| A recomendacao final (compra ou nao compra) | Enrolacao para estender o video |
+| O veredito do Pentagono | Piadas internas que so o apresentador entende |
+
+### 10.3 Decisao sobre Informacao Tecnica
+
+**Teste:** Isso ajuda a decisao de compra do espectador?
+
+| Se SIM | Se NAO |
+|---|---|
+| Entra no video, traduzido para linguagem do cara | Corta. Nao importa se e impressionante. |
+| Ex: "O aco carbono aguentou porque o tratamento termico e honesto." | Ex: "O aco e 1095 com tratamento criogenico a -196C." |
+
+**Regra:** Se a informacao nao responder "devo comprar isso ou nao?", ela nao pertence ao video.
+
+### 10.4 Checklist de Analise do Pentagono
+
+Para cada produto, antes de gravar, preencher:
+
+- [ ] **CARCACA (1-10):** Material, encaixes, peso, sensacao de fragilidade
+- [ ] **PEGADA (1-10):** Conforto, ergonomia, clareza dos controles
+- [ ] **FORCA BRUTA (1-10):** Desempenho principal vs. prometido
+- [ ] **CASCA GROSSA (1-10):** Resistencia a queda, agua, poeira, uso continuo
+- [ ] **PRECO DA BRINCADEIRA (1-10):** Custo-beneficio no mercado atual
+- [ ] **MEDIA PONDERADA:** Calculada com pesos (20%/20%/25%/20%/15%)
+- [ ] **NIVEL FINAL:** LIXO CARO / QUEBRA-GALHO / HONESTO / MONSTRO
+- [ ] **SELO:** TESTADO E APROVADO / COMPRA INTELIGENTE / CILADA
+
+---
+
+## 11. COMO ESCREVER DESCRICOES
+
+### 11.1 Template para TikTok
+
+```
+[PROBLEMA] + [PROMESSA] + [VEREDITO]
+
+[TEXTO]
+Vi isso [local] e resolvi testar pra ver se e realmente bom ou so marketing.
+[1-2 linhas sobre o teste principal]
+Veredito: [NIVEL DO MEDIDOR DE RESPEITO] — [SELO]
+Preco real pago: R$ [VALOR]
+
+[SE APROVADO] Link na bio.
+[SE CILADA] Fuja disso.
+
+[HASHTAGS]
+#OCaraTestou #[categoria] #[produto] #[problema] #Review #NaoCompre
+```
+
+**Exemplo concreto:**
+```
+Disseram que essa parafusadeira fura concreto como manteiga. Testei no limite pra voce nao precisar.
+
+Coloquei ela pra furar tijolo macico, bloco de concreto e ate uma viga de peroba-rosa. O motor nao travou, a bateria aguentou 45 minutos de uso continuo e o mandril nao soltou a broca uma vez sequer.
+
+Veredito: MONSTRO — Selo Testado e Aprovado.
+Preco real pago: R$ 289 na Shopee.
+
+Link na bio.
+
+#OCaraTestou #Furadeira #Ferramentas #Review #NaoCompre #Parafusadeira
+```
+
+### 11.2 Template para YouTube
+
+```
+[TITULO SUGERIDO]
+[PRODUTO] e realmente bom? Testei no limite! | O Cara Testou
+
+[DESCRICAO]
+[PROBLEMA] — Será que [PRODUTO] resolve?
+
+Fala, cara! Comprei [PRODUTO] com meu dinheiro e botei no Protocolo da Vida Real pra descobrir se vale o investimento.
+
+Nesse video:
+00:00 — O Gancho
+00:XX — Unboxing e Primeiras Impressoes
+00:XX — O Teste (Uso Real)
+00:XX — O Perrengue (Teste de Limite)
+00:XX — A Autopsia
+00:XX — Veredito Final
+
+RESULTADO:
+- Nivel: [NIVEL]
+- Selo: [SELO]
+- Preco pago: R$ [VALOR]
+
+[CASO APROVADO] Quer comprar? O link esta na descricao e na bio.
+[CASO CILADA] Economize seu dinheiro e passe longe desse produto.
+
+[Sobre o canal]
+"Gasto meu tempo e dinheiro testando para que voce nao desperdice os seus."
+Se apareceu aqui, passou no teste. Um abraco e ate o proximo teste.
+
+[HASHTAGS]
+#OCaraTestou #[categoria] #[produto-marca] #ReviewHonesto #Ferramentas #NaoCompre
+```
+
+### 11.3 Palavras e Hashtags Obrigatorias
+
+| Elemento | Obrigatorio? |
+|---|---|
+| #OCaraTestou | Sempre |
+| Marca do produto | Sempre |
+| Categoria (ex: #Ferramentas, #Churrasco, #Camping) | Sempre |
+| "Se apareceu aqui, passou no teste" | Sempre na legenda ou descricao |
+| Preco real pago | Sempre |
+| Nivel do Medidor de Respeito | Sempre |
+| Selo aplicado | Sempre |
+
+### 11.4 O que Nunca Colocar
+
+- "Promocao imperdivel" ou "oferta por tempo limitado"
+- "Clique aqui" (use "link na bio" ou "caminho das pedras")
+- "Garantimos sua satisfacao"
+- Links de afiliado disfarcados sem aviso
+- Emojis em excesso (max 2-3 no final)
+- Palavras proibidas: mindset, inovador, exclusivo, oportunidade unica
+
+---
+
+## 12. COMO RESPONDER COMENTARIOS
+
+### 12.1 Tecnica de Responder com Pergunta
+
+**Regra de ouro:** Nunca responda apenas "Valeu!". Responda com outra pergunta para continuar a conversa.
+
+| Comentario do usuario | Resposta CERTA | Resposta ERRADA |
+|---|---|---|
+| "Essa marca e horrivel, quebrou na minha mao." | "Serio? Com quantos meses de uso? Qual voce comprou no lugar para eu testar aqui?" | "Valeu pelo comentario!" |
+| "Prefiro a marca X." | "Justo. O que faz a X ser melhor na sua experiencia?" | "Okay." |
+| "Nao vale o preco." | "Qual preco voce acha justo pra esse tipo de produto?" | "Entendo." |
+| "Comprei e amei!" | "Boa! Quanto tempo de uso? Ta durando bem?" | "Que bom!" |
+
+### 12.2 Tom de WhatsApp, Nao de SAC
+
+| Nao faca | Faca |
+|---|---|
+| "Prezado usuario, agradecemos seu feedback." | "Cara, valeu pela dica! Voce usa ha quanto tempo?" |
+| "Pedimos desculpas pelo transtorno." | "Po, que bad. Ja teve antes ou foi na primeira vez?" |
+| "Sua opiniao e muito importante para nos." | "Boa observacao! Vou testar isso aqui, valeu mesmo." |
+| Responder com texto padrao decorado | Responder como se fosse audio de WhatsApp |
+
+### 12.3 Como Lidar com Criticas
+
+| Tipo de Critica | Abordagem |
+|---|---|
+| **Construtiva** (aponta erro real) | Agradecer, avaliar se o teste precisa ser refeito, responder com respeito. Se o ataque for tecnico e valido, refazer o teste publicamente. |
+| **Hater sem argumentos** | Ignorar completamente. Nao dar palco. Nao engajar. |
+| **Discordância de opiniao** | "Justo, irmao. Respeito sua opiniao. Qual produto voce recomenda no lugar pra eu testar?" |
+| **Ataque a credibilidade** | Responder com evidencias. Liberar cortes longos sem edicao (raw) do PVR. |
+| **Critica a formato/edicao** | "Valeu pela dica, vou considerar nos proximos." |
+
+### 12.4 O "Comentario Semente"
+
+Logo apos o video ir ao ar, poste o primeiro comentario. Isso quebra o gelo e dita o tom da secao.
+
+**Opcoes de comentario semente:**
+
+| Tipo | Exemplo |
+|---|---|
+| Detalhe extra do teste | "O que nao mostrei no video: depois de 2 horas de uso continuo, a bateria ainda tinha 40%. Surpreendente." |
+| Link do produto | "Quem quiser o link direto, e so pedir que mando no PV." |
+| Piada sobre a falha | "O plastico chorou litros nesse teste hahaha" |
+| Pergunta para engajar | "Qual foi a pior ferramenta que voce ja comprou? Fala ai nos comentarios." |
+
+---
+
+## 13. COMO FAZER LIVES
+
+### 13.1 Formato e Proposito
+
+| Item | Regra |
+|---|---|
+| Proposito | Interagir com a comunidade, responder perguntas em tempo real, mostrar produtos que nao renderiam video proprio |
+| Plataforma | YouTube Live ou Instagram Live (iniciar no IG, migrar para YouTube com o tempo) |
+| Duracao | 30-60 minutos. Nao ultrapassar 1h sem um intervalo. |
+| Frequencia | Quinzenal ou mensal. Nao precisa ser semanal — qualidade > quantidade. |
+
+### 13.2 Estrutura da Live
+
+| Bloco | Tempo | Conteudo |
+|---|---|---|
+| Abertura | 0-5min | "Fala, cara!" — apresentador ja aparece com produto na mao. Nao perder tempo com "ola galera do YouTube". Ja comecar respondendo uma pergunta. |
+| Aquecimento | 5-15min | Responder comentarios recentes dos videos. Mostrar 1-2 produtos que chegaram para testar. |
+| Bloco Principal | 15-40min | Tema do dia: "Respondo perguntas sobre ferramentas", "Analiso produtos que voces enviaram", "Desafio da comunidade: tentar quebrar isso ao vivo". |
+| Encerramento | 40-45min | Recap do que foi discutido. Agradecimento nominal a participantes ativos. CTA: "Segue o perfil, ativa o sininho, e me manda sugestao de produto pra testar." |
+| Pos-Live | — | Publicar o corte ao vivo mais impactante como video curto (Reels/Shorts/TikTok) |
+
+### 13.3 Regras da Live
+
+| Regra | Descricao |
+|---|---|
+| Tom | Mesmo tom dos videos: informal, WhatsApp, amigo na garagem. Nao virar "apresentador de programa de TV". |
+| Interacao | Ler comentarios pelo nome. "O Joao perguntou..." — isso faz o espectador se sentir visto. |
+| Produto | Sempre ter pelo menos 1 produto na bancada para mostrar/manusear enquanto fala. Nao ficar so olhando para a camera. |
+| Edicao artistica | Nao precisa. Live e crua. Se for editar algo, faca um corte para o YouTube depois. |
+| Moderacao | Banir imediatamente: spam de link, ofensas, politique. Nao alimentar troll. |
+| Preparacao | Testar camera, audio e internet 30 minutos antes. Ter um "produto reserva" na bancada caso o papo esfrie. |
+| Monetizacao | Nunca pedir doacao/gifts. A live e servico a comunidade, nao evento de arrecadacao. |
+
+### 13.4 Cenarios de Live
+
+| Tipo | Conteudo |
+|---|---|
+| **"Pergunte ao Cara"** | Seguidores enviam duvidas sobre produtos que estao pensando em comprar. Apresentador analisa ao vivo. |
+| **"Unboxing ao Vivo"** | Abrir produtos enviados pela comunidade ou pela marca ao vivo. Reacoes genuinas. |
+| **"Desafio do Galpao"** | Tentar montar/quebrar/usar um produto em condicoes absurdas ao vivo. |
+| **"Bate-Papo de Sexta"** | Conversa casual sobre o mundo de ferramentas, churrasco, EDC. Produto da semana. |
+
+---
+
+## 14. CHECKLIST FINAL DE APROVACAO
+
+**Nenhum video, post ou thumbnail vai ao ar sem marcar "SIM" em todos os itens abaixo.**
+
+### 14.1 Checklist Visual (10 itens)
+
+- [ ] As cores Preto Asfalto e Amarelo Maquina dominam a arte/thumbnail?
+- [ ] O produto esta sendo mostrado com sinais reais de uso/sujeira? (Proibido render 3D ou foto de catalogo perfeita)
+- [ ] A fonte Anton esta sendo usada nos titulos de forma correta e sem distorcao?
+- [ ] O selo do Medidor de Respeito esta legivel e de acordo com a conclusao?
+- [ ] A iluminacao exalta as texturas e os materiais do produto?
+- [ ] O apresentador esta vestindo o avental preto da marca?
+- [ ] O cenario da oficina/garagem esta visivel compondo o fundo?
+- [ ] O video/arte tem ausencia total de filtros de beleza ou adesivos fofos?
+- [ ] A edicao tem cortes limpos, secos e dinamicos, sem transicoes espalhafatosas?
+- [ ] As especificacoes tecnicas surgem na tela em Roboto Mono de forma pontual?
+
+### 14.2 Checklist Verbal (10 itens)
+
+- [ ] O video vai direto ao ponto, com menos de 10 segundos de introducao?
+- [ ] O produto passou por todas as fases cabiveis do PVR?
+- [ ] O preco exato pago na vida real foi mencionado clara e diretamente?
+- [ ] Ha ausencia total de "Palavras Nunca" (prezado, mindset, inovador, adquira ja)?
+- [ ] O veredito e claro, definitivo e toma um lado (sem ficar em cima do muro)?
+- [ ] O apresentador manteve a energia de um amigo conversando na garagem?
+- [ ] Foi utilizado pelo menos um bordao da marca de forma fluida e natural?
+- [ ] A logica de "Se apareceu aqui, passou no teste" esta evidente?
+- [ ] O conteudo foi encerrado com "Um abraco e ate o proximo teste"?
+- [ ] A narrativa soa 100% natural, sem parecer texto decorado ou lido de teleprompter?
+
+### 14.3 Checklist de Valores (5 itens)
+
+- [ ] O teste foi brutalmente honesto, imparcial e pode ser replicado por quem assistir?
+- [ ] O interesse do consumidor foi colocado acima de qualquer marca ou patrocinio?
+- [ ] Evitou-se julgar o produto apenas pela aparencia antes do Perrengue?
+- [ ] A critica de reprovacao foi focada no defeito do produto, nao em ofensa a empresa?
+- [ ] Este conteudo realmente ajuda a audiencia a nao gastar dinheiro a toa?
+
+### 14.4 Checklist Tecnico (5 itens)
+
+- [ ] O video tem pelo menos 1 corte a cada 2,5 segundos (exceto veredito)?
+- [ ] Pelo menos 3 dos 10 efeitos sonoros obrigatorios foram usados?
+- [ ] As legendas estao sincronizadas e com destaque em Amarelo Maquina nas palavras-chave?
+- [ ] A transicao nao usa fade to black, star wipe ou glitch digital?
+- [ ] O logo carimbou a tela com impacto (nao apareceu em fade)?
+
+### 14.5 Checklist de Descricao e Publicacao (5 itens)
+
+- [ ] #OCaraTestou esta na descricao/legenda?
+- [ ] Categoria e hashtags obrigatorias estao presentes?
+- [ ] Link do produto (se aprovado) esta funcionando?
+- [ ] Preco pago e nivel do Medidor de Respeito estao na descricao?
+- [ ] Comentario semente ja foi postado?
+
+### Resultado Final
+
+```
+Total de itens: 35
+Minimo para publicacao: 35/35
+Aprovado para publicar? [ ] SIM [ ] NAO
+```
+
+---
+
+## 15. SISTEMA DE ROTEIROS DE VENDAS
+
+### 15.1 Estruturas Disponiveis
+
+| Formato | Codigo | Etapas | Duracao | Arquivos | Proposito |
+|---------|--------|--------|---------|----------|-----------|
+| Classico (7 etapas) | V001-V100 | GANCHO, PROBLEMA, PROMESSA, TESTE, TRANSFORMACAO, VEREDITO, CTA | 60s | `roteiros/vendas/` | Explicativo completo |
+| Rapido (6 etapas) | R001-R100 | GANCHO, PROBLEMA, PROMESSA 4EM1, TESTE, RESULTADO, CTA | 45s | `roteiros/vendas-rapido/` | Direto, conversa, urgencia |
+
+### 15.2 Scripts de Geracao
+
+| Script | Funcao | Comando |
+|--------|--------|---------|
+| `build-matriz.ps1` | Gera 100 roteiros classicos (V001-V100) | `.\build-matriz.ps1 -ProdutoDir "C:\...\O Cara Testou"` |
+| `build-matriz-rapido.ps1` | Gera 100 roteiros rapidos (R001-R100) | `.\build-matriz-rapido.ps1` |
+| `build-roteiros.ps1` | Converte todos .md em .html | `.\build-roteiros.ps1` |
+| `build-pdf-vendas.ps1` | Gera HTML unificado para PDF (classico) | `.\build-pdf-vendas.ps1` |
+| `build-pdf-vendas-rapido.ps1` | Gera HTML unificado para PDF (rapido) | `.\build-pdf-vendas-rapido.ps1` |
+
+### 15.3 Estrutura do Roteiro Rapido (6 etapas, 45s)
+
+```
+0s-5s   GANCHO      - Bora descobrir se presta. Corte seco, sem intro.
+5s-10s  PROBLEMA    - "O problema e que..." gerar identificacao.
+10s-16s PROMESSA    - Citando as 4 funcoes visualmente.
+16s-35s TESTE       - Acao real, cortes secos, close nas funcoes.
+35s-40s RESULTADO   - Veredito sincero. "Ganhou meu respeito."
+40s-45s CTA         - Urgencia + TikTok Shop. "Link ta aqui."
+```
+
+### 15.4 Tom de Voz (Rapido)
+
+- "Cara", "Mano", "Bora", "Raiz", "Tranqueira" (vocabulario da marca)
+- "Ganhou meu respeito", "Passou no teste", "E honesto" (bordoes)
+- CTA sempre com urgencia: "desconto bacana no TikTok Shop"
+- Frases curtas, 150 palavras por minuto
+- Nao usar: "Fala galera", "Adquira", "Promocao imperdivel", "Clique aqui"
+
+---
+
+> **Versao:** 1.1
+> **Ultima atualizacao:** Julho 2026
+
+---
+
+[00 Dashboard](../00_dashboard-do-projeto.md) | [Base de Conhecimento](01_base_de_conhecimento.md) | [Prompt Mestre](03_prompt_mestre.md)

@@ -1,0 +1,2827 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modelo de Conte&uacute;do &mdash; O Cara Testou</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; padding: 2rem; }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* header */
+  .header { text-align: center; margin-bottom: 3rem; }
+  .header-msg { font-size: 1.05rem; color: #555; }
+  .header p { color: #555; margin-top: .4rem; font-size: 1.05rem; }
+
+  /* phase label */
+  .phase { display: flex; align-items: center; gap: 1rem; margin: 2.5rem 0 1.2rem; }
+  .phase:first-of-type { margin-top: 0; }
+  .phase-tag {
+    background: #1a1a1a; color: #fff; font-weight: 700; font-size: .8rem;
+    padding: .3rem .9rem; border-radius: 20px; letter-spacing: .03em; white-space: nowrap;
+  }
+  .phase-line { flex: 1; height: 2px; background: #ddd; }
+
+  /* section */
+  .section {
+    background: #fff; border-radius: 14px; padding: 1.4rem 1.6rem;
+    margin-bottom: 1rem; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    border-left: 4px solid #ddd;
+    transition: box-shadow .2s;
+  }
+  .section:hover { box-shadow: 0 3px 12px rgba(0,0,0,.1); }
+
+  .section-header { display: flex; align-items: center; gap: .75rem; margin-bottom: .6rem; }
+  .section-number {
+    font-size: .75rem; font-weight: 700; color: #fff;
+    background: #888; width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .section-title { font-size: 1.15rem; font-weight: 700; }
+  .section-desc { color: #555; font-size: .92rem; margin-bottom: 1rem; line-height: 1.5; }
+
+  /* card grid */
+  .card-grid {
+    display: none;
+    margin-top: .5rem;
+  }
+  .card-grid.open { display: block; }
+
+  .subcat { margin-bottom: 1.2rem; }
+  .subcat.highlight { background: #fff8f0; border-radius: 10px; padding: .8rem 1rem; margin-bottom: 1.5rem; border: 1px solid #f4a261; }
+  .subcat.highlight .subcat-title { color: #e63946; }
+  .subcat.highlight .card.filled { border-color: #f4a261; background: #fff4e6; }
+  .subcat:last-child { margin-bottom: 0; }
+  .subcat-title {
+    font-weight: 700; font-size: .85rem; color: #555;
+    margin-bottom: .5rem; display: flex; align-items: center; gap: .5rem;
+  }
+  .subcat-title span {
+    font-weight: 400; color: #aaa; font-size: .78rem;
+    background: #f0f0f0; padding: .1rem .5rem; border-radius: 10px;
+  }
+  .subcat-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: .5rem;
+  }
+
+  .card {
+    background: #f9f9f9; border: 1px dashed #ccc; border-radius: 10px;
+    padding: .75rem 1rem; text-align: center;
+    font-size: .82rem; color: #999; min-height: 52px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, border-color .2s;
+    cursor: default; line-height: 1.3;
+  }
+  .card.filled {
+    border-style: solid; border-color: #e63946;
+    background: linear-gradient(135deg, #fff4f4, #fff);
+    color: #1a1a1a; font-weight: 600;
+  }
+
+  /* toggle cards btn */
+  .toggle-btn {
+    background: none; border: 1px solid #ccc; border-radius: 8px;
+    padding: .35rem 1rem; font-size: .82rem; color: #666; cursor: pointer;
+    transition: all .2s; font-family: inherit;
+  }
+  .toggle-btn:hover { border-color: #e63946; color: #e63946; }
+
+  /* jornada do espectador */
+  .jornada { margin-bottom: 2rem; text-align: center; }
+  .jornada-steps {
+    display: flex; align-items: center; justify-content: center;
+    gap: .4rem; flex-wrap: wrap;
+  }
+  .j-step {
+    display: flex; align-items: center; gap: .3rem;
+    font-weight: 700; font-size: .85rem; color: #555;
+  }
+  .j-icon { font-size: 1rem; }
+  .j-arrow { color: #aaa; font-size: 1rem; }
+
+  /* estrategia do video */
+  .estrategia { margin-bottom: 2.5rem; }
+  .estrategia-label {
+    font-weight: 800; font-size: .85rem; letter-spacing: .04em;
+    color: #e63946; margin-bottom: 1rem; text-align: center;
+  }
+  .estrategia-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .est-card {
+    background: #fff; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .est-header {
+    color: #fff; font-weight: 700; font-size: .9rem;
+    padding: .6rem 1rem; text-align: center; letter-spacing: .02em;
+  }
+  .est-body { padding: .8rem 1rem 1rem; }
+  .est-desc { font-size: .85rem; color: #555; margin-bottom: .6rem; }
+  .est-body .toggle-btn { font-size: .78rem; }
+  .est-body .card-grid { margin-top: .6rem; }
+
+  /* card selected state */
+  .card.clickable { cursor: pointer; }
+  .card.clickable:hover { border-color: #e63946; }
+  .card.selected {
+    border-style: solid; border-color: #e63946 !important;
+    background: #e63946 !important; color: #fff !important;
+    box-shadow: 0 2px 8px rgba(230,57,70,.3);
+  }
+
+  /* top nav */
+  .topnav {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: #1a1a1a; padding: .6rem 2rem; z-index: 150;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topnav-brand { font-weight: 800; color: #fff; font-size: .9rem; }
+  .topnav-brand span { color: #e63946; }
+  .topnav-modes { display: flex; gap: .3rem; }
+  .topnav-btn {
+    background: none; border: none; padding: .4rem 1rem;
+    font-size: .8rem; font-weight: 700; font-family: inherit;
+    color: #666; cursor: pointer; border-radius: 6px;
+    transition: all .2s; text-decoration: none;
+  }
+  .topnav-btn:hover { color: #aaa; }
+  .topnav-btn.active { background: #e63946; color: #fff; }
+  .topnav-toggle {
+    background: #333; border: none; padding: .4rem .9rem;
+    font-size: .78rem; font-weight: 600; font-family: inherit;
+    color: #ccc; cursor: pointer; border-radius: 6px;
+    transition: all .2s;
+  }
+  .topnav-toggle:hover { background: #e63946; color: #fff; }
+
+  body { padding-top: 3.5rem; }
+
+  /* floating panel */
+  .panel {
+    display: none; position: fixed; top: 1rem; right: 1rem;
+    width: 380px; max-height: calc(100vh - 2rem);
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.18);
+    z-index: 200;
+    flex-direction: column; animation: panelIn .25s ease;
+  }
+  .panel.open { display: flex; }
+  @keyframes panelIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+
+  .panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .9rem 1.2rem .7rem; border-bottom: 1px solid #eee;
+  }
+  .panel-title { font-size: .95rem; font-weight: 800; }
+  .panel-title span { color: #e63946; }
+  .panel-close {
+    background: none; border: none; font-size: 1.3rem; color: #999;
+    cursor: pointer; line-height: 1; padding: 0 .2rem;
+  }
+  .panel-close:hover { color: #1a1a1a; }
+
+  .panel-body {
+    padding: .6rem 1.2rem; overflow-y: auto; flex: 1;
+    max-height: calc(100vh - 12rem);
+  }
+
+  .m-item {
+    display: flex; align-items: flex-start; gap: .5rem;
+    padding: .35rem 0; font-size: .8rem; line-height: 1.35;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .m-item:last-child { border-bottom: none; }
+  .m-num {
+    font-weight: 700; color: #e63946; min-width: 22px;
+    font-size: .72rem; margin-top: .05rem; text-align: right;
+  }
+  .m-label { color: #888; min-width: 90px; flex-shrink: 0; font-weight: 600; font-size: .75rem; }
+  .m-text { color: #aaa; word-break: break-word; }
+  .m-text.empty { font-style: italic; font-size: .75rem; }
+  .m-text.selected { color: #1a1a1a; font-weight: 600; }
+
+  .panel-footer {
+    padding: .7rem 1.2rem .9rem; border-top: 1px solid #eee;
+    display: flex; gap: .5rem;
+  }
+  .panel-btn {
+    flex: 1; padding: .6rem; border: none; border-radius: 8px;
+    font-weight: 700; font-size: .8rem; cursor: pointer; font-family: inherit;
+    transition: opacity .2s;
+  }
+  .panel-btn:hover { opacity: .85; }
+  .btn-copy { background: #e63946; color: #fff; }
+  .btn-copy.copied { background: #2a9d8f; }
+  .btn-save { background: #2a9d8f; color: #fff; }
+  .btn-save.saved { background: #264653; }
+  .btn-reset { background: #eee; color: #666; }
+  .btn-reset:hover { background: #ddd; color: #1a1a1a; }
+
+  .counter {
+    text-align: center; font-size: .75rem; color: #aaa;
+    padding: .3rem 0 .4rem; border-bottom: 1px solid #eee; margin-bottom: .3rem;
+  }
+  .counter span { color: #e63946; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <p class="header-msg">Modelo de Conte&uacute;do &mdash; Framework oficial de roteiro</p>
+  </div>
+
+  <!-- jornada do espectador -->
+  <div class="jornada">
+    <div class="jornada-steps">
+      <div class="j-step"><span class="j-icon">⏹</span><span>EU PARO</span></div>
+      <div class="j-arrow">&rarr;</div>
+      <div class="j-step"><span class="j-icon">👤</span><span>EU ME IDENTIFICO</span></div>
+      <div class="j-arrow">&rarr;</div>
+      <div class="j-step"><span class="j-icon">✓</span><span>EU ACREDITO</span></div>
+      <div class="j-arrow">&rarr;</div>
+      <div class="j-step"><span class="j-icon">🚀</span><span>EU DECIDO</span></div>
+    </div>
+  </div>
+
+  <!-- estrategia do video -->
+  <div class="estrategia">
+    <div class="estrategia-label">ESTRAT&Eacute;GIA DO V&Iacute;DEO</div>
+    <div class="estrategia-grid">
+      <div class="est-card" data-section="publico">
+        <div class="est-header" style="background:#e63946;">P&uacute;blico</div>
+        <div class="est-body">
+          <p class="est-desc">Para quem &eacute; este v&iacute;deo?</p>
+          <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+          <div class="card-grid">
+            <div class="subcat">
+              <div class="subcat-title">CASAMENTO</div>
+              <div class="subcat-cards">
+                <div class="card filled">Acabou de casar</div>
+                <div class="card filled">Vai casar</div>
+                <div class="card filled">Quer conquistar a fam&iacute;lia da namorada</div>
+                <div class="card filled">Mora sozinho</div>
+              </div>
+            </div>
+            <div class="subcat">
+              <div class="subcat-title">PAI</div>
+              <div class="subcat-cards">
+                <div class="card filled">Pai que resolve tudo</div>
+              </div>
+            </div>
+            <div class="subcat">
+              <div class="subcat-title">PROFISSIONAL</div>
+              <div class="subcat-cards">
+                <div class="card filled">Profissional da &aacute;rea</div>
+                <div class="card filled">Dono de oficina</div>
+              </div>
+            </div>
+            <div class="subcat">
+              <div class="subcat-title">OUTROS</div>
+              <div class="subcat-cards">
+                <div class="card filled">Apaixonado por DIY</div>
+                <div class="card filled">Apaixonado por ferramentas</div>
+                <div class="card filled">Faz tudo na garagem</div>
+                <div class="card filled">Pequenos reparos em casa</div>
+                <div class="card filled">Faz tudo dentro de casa</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="est-card" data-section="tema">
+        <div class="est-header" style="background:#f4a261;">Tema</div>
+        <div class="est-body">
+          <p class="est-desc">Sobre qual situa&ccedil;&atilde;o do dia a dia?</p>
+          <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+          <div class="card-grid">
+            <div class="subcat-cards">
+              <div class="card filled">Montar m&oacute;veis</div>
+              <div class="card filled">Manuten&ccedil;&atilde;o de ve&iacute;culos</div>
+              <div class="card filled">Churrasco e lazer</div>
+              <div class="card filled">Reparos r&aacute;pidos</div>
+              <div class="card filled">Constru&ccedil;&otilde;es e projetos</div>
+              <div class="card filled">Camping e quintal</div>
+              <div class="card filled">Instala&ccedil;&otilde;es em geral</div>
+              <div class="card filled">Uso profissional</div>
+              <div class="card filled">Organiza&ccedil;&atilde;o da casa</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="est-card" data-section="tensao">
+        <div class="est-header" style="background:#2a9d8f;">Tens&atilde;o</div>
+        <div class="est-body">
+          <p class="est-desc">Qual conflito ou dor essa pessoa vive?</p>
+          <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+          <div class="card-grid">
+            <div class="subcat-cards">
+              <div class="card filled">Incomoda os outros</div>
+              <div class="card filled">Ferramenta errada</div>
+              <div class="card filled">Gastar mais</div>
+              <div class="card filled">N&atilde;o tem o que precisa</div>
+              <div class="card filled">Trabalho cansa</div>
+              <div class="card filled">Trabalho n&atilde;o fica bom</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="est-card" data-section="objetivo">
+        <div class="est-header" style="background:#264653;">Objetivo</div>
+        <div class="est-body">
+          <p class="est-desc">O que o v&iacute;deo precisa gerar?</p>
+          <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+          <div class="card-grid">
+            <div class="subcat-cards">
+              <div class="card filled">Vender</div>
+              <div class="card filled">Gerar coment&aacute;rios</div>
+              <div class="card filled">Gerar compartilhamento</div>
+              <div class="card filled">Engajar com a comunidade</div>
+              <div class="card filled">Testar produto</div>
+              <div class="card filled">Ganhar seguidores</div>
+              <div class="card filled">Criar salvamento</div>
+              <div class="card filled">Educar</div>
+              <div class="card filled">Gerar curiosidade</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ATENÇÃO ============ -->
+  <div class="phase">
+    <span class="phase-tag">FASE 1 &mdash; ATEN&Ccedil;&Atilde;O</span>
+    <div class="phase-line"></div>
+  </div>
+
+  <div class="section" data-section="gancho" style="border-left-color: #e63946;">
+    <div class="section-header">
+      <span class="section-number" style="background:#e63946;">1</span>
+      <span class="section-title">Gancho</span>
+    </div>
+    <div class="section-desc">Parar o scroll nos primeiros segundos.</div>
+    <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+    <div class="card-grid">
+
+      <div class="subcat highlight">
+        <div class="subcat-title">TOP 5 &mdash; O Cara Testou <span>essenciais</span></div>
+        <div class="subcat-cards highlight-cards">
+          <div class="card filled">O papel aceita tudo... quero ver na pr&aacute;tica.</div>
+          <div class="card filled">Ser&aacute; que isso entrega o que promete?</div>
+          <div class="card filled">Quase todo mundo compra sem saber disso.</div>
+          <div class="card filled">Tem um detalhe que ningu&eacute;m mostra.</div>
+          <div class="card filled">Antes de gastar seu dinheiro, olha isso.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">1. IDENTIFICA&Ccedil;&Atilde;O <span>1&ndash;10</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; tamb&eacute;m passa por isso?</div>
+          <div class="card filled">Isso s&oacute; acontece comigo ou com voc&ecirc; tamb&eacute;m?</div>
+          <div class="card filled">Se voc&ecirc; faz isso, presta aten&ccedil;&atilde;o.</div>
+          <div class="card filled">Quem nunca passou por isso, n&eacute;?</div>
+          <div class="card filled">Aposto que voc&ecirc; j&aacute; fez isso.</div>
+          <div class="card filled">Voc&ecirc; conhece algu&eacute;m assim?</div>
+          <div class="card filled">Isso aqui &eacute; mais comum do que parece.</div>
+          <div class="card filled">Se isso acontece com voc&ecirc;, fica at&eacute; o final.</div>
+          <div class="card filled">Eu tenho quase certeza que voc&ecirc; j&aacute; viveu isso.</div>
+          <div class="card filled">Esse v&iacute;deo &eacute; pra quem j&aacute; passou por essa situa&ccedil;&atilde;o.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">2. ERRO COMUM <span>11&ndash;20</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Quase todo mundo faz isso errado.</div>
+          <div class="card filled">Voc&ecirc; provavelmente est&aacute; cometendo esse erro.</div>
+          <div class="card filled">O erro come&ccedil;a antes mesmo de comprar.</div>
+          <div class="card filled">Tem um detalhe que quase ningu&eacute;m percebe.</div>
+          <div class="card filled">&Eacute; aqui que a maioria perde dinheiro.</div>
+          <div class="card filled">Esse erro parece pequeno, mas custa caro.</div>
+          <div class="card filled">Voc&ecirc; faz isso sem perceber.</div>
+          <div class="card filled">O problema n&atilde;o &eacute; o produto.</div>
+          <div class="card filled">Voc&ecirc; foi ensinado do jeito errado.</div>
+          <div class="card filled">O erro est&aacute; bem na sua frente.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">3. DINHEIRO <span>21&ndash;30</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Quer parar de jogar dinheiro fora?</div>
+          <div class="card filled">Esse erro pode estar custando caro.</div>
+          <div class="card filled">Voc&ecirc; pagaria duas vezes pelo mesmo produto?</div>
+          <div class="card filled">Economizar nem sempre significa gastar menos.</div>
+          <div class="card filled">O barato quase sempre sai caro.</div>
+          <div class="card filled">O problema come&ccedil;a quando voc&ecirc; tenta economizar.</div>
+          <div class="card filled">Isso faz muita gente perder dinheiro.</div>
+          <div class="card filled">Antes de comprar, voc&ecirc; precisa saber disso.</div>
+          <div class="card filled">Voc&ecirc; sabe onde est&aacute; desperdi&ccedil;ando dinheiro?</div>
+          <div class="card filled">Se eu soubesse disso antes, teria economizado muito.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">4. FRUSTRA&Ccedil;&Atilde;O <span>31&ndash;40</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">J&aacute; passou raiva com isso?</div>
+          <div class="card filled">Eu quase desisti por causa disso.</div>
+          <div class="card filled">Isso me irrita toda vez.</div>
+          <div class="card filled">Ningu&eacute;m merece passar por isso.</div>
+          <div class="card filled">Voc&ecirc; compra cheio de expectativa e...</div>
+          <div class="card filled">Parece que s&oacute; acontece com a gente.</div>
+          <div class="card filled">A pior sensa&ccedil;&atilde;o &eacute; descobrir depois.</div>
+          <div class="card filled">Isso estraga qualquer experi&ecirc;ncia.</div>
+          <div class="card filled">Quem j&aacute; passou por isso sabe.</div>
+          <div class="card filled">&Eacute; uma frustra&ccedil;&atilde;o que d&aacute; pra evitar.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">5. CURIOSIDADE <span>41&ndash;50</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Tem um detalhe que ningu&eacute;m comenta.</div>
+          <div class="card filled">Descobri uma coisa interessante.</div>
+          <div class="card filled">Voc&ecirc; reparou nisso?</div>
+          <div class="card filled">Existe um motivo pra isso acontecer.</div>
+          <div class="card filled">O segredo n&atilde;o &eacute; o que parece.</div>
+          <div class="card filled">A resposta &eacute; mais simples do que voc&ecirc; imagina.</div>
+          <div class="card filled">Isso explica muita coisa.</div>
+          <div class="card filled">Voc&ecirc; nunca pensou por esse lado.</div>
+          <div class="card filled">Existe uma diferen&ccedil;a enorme aqui.</div>
+          <div class="card filled">O detalhe faz toda a diferen&ccedil;a.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">6. COMPARA&Ccedil;&Atilde;O <span>51&ndash;60</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Qual voc&ecirc; escolheria?</div>
+          <div class="card filled">Os dois parecem iguais, mas...</div>
+          <div class="card filled">Vale pagar mais caro?</div>
+          <div class="card filled">O mais barato realmente compensa?</div>
+          <div class="card filled">Existe uma diferen&ccedil;a que ningu&eacute;m mostra.</div>
+          <div class="card filled">Voc&ecirc; consegue descobrir qual &eacute; melhor?</div>
+          <div class="card filled">Parece igual... at&eacute; usar.</div>
+          <div class="card filled">Eu tamb&eacute;m achava que era tudo igual.</div>
+          <div class="card filled">Nem sempre o mais caro vence.</div>
+          <div class="card filled">Vamos comparar de verdade.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">7. DESAFIO <span>61&ndash;70</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Ser&aacute; que isso aguenta?</div>
+          <div class="card filled">Vamos colocar isso &agrave; prova.</div>
+          <div class="card filled">Hoje eu quero descobrir uma coisa.</div>
+          <div class="card filled">Eu resolvi testar isso.</div>
+          <div class="card filled">Bora descobrir se funciona mesmo.</div>
+          <div class="card filled">Vamos acabar com essa d&uacute;vida.</div>
+          <div class="card filled">Ser&aacute; que vale o pre&ccedil;o?</div>
+          <div class="card filled">Vamos ver se entrega o que promete.</div>
+          <div class="card filled">Hoje &eacute; dia de teste.</div>
+          <div class="card filled">Vamos descobrir juntos.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">8. MITOS <span>71&ndash;80</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; acredita nisso at&eacute; hoje?</div>
+          <div class="card filled">Tem um mito que precisa acabar.</div>
+          <div class="card filled">Nem tudo que falam &eacute; verdade.</div>
+          <div class="card filled">Voc&ecirc; caiu nessa tamb&eacute;m?</div>
+          <div class="card filled">Isso virou verdade sem ser.</div>
+          <div class="card filled">Muita gente acredita nisso.</div>
+          <div class="card filled">N&atilde;o &eacute; bem assim.</div>
+          <div class="card filled">A internet exagera bastante.</div>
+          <div class="card filled">Vamos separar fato de opini&atilde;o.</div>
+          <div class="card filled">Chegou a hora de descobrir.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">9. HUMOR <span>81&ndash;90</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Quem nunca fez essa gambiarra?</div>
+          <div class="card filled">A famosa engenharia brasileira.</div>
+          <div class="card filled">Todo mundo tem um amigo assim.</div>
+          <div class="card filled">Eu ri quando vi isso.</div>
+          <div class="card filled">Isso parece piada.</div>
+          <div class="card filled">S&oacute; quem j&aacute; passou entende.</div>
+          <div class="card filled">Quem inventou isso estava inspirado.</div>
+          <div class="card filled">Parece que foi feito pra dar errado.</div>
+          <div class="card filled">Voc&ecirc; vai se identificar.</div>
+          <div class="card filled">Confessa... voc&ecirc; j&aacute; fez isso.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">10. TESTE / REVIEW <span>91&ndash;100</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Ser&aacute; que vale a pena?</div>
+          <div class="card filled">Funciona ou &eacute; propaganda?</div>
+          <div class="card filled">Vamos descobrir agora.</div>
+          <div class="card filled">Eu quero ver isso funcionando.</div>
+          <div class="card filled">Chegou a hora da verdade.</div>
+          <div class="card filled">Vamos testar sem enrola&ccedil;&atilde;o.</div>
+          <div class="card filled">O papel aceita tudo... quero ver na pr&aacute;tica.</div>
+          <div class="card filled">Promete muito, mas entrega?</div>
+          <div class="card filled">Eu s&oacute; acredito vendo.</div>
+          <div class="card filled">Agora vamos descobrir se isso realmente presta.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ INTERESSE ============ -->
+  <div class="phase">
+    <span class="phase-tag">FASE 2 &mdash; INTERESSE</span>
+    <div class="phase-line"></div>
+  </div>
+
+  <div class="section" data-section="curiosidade" style="border-left-color: #f4a261;">
+    <div class="section-header">
+      <span class="section-number" style="background:#f4a261;">2</span>
+      <span class="section-title">Curiosidade</span>
+    </div>
+    <div class="section-desc">Criar uma pergunta ou gerar curiosidade.</div>
+    <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+    <div class="card-grid">
+      <div class="subcat highlight">
+        <div class="subcat-title">TOP 10 &mdash; O Cara Testou <span>essenciais</span></div>
+        <div class="subcat-cards highlight-cards">
+          <div class="card filled">Tem um detalhe que quase ningu&eacute;m percebe.</div>
+          <div class="card filled">O resultado me surpreendeu.</div>
+          <div class="card filled">Ser&aacute; que entrega o que promete?</div>
+          <div class="card filled">Hoje eu quero tirar essa d&uacute;vida.</div>
+          <div class="card filled">Nada de teoria, vamos direto para a pr&aacute;tica.</div>
+          <div class="card filled">Vou mostrar exatamente o que aconteceu.</div>
+          <div class="card filled">No final eu vou dar meu veredito.</div>
+          <div class="card filled">Quero descobrir se vale o dinheiro.</div>
+          <div class="card filled">Chegou a hora da verdade.</div>
+          <div class="card filled">Voc&ecirc; decide comigo no final.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">1. SEGREDO <span>1&ndash;10</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Tem um detalhe que quase ningu&eacute;m percebe.</div>
+          <div class="card filled">Existe um segredo por tr&aacute;s disso.</div>
+          <div class="card filled">Pouca gente sabe disso.</div>
+          <div class="card filled">Tem uma coisa escondida aqui.</div>
+          <div class="card filled">O mais interessante ningu&eacute;m comenta.</div>
+          <div class="card filled">Descobri uma diferen&ccedil;a enorme.</div>
+          <div class="card filled">Existe um motivo para isso acontecer.</div>
+          <div class="card filled">O problema est&aacute; onde ningu&eacute;m olha.</div>
+          <div class="card filled">Tem algo que faz toda diferen&ccedil;a.</div>
+          <div class="card filled">Voc&ecirc; vai entender por qu&ecirc;.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">2. RESULTADO <span>11&ndash;20</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">O resultado me surpreendeu.</div>
+          <div class="card filled">Eu n&atilde;o esperava isso.</div>
+          <div class="card filled">O final foi bem diferente.</div>
+          <div class="card filled">Isso mudou completamente minha opini&atilde;o.</div>
+          <div class="card filled">Eu achei que seria pior.</div>
+          <div class="card filled">A diferen&ccedil;a apareceu r&aacute;pido.</div>
+          <div class="card filled">O teste tomou outro rumo.</div>
+          <div class="card filled">O resultado foi inesperado.</div>
+          <div class="card filled">N&atilde;o aconteceu como eu imaginava.</div>
+          <div class="card filled">Isso me fez repensar tudo.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">3. DESAFIO <span>21&ndash;30</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Resolvi colocar isso &agrave; prova.</div>
+          <div class="card filled">Vamos descobrir juntos.</div>
+          <div class="card filled">Hoje eu quero tirar essa d&uacute;vida.</div>
+          <div class="card filled">Chegou a hora do teste.</div>
+          <div class="card filled">Vamos ver quem vence.</div>
+          <div class="card filled">Ser&aacute; que aguenta mesmo?</div>
+          <div class="card filled">Vamos descobrir na pr&aacute;tica.</div>
+          <div class="card filled">Eu quero ver at&eacute; onde isso vai.</div>
+          <div class="card filled">Chegou o momento da verdade.</div>
+          <div class="card filled">Agora come&ccedil;a o teste de verdade.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">4. EXPECTATIVA <span>31&ndash;40</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Ser&aacute; que vale tudo isso?</div>
+          <div class="card filled">Ser&aacute; que funciona mesmo?</div>
+          <div class="card filled">Ser&aacute; que entrega o que promete?</div>
+          <div class="card filled">Quero descobrir se vale o dinheiro.</div>
+          <div class="card filled">Eu ainda n&atilde;o tenho certeza.</div>
+          <div class="card filled">Ser&aacute; que &eacute; s&oacute; propaganda?</div>
+          <div class="card filled">Vale todo esse sucesso?</div>
+          <div class="card filled">Tem muita promessa aqui.</div>
+          <div class="card filled">Ser&aacute; que faz diferen&ccedil;a?</div>
+          <div class="card filled">Eu tamb&eacute;m quero descobrir.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">5. COMPARA&Ccedil;&Atilde;O <span>41&ndash;50</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Vamos comparar.</div>
+          <div class="card filled">Existe uma diferen&ccedil;a enorme.</div>
+          <div class="card filled">Parece igual, mas n&atilde;o &eacute;.</div>
+          <div class="card filled">Quero descobrir qual &eacute; melhor.</div>
+          <div class="card filled">O mais barato ser&aacute; suficiente?</div>
+          <div class="card filled">O mais caro vale a pena?</div>
+          <div class="card filled">Vamos colocar lado a lado.</div>
+          <div class="card filled">Hoje a compara&ccedil;&atilde;o vai ser justa.</div>
+          <div class="card filled">Quem ser&aacute; que leva essa?</div>
+          <div class="card filled">S&oacute; existe um jeito de descobrir.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">6. MITO <span>51&ndash;60</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Ser&aacute; que isso &eacute; verdade?</div>
+          <div class="card filled">Todo mundo fala isso.</div>
+          <div class="card filled">Sempre ouvi essa hist&oacute;ria.</div>
+          <div class="card filled">Vamos descobrir se &eacute; mito.</div>
+          <div class="card filled">Chegou a hora da verdade.</div>
+          <div class="card filled">A internet diz uma coisa.</div>
+          <div class="card filled">Quero conferir pessoalmente.</div>
+          <div class="card filled">Ser&aacute; que exageraram?</div>
+          <div class="card filled">Hoje vamos confirmar.</div>
+          <div class="card filled">Bora descobrir.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">7. ERRO <span>61&ndash;70</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Talvez voc&ecirc; esteja fazendo errado.</div>
+          <div class="card filled">O erro &eacute; mais comum do que parece.</div>
+          <div class="card filled">&Eacute; aqui que muita gente erra.</div>
+          <div class="card filled">Tem um detalhe importante.</div>
+          <div class="card filled">Pouca gente presta aten&ccedil;&atilde;o nisso.</div>
+          <div class="card filled">Talvez o problema seja outro.</div>
+          <div class="card filled">N&atilde;o &eacute; culpa do produto.</div>
+          <div class="card filled">Descobri onde todo mundo erra.</div>
+          <div class="card filled">Vale prestar aten&ccedil;&atilde;o.</div>
+          <div class="card filled">Isso muda tudo.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">8. PROMESSA <span>71&ndash;80</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">No final eu vou dar meu veredito.</div>
+          <div class="card filled">At&eacute; o final voc&ecirc; vai entender.</div>
+          <div class="card filled">Daqui a pouco tudo faz sentido.</div>
+          <div class="card filled">Vou mostrar exatamente o que aconteceu.</div>
+          <div class="card filled">Voc&ecirc; vai ver tudo sem cortes.</div>
+          <div class="card filled">Vou mostrar os pontos fortes e fracos.</div>
+          <div class="card filled">Nada de enrola&ccedil;&atilde;o.</div>
+          <div class="card filled">Vou mostrar exatamente como foi.</div>
+          <div class="card filled">Voc&ecirc; decide comigo.</div>
+          <div class="card filled">O resultado vai responder sozinho.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">9. IDENTIFICA&Ccedil;&Atilde;O <span>81&ndash;90</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Isso acontece com muita gente.</div>
+          <div class="card filled">Talvez voc&ecirc; passe por isso.</div>
+          <div class="card filled">Se voc&ecirc; j&aacute; viveu isso...</div>
+          <div class="card filled">Aposto que voc&ecirc; conhece algu&eacute;m assim.</div>
+          <div class="card filled">Quem faz isso vai entender.</div>
+          <div class="card filled">Isso &eacute; mais comum do que parece.</div>
+          <div class="card filled">Voc&ecirc; provavelmente j&aacute; viu isso.</div>
+          <div class="card filled">Eu tamb&eacute;m tinha essa d&uacute;vida.</div>
+          <div class="card filled">Eu tamb&eacute;m pensei assim.</div>
+          <div class="card filled">Voc&ecirc; n&atilde;o est&aacute; sozinho.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">10. TESTE REAL <span>91&ndash;100</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Nada de teoria.</div>
+          <div class="card filled">Vamos direto para a pr&aacute;tica.</div>
+          <div class="card filled">O teste come&ccedil;a agora.</div>
+          <div class="card filled">Quero ver funcionando.</div>
+          <div class="card filled">Aqui n&atilde;o tem enrola&ccedil;&atilde;o.</div>
+          <div class="card filled">Vamos descobrir juntos.</div>
+          <div class="card filled">Agora &eacute; tudo na pr&aacute;tica.</div>
+          <div class="card filled">&Eacute; isso que eu quero testar.</div>
+          <div class="card filled">Chegou a hora de provar.</div>
+          <div class="card filled">Vamos ver o que realmente acontece.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" data-section="tema-central" style="border-left-color: #f4a261;">
+    <div class="section-header">
+      <span class="section-number" style="background:#f4a261;">3</span>
+      <span class="section-title">Tema Central</span>
+    </div>
+    <div class="section-desc">Deixar claro que o v&iacute;deo &eacute; sobre ela. <strong style="color:#e63946;">&ldquo;Quem &eacute; essa pessoa?&rdquo;</strong></div>
+    <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+    <div class="card-grid">
+      <div class="subcat highlight">
+        <div class="subcat-title">TOP 10 &mdash; O Cara Testou <span>essenciais</span></div>
+        <div class="subcat-cards highlight-cards">
+          <div class="card filled">Para quem gosta de resolver as coisas sozinho.</div>
+          <div class="card filled">Para quem pesquisa antes de comprar.</div>
+          <div class="card filled">Para quem odeia jogar dinheiro fora.</div>
+          <div class="card filled">Para quem gosta de ferramentas.</div>
+          <div class="card filled">Para quem vive fazendo pequenos reparos.</div>
+          <div class="card filled">Para quem quer comprar certo na primeira vez.</div>
+          <div class="card filled">Para quem n&atilde;o cai em propaganda.</div>
+          <div class="card filled">Para quem gosta de ver testes reais.</div>
+          <div class="card filled">Para quem quer economizar sem abrir m&atilde;o da qualidade.</div>
+          <div class="card filled">Para quem acredita que teste vale mais que propaganda.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">1. CASA <span>1&ndash;10</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Para quem monta m&oacute;veis em casa.</div>
+          <div class="card filled">Para quem acabou de comprar uma casa.</div>
+          <div class="card filled">Para quem vive fazendo pequenos reparos.</div>
+          <div class="card filled">Para quem gosta de colocar a m&atilde;o na massa.</div>
+          <div class="card filled">Para quem faz manuten&ccedil;&atilde;o sem chamar ningu&eacute;m.</div>
+          <div class="card filled">Para quem gosta de deixar a casa em ordem.</div>
+          <div class="card filled">Para quem sempre tem algo para consertar.</div>
+          <div class="card filled">Para quem est&aacute; reformando.</div>
+          <div class="card filled">Para quem acabou de se mudar.</div>
+          <div class="card filled">Para quem quer resolver tudo sozinho.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">2. OFICINA / GARAGEM <span>11&ndash;20</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Para quem passa tempo na garagem.</div>
+          <div class="card filled">Para quem vive mexendo no carro.</div>
+          <div class="card filled">Para quem gosta de ferramentas.</div>
+          <div class="card filled">Para quem monta sua pr&oacute;pria oficina.</div>
+          <div class="card filled">Para quem faz manuten&ccedil;&atilde;o da moto.</div>
+          <div class="card filled">Para quem gosta de projetos DIY.</div>
+          <div class="card filled">Para quem n&atilde;o depende de oficina.</div>
+          <div class="card filled">Para quem sempre inventa um projeto novo.</div>
+          <div class="card filled">Para quem trabalha com ferramentas.</div>
+          <div class="card filled">Para quem gosta de organizar a bancada.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">3. ECONOMIA <span>21&ndash;30</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Para quem quer economizar.</div>
+          <div class="card filled">Para quem prefere fazer ao inv&eacute;s de pagar.</div>
+          <div class="card filled">Para quem n&atilde;o gosta de desperdi&ccedil;ar dinheiro.</div>
+          <div class="card filled">Para quem pesquisa antes de comprar.</div>
+          <div class="card filled">Para quem compra pensando no custo-benef&iacute;cio.</div>
+          <div class="card filled">Para quem quer gastar uma vez s&oacute;.</div>
+          <div class="card filled">Para quem odeia comprar duas vezes.</div>
+          <div class="card filled">Para quem quer comprar certo na primeira vez.</div>
+          <div class="card filled">Para quem pensa antes de investir.</div>
+          <div class="card filled">Para quem valoriza cada real.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">4. CHURRASCO <span>31&ndash;40</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Para quem ama churrasco.</div>
+          <div class="card filled">Para quem faz churrasco todo fim de semana.</div>
+          <div class="card filled">Para quem &eacute; o churrasqueiro da fam&iacute;lia.</div>
+          <div class="card filled">Para quem recebe os amigos em casa.</div>
+          <div class="card filled">Para quem gosta de facilitar a vida no churrasco.</div>
+          <div class="card filled">Para quem leva o churrasco a s&eacute;rio.</div>
+          <div class="card filled">Para quem gosta de praticidade.</div>
+          <div class="card filled">Para quem organiza encontros.</div>
+          <div class="card filled">Para quem n&atilde;o abre m&atilde;o de um bom churrasco.</div>
+          <div class="card filled">Para quem gosta de testar acess&oacute;rios.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">5. CAMPING / AVENTURA <span>41&ndash;50</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Para quem gosta de acampar.</div>
+          <div class="card filled">Para quem faz trilha.</div>
+          <div class="card filled">Para quem gosta de aventura.</div>
+          <div class="card filled">Para quem viaja de carro.</div>
+          <div class="card filled">Para quem vive na estrada.</div>
+          <div class="card filled">Para quem gosta de explorar lugares novos.</div>
+          <div class="card filled">Para quem monta acampamento.</div>
+          <div class="card filled">Para quem n&atilde;o gosta de passar aperto.</div>
+          <div class="card filled">Para quem leva equipamento a s&eacute;rio.</div>
+          <div class="card filled">Para quem ama atividades ao ar livre.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">6. CARRO / MOTO <span>51&ndash;60</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Para quem cuida do pr&oacute;prio carro.</div>
+          <div class="card filled">Para quem lava o carro em casa.</div>
+          <div class="card filled">Para quem gosta de carro limpo.</div>
+          <div class="card filled">Para quem dirige todo dia.</div>
+          <div class="card filled">Para quem usa moto no trabalho.</div>
+          <div class="card filled">Para quem roda muito.</div>
+          <div class="card filled">Para quem gosta de acess&oacute;rios automotivos.</div>
+          <div class="card filled">Para quem cuida de cada detalhe.</div>
+          <div class="card filled">Para quem ama carro.</div>
+          <div class="card filled">Para quem ama moto.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">7. TRABALHO <span>61&ndash;70</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Para quem trabalha com manuten&ccedil;&atilde;o.</div>
+          <div class="card filled">Para quem trabalha em obra.</div>
+          <div class="card filled">Para quem &eacute; eletricista.</div>
+          <div class="card filled">Para quem &eacute; marceneiro.</div>
+          <div class="card filled">Para quem &eacute; mec&acirc;nico.</div>
+          <div class="card filled">Para quem trabalha por conta pr&oacute;pria.</div>
+          <div class="card filled">Para quem vive com ferramentas na m&atilde;o.</div>
+          <div class="card filled">Para quem trabalha todos os dias com isso.</div>
+          <div class="card filled">Para quem precisa de produtividade.</div>
+          <div class="card filled">Para quem vive resolvendo problemas.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">8. ORGANIZA&Ccedil;&Atilde;O <span>71&ndash;80</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Para quem gosta de tudo organizado.</div>
+          <div class="card filled">Para quem odeia bagun&ccedil;a.</div>
+          <div class="card filled">Para quem organiza a oficina.</div>
+          <div class="card filled">Para quem organiza a garagem.</div>
+          <div class="card filled">Para quem gosta de praticidade.</div>
+          <div class="card filled">Para quem perde ferramentas.</div>
+          <div class="card filled">Para quem quer ganhar tempo.</div>
+          <div class="card filled">Para quem gosta de efici&ecirc;ncia.</div>
+          <div class="card filled">Para quem pensa em funcionalidade.</div>
+          <div class="card filled">Para quem gosta de ter tudo &agrave; m&atilde;o.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">9. COMPORTAMENTO <span>81&ndash;90</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Para quem prefere resolver sozinho.</div>
+          <div class="card filled">Para quem gosta de aprender.</div>
+          <div class="card filled">Para quem &eacute; curioso.</div>
+          <div class="card filled">Para quem gosta de testar novidades.</div>
+          <div class="card filled">Para quem pesquisa antes de comprar.</div>
+          <div class="card filled">Para quem n&atilde;o compra por impulso.</div>
+          <div class="card filled">Para quem gosta de escolher bem.</div>
+          <div class="card filled">Para quem valoriza qualidade.</div>
+          <div class="card filled">Para quem gosta de produtos &uacute;teis.</div>
+          <div class="card filled">Para quem n&atilde;o cai em propaganda.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">10. COMUNIDADE <span>91&ndash;100</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Para quem acompanha reviews.</div>
+          <div class="card filled">Para quem gosta de descobrir produtos novos.</div>
+          <div class="card filled">Para quem quer comprar sem arrependimento.</div>
+          <div class="card filled">Para quem gosta de opini&atilde;o sincera.</div>
+          <div class="card filled">Para quem busca recomenda&ccedil;&otilde;es honestas.</div>
+          <div class="card filled">Para quem quer evitar dor de cabe&ccedil;a.</div>
+          <div class="card filled">Para quem quer acertar na compra.</div>
+          <div class="card filled">Para quem gosta de ver testes reais.</div>
+          <div class="card filled">Para quem acredita que teste vale mais que propaganda.</div>
+          <div class="card filled">Para quem quer comprar com mais confian&ccedil;a.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PROVA ============ -->
+  <div class="phase">
+    <span class="phase-tag">FASE 3 &mdash; PROVA</span>
+    <div class="phase-line"></div>
+  </div>
+
+  <div class="section" data-section="problema" style="border-left-color: #2a9d8f;">
+    <div class="section-header">
+      <span class="section-number" style="background:#2a9d8f;">4</span>
+      <span class="section-title">Problema</span>
+    </div>
+    <div class="section-desc">Mostrar o problema que ela conhece. <strong style="color:#e63946;">&ldquo;&Eacute; exatamente isso que acontece comigo.&rdquo;</strong></div>
+    <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+    <div class="card-grid">
+      <div class="subcat highlight">
+        <div class="subcat-title">TOP 10 &mdash; O Cara Testou <span>essenciais</span></div>
+        <div class="subcat-cards highlight-cards">
+          <div class="card filled">Voc&ecirc; compra sem saber como &eacute; na pr&aacute;tica.</div>
+          <div class="card filled">Todo produto parece incr&iacute;vel na internet.</div>
+          <div class="card filled">O barato acaba saindo caro.</div>
+          <div class="card filled">Voc&ecirc; perde tempo fazendo isso do jeito dif&iacute;cil.</div>
+          <div class="card filled">Voc&ecirc; acaba comprando duas vezes.</div>
+          <div class="card filled">Voc&ecirc; depende dos outros para resolver algo simples.</div>
+          <div class="card filled">A propaganda promete mais do que entrega.</div>
+          <div class="card filled">Voc&ecirc; passa mais raiva do que deveria.</div>
+          <div class="card filled">O problema &eacute; decidir sem informa&ccedil;&atilde;o.</div>
+          <div class="card filled">Quase ningu&eacute;m mostra o produto sendo usado de verdade.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">1. TEMPO <span>1&ndash;10</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; perde muito tempo fazendo isso.</div>
+          <div class="card filled">Essa tarefa demora mais do que deveria.</div>
+          <div class="card filled">O servi&ccedil;o que era para ser r&aacute;pido vira uma dor de cabe&ccedil;a.</div>
+          <div class="card filled">Voc&ecirc; acaba gastando horas em algo simples.</div>
+          <div class="card filled">O problema n&atilde;o &eacute; fazer, &eacute; o tempo que leva.</div>
+          <div class="card filled">Uma tarefa de cinco minutos vira meia hora.</div>
+          <div class="card filled">Voc&ecirc; faz esfor&ccedil;o demais para um resultado pequeno.</div>
+          <div class="card filled">Parece simples, mas demora muito.</div>
+          <div class="card filled">Quanto mais voc&ecirc; adia, pior fica.</div>
+          <div class="card filled">O tempo perdido ningu&eacute;m devolve.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">2. ESFOR&Ccedil;O <span>11&ndash;20</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; faz for&ccedil;a &agrave; toa.</div>
+          <div class="card filled">Parece que nada ajuda.</div>
+          <div class="card filled">D&aacute; muito mais trabalho do que deveria.</div>
+          <div class="card filled">Voc&ecirc; termina cansado por uma tarefa simples.</div>
+          <div class="card filled">O problema &eacute; o esfor&ccedil;o desnecess&aacute;rio.</div>
+          <div class="card filled">Voc&ecirc; precisa repetir v&aacute;rias vezes.</div>
+          <div class="card filled">&Eacute; um desgaste que d&aacute; para evitar.</div>
+          <div class="card filled">Voc&ecirc; complica algo que poderia ser f&aacute;cil.</div>
+          <div class="card filled">Quanto mais for&ccedil;a, pior fica.</div>
+          <div class="card filled">O trabalho vira sofrimento.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">3. DINHEIRO <span>21&ndash;30</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; compra duas vezes porque comprou errado na primeira.</div>
+          <div class="card filled">O barato acaba saindo caro.</div>
+          <div class="card filled">Voc&ecirc; perde dinheiro sem perceber.</div>
+          <div class="card filled">O erro custa mais do que imagina.</div>
+          <div class="card filled">Economizar errado sai caro.</div>
+          <div class="card filled">Voc&ecirc; acaba gastando mais depois.</div>
+          <div class="card filled">O problema come&ccedil;a na compra.</div>
+          <div class="card filled">Voc&ecirc; paga por algo que n&atilde;o resolve.</div>
+          <div class="card filled">Comprar sem pesquisar custa caro.</div>
+          <div class="card filled">O arrependimento chega junto com a entrega.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">4. DEPEND&Ecirc;NCIA <span>31&ndash;40</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; sempre precisa pedir ajuda.</div>
+          <div class="card filled">Nunca consegue resolver sozinho.</div>
+          <div class="card filled">Depende de algu&eacute;m at&eacute; para coisas simples.</div>
+          <div class="card filled">Sempre espera outra pessoa fazer.</div>
+          <div class="card filled">Fica preso porque n&atilde;o tem a ferramenta certa.</div>
+          <div class="card filled">Precisa pedir emprestado toda vez.</div>
+          <div class="card filled">Sempre fica devendo um favor.</div>
+          <div class="card filled">Voc&ecirc; perde autonomia.</div>
+          <div class="card filled">Quando precisa, nunca tem.</div>
+          <div class="card filled">Acaba adiando porque depende dos outros.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">5. FRUSTRA&Ccedil;&Atilde;O <span>41&ndash;50</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; cria expectativa e se decepciona.</div>
+          <div class="card filled">Parece bom, mas n&atilde;o entrega.</div>
+          <div class="card filled">Voc&ecirc; passa mais raiva do que deveria.</div>
+          <div class="card filled">O produto promete muito e faz pouco.</div>
+          <div class="card filled">A propaganda convence, mas a pr&aacute;tica decepciona.</div>
+          <div class="card filled">Voc&ecirc; compra animado e se arrepende.</div>
+          <div class="card filled">A experi&ecirc;ncia n&atilde;o corresponde ao an&uacute;ncio.</div>
+          <div class="card filled">Voc&ecirc; perde a confian&ccedil;a.</div>
+          <div class="card filled">D&aacute; vontade de devolver.</div>
+          <div class="card filled">O pior &eacute; descobrir depois.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">6. QUALIDADE <span>51&ndash;60</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">O acabamento deixa a desejar.</div>
+          <div class="card filled">O material parece fr&aacute;gil.</div>
+          <div class="card filled">Quebra antes do esperado.</div>
+          <div class="card filled">N&atilde;o aguenta o uso do dia a dia.</div>
+          <div class="card filled">Voc&ecirc; sente que n&atilde;o vai durar.</div>
+          <div class="card filled">A qualidade n&atilde;o acompanha o pre&ccedil;o.</div>
+          <div class="card filled">Parece resistente, mas n&atilde;o &eacute;.</div>
+          <div class="card filled">O problema aparece logo no come&ccedil;o.</div>
+          <div class="card filled">O desgaste chega r&aacute;pido.</div>
+          <div class="card filled">Voc&ecirc; percebe que economizou no lugar errado.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">7. ORGANIZA&Ccedil;&Atilde;O <span>61&ndash;70</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; nunca encontra quando precisa.</div>
+          <div class="card filled">A bagun&ccedil;a faz perder tempo.</div>
+          <div class="card filled">As ferramentas vivem espalhadas.</div>
+          <div class="card filled">Voc&ecirc; compra outra porque n&atilde;o acha a primeira.</div>
+          <div class="card filled">A desorganiza&ccedil;&atilde;o atrapalha tudo.</div>
+          <div class="card filled">Falta praticidade.</div>
+          <div class="card filled">Voc&ecirc; perde mais tempo procurando do que usando.</div>
+          <div class="card filled">Tudo fica fora do lugar.</div>
+          <div class="card filled">Organizar vira um problema.</div>
+          <div class="card filled">O ambiente trabalha contra voc&ecirc;.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">8. SEGURAN&Ccedil;A <span>71&ndash;80</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Fazer do jeito errado pode machucar.</div>
+          <div class="card filled">O improviso aumenta o risco.</div>
+          <div class="card filled">Um pequeno erro pode causar um acidente.</div>
+          <div class="card filled">Trabalhar sem a ferramenta certa &eacute; perigoso.</div>
+          <div class="card filled">Voc&ecirc; força al&eacute;m do necess&aacute;rio.</div>
+          <div class="card filled">O equipamento n&atilde;o transmite confian&ccedil;a.</div>
+          <div class="card filled">Seguran&ccedil;a vem antes da velocidade.</div>
+          <div class="card filled">Vale mais prevenir do que remediar.</div>
+          <div class="card filled">N&atilde;o vale correr esse risco.</div>
+          <div class="card filled">Tem coisas que n&atilde;o compensam improvisar.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">9. EFICI&Ecirc;NCIA <span>81&ndash;90</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; trabalha mais e produz menos.</div>
+          <div class="card filled">O rendimento &eacute; muito baixo.</div>
+          <div class="card filled">Voc&ecirc; faz o mesmo servi&ccedil;o duas vezes.</div>
+          <div class="card filled">O resultado nunca fica igual.</div>
+          <div class="card filled">O esfor&ccedil;o n&atilde;o vira produtividade.</div>
+          <div class="card filled">Voc&ecirc; perde ritmo.</div>
+          <div class="card filled">O trabalho rende pouco.</div>
+          <div class="card filled">Parece que nunca termina.</div>
+          <div class="card filled">Voc&ecirc; faz muito para conseguir pouco.</div>
+          <div class="card filled">Falta efici&ecirc;ncia.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">10. COMPRA <span>91&ndash;100</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">O dif&iacute;cil &eacute; saber em quem confiar.</div>
+          <div class="card filled">Hoje qualquer an&uacute;ncio parece perfeito.</div>
+          <div class="card filled">Todo produto parece incr&iacute;vel na internet.</div>
+          <div class="card filled">A propaganda vende um sonho.</div>
+          <div class="card filled">Nem sempre a avalia&ccedil;&atilde;o conta toda a hist&oacute;ria.</div>
+          <div class="card filled">Voc&ecirc; compra sem saber como &eacute; na pr&aacute;tica.</div>
+          <div class="card filled">O problema &eacute; decidir sem informa&ccedil;&atilde;o.</div>
+          <div class="card filled">Fica dif&iacute;cil escolher entre tantas op&ccedil;&otilde;es.</div>
+          <div class="card filled">Todo mundo diz que &eacute; bom.</div>
+          <div class="card filled">Mas quase ningu&eacute;m mostra usando de verdade.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" data-section="consequencia" style="border-left-color: #2a9d8f;">
+    <div class="section-header">
+      <span class="section-number" style="background:#2a9d8f;">5</span>
+      <span class="section-title">Consequ&ecirc;ncia</span>
+    </div>
+    <div class="section-desc">Mostrar o custo de continuar assim. <strong style="color:#e63946;">&ldquo;O que acontece se eu n&atilde;o resolver esse problema?&rdquo;</strong></div>
+    <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+    <div class="card-grid">
+      <div class="subcat highlight">
+        <div class="subcat-title">TOP 10 &mdash; O Cara Testou <span>essenciais</span></div>
+        <div class="subcat-cards highlight-cards">
+          <div class="card filled">Voc&ecirc; perde tempo em uma tarefa que poderia terminar em minutos.</div>
+          <div class="card filled">No final, acaba comprando duas vezes.</div>
+          <div class="card filled">Voc&ecirc; passa mais raiva do que precisava.</div>
+          <div class="card filled">Quando realmente precisa, n&atilde;o consegue resolver.</div>
+          <div class="card filled">O barato acaba saindo caro.</div>
+          <div class="card filled">Voc&ecirc; continua dependendo dos outros.</div>
+          <div class="card filled">O projeto fica parado por mais tempo.</div>
+          <div class="card filled">Voc&ecirc; trabalha mais e produz menos.</div>
+          <div class="card filled">Corre o risco de cometer o mesmo erro novamente.</div>
+          <div class="card filled">A d&uacute;vida continua porque ningu&eacute;m mostra o produto funcionando de verdade.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">1. TEMPO <span>1&ndash;10</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; perde muito mais tempo do que deveria.</div>
+          <div class="card filled">Uma tarefa simples vira um servi&ccedil;o demorado.</div>
+          <div class="card filled">O que levaria minutos acaba ocupando horas.</div>
+          <div class="card filled">Voc&ecirc; deixa de fazer outras coisas importantes.</div>
+          <div class="card filled">O dia rende menos.</div>
+          <div class="card filled">Tudo demora mais.</div>
+          <div class="card filled">Voc&ecirc; vive adiando porque sabe que vai demorar.</div>
+          <div class="card filled">O trabalho nunca acaba.</div>
+          <div class="card filled">Voc&ecirc; gasta energia &agrave; toa.</div>
+          <div class="card filled">No fim do dia parece que n&atilde;o fez nada.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">2. DINHEIRO <span>11&ndash;20</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; acaba gastando duas vezes.</div>
+          <div class="card filled">Compra outro produto para substituir.</div>
+          <div class="card filled">O barato sai caro.</div>
+          <div class="card filled">Voc&ecirc; joga dinheiro fora.</div>
+          <div class="card filled">Precisa pagar algu&eacute;m para resolver.</div>
+          <div class="card filled">O preju&iacute;zo aumenta aos poucos.</div>
+          <div class="card filled">Economiza hoje e gasta amanh&atilde;.</div>
+          <div class="card filled">O conserto custa mais que o produto.</div>
+          <div class="card filled">O erro pesa no bolso.</div>
+          <div class="card filled">Voc&ecirc; paga pela mesma dor mais de uma vez.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">3. ESFOR&Ccedil;O <span>21&ndash;30</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; faz muito esfor&ccedil;o para pouco resultado.</div>
+          <div class="card filled">Termina cansado por algo simples.</div>
+          <div class="card filled">Sua m&atilde;o fica dolorida.</div>
+          <div class="card filled">Voc&ecirc; perde a paci&ecirc;ncia.</div>
+          <div class="card filled">O trabalho vira sofrimento.</div>
+          <div class="card filled">O corpo sente o desgaste.</div>
+          <div class="card filled">Voc&ecirc; desanima antes de terminar.</div>
+          <div class="card filled">Faz for&ccedil;a onde n&atilde;o precisava.</div>
+          <div class="card filled">A tarefa fica mais pesada.</div>
+          <div class="card filled">Voc&ecirc; transforma uma coisa simples em algo dif&iacute;cil.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">4. FRUSTRA&Ccedil;&Atilde;O <span>31&ndash;40</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; se arrepende da compra.</div>
+          <div class="card filled">A expectativa vira decep&ccedil;&atilde;o.</div>
+          <div class="card filled">D&aacute; vontade de desistir.</div>
+          <div class="card filled">Voc&ecirc; perde a confian&ccedil;a.</div>
+          <div class="card filled">A experi&ecirc;ncia &eacute; frustrante.</div>
+          <div class="card filled">O entusiasmo acaba r&aacute;pido.</div>
+          <div class="card filled">Voc&ecirc; sente que fez um mau neg&oacute;cio.</div>
+          <div class="card filled">O produto vai parar esquecido.</div>
+          <div class="card filled">A compra deixa de fazer sentido.</div>
+          <div class="card filled">Voc&ecirc; pensa: &ldquo;eu deveria ter pesquisado melhor.&rdquo;</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">5. DEPEND&Ecirc;NCIA <span>41&ndash;50</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; continua dependendo dos outros.</div>
+          <div class="card filled">Precisa pedir ferramenta emprestada.</div>
+          <div class="card filled">Fica esperando algu&eacute;m ajudar.</div>
+          <div class="card filled">Nunca resolve quando quer.</div>
+          <div class="card filled">Sempre precisa marcar outro dia.</div>
+          <div class="card filled">Voc&ecirc; perde autonomia.</div>
+          <div class="card filled">Depende da disponibilidade de outra pessoa.</div>
+          <div class="card filled">O problema fica parado.</div>
+          <div class="card filled">Voc&ecirc; vive devendo favores.</div>
+          <div class="card filled">Quando precisa, nunca consegue resolver na hora.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">6. SEGURAN&Ccedil;A <span>51&ndash;60</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">O improviso aumenta o risco.</div>
+          <div class="card filled">Voc&ecirc; pode estragar a pe&ccedil;a.</div>
+          <div class="card filled">O servi&ccedil;o fica mal feito.</div>
+          <div class="card filled">Um pequeno erro pode causar preju&iacute;zo.</div>
+          <div class="card filled">O risco de acidente aumenta.</div>
+          <div class="card filled">Voc&ecirc; trabalha sem confian&ccedil;a.</div>
+          <div class="card filled">O equipamento limita voc&ecirc;.</div>
+          <div class="card filled">O problema pode ficar maior.</div>
+          <div class="card filled">Vale mais prevenir do que consertar.</div>
+          <div class="card filled">Seguran&ccedil;a nunca deveria ser improvisada.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">7. QUALIDADE <span>61&ndash;70</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">O resultado fica abaixo do esperado.</div>
+          <div class="card filled">O acabamento n&atilde;o fica bom.</div>
+          <div class="card filled">Voc&ecirc; precisa refazer depois.</div>
+          <div class="card filled">O servi&ccedil;o perde qualidade.</div>
+          <div class="card filled">O problema volta logo.</div>
+          <div class="card filled">O trabalho n&atilde;o dura.</div>
+          <div class="card filled">O produto desgasta mais r&aacute;pido.</div>
+          <div class="card filled">Voc&ecirc; percebe que economizou no lugar errado.</div>
+          <div class="card filled">A qualidade faz falta.</div>
+          <div class="card filled">O barato custa caro no longo prazo.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">8. ORGANIZA&Ccedil;&Atilde;O <span>71&ndash;80</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; perde tempo procurando.</div>
+          <div class="card filled">Nunca acha quando precisa.</div>
+          <div class="card filled">A bagun&ccedil;a atrapalha o trabalho.</div>
+          <div class="card filled">Compra itens repetidos.</div>
+          <div class="card filled">O ambiente vira um caos.</div>
+          <div class="card filled">Tudo demora mais.</div>
+          <div class="card filled">Voc&ecirc; perde produtividade.</div>
+          <div class="card filled">Trabalha irritado.</div>
+          <div class="card filled">Organizar vira outro problema.</div>
+          <div class="card filled">A desorganiza&ccedil;&atilde;o gera mais desorganiza&ccedil;&atilde;o.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">9. OPORTUNIDADE <span>81&ndash;90</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; deixa de aproveitar o momento.</div>
+          <div class="card filled">Adia projetos importantes.</div>
+          <div class="card filled">Nunca come&ccedil;a.</div>
+          <div class="card filled">Perde oportunidades.</div>
+          <div class="card filled">Fica preso no mesmo problema.</div>
+          <div class="card filled">Sempre deixa para depois.</div>
+          <div class="card filled">O projeto nunca sai do papel.</div>
+          <div class="card filled">O sonho continua parado.</div>
+          <div class="card filled">Voc&ecirc; vive esperando o momento certo.</div>
+          <div class="card filled">O tempo passa e nada muda.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">10. DECIS&Atilde;O DE COMPRA <span>91&ndash;100</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; compra no escuro.</div>
+          <div class="card filled">Continua acreditando s&oacute; na propaganda.</div>
+          <div class="card filled">Corre o risco de errar de novo.</div>
+          <div class="card filled">Escolhe pela apar&ecirc;ncia.</div>
+          <div class="card filled">Compra sem informa&ccedil;&atilde;o suficiente.</div>
+          <div class="card filled">Confia em quem nunca usou.</div>
+          <div class="card filled">Pode se arrepender novamente.</div>
+          <div class="card filled">O risco continua alto.</div>
+          <div class="card filled">Voc&ecirc; continua sem saber se vale a pena.</div>
+          <div class="card filled">A d&uacute;vida continua.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" data-section="solucao" style="border-left-color: #2a9d8f;">
+    <div class="section-header">
+      <span class="section-number" style="background:#2a9d8f;">6</span>
+      <span class="section-title">Solu&ccedil;&atilde;o</span>
+    </div>
+    <div class="section-desc">Apresentar o produto como solu&ccedil;&atilde;o. <strong style="color:#e63946;">&ldquo;O que resolveria esse problema?&rdquo;</strong></div>
+    <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+    <div class="card-grid">
+      <div class="subcat highlight">
+        <div class="subcat-title">TOP 10 &mdash; O Cara Testou <span>essenciais</span></div>
+        <div class="subcat-cards highlight-cards">
+          <div class="card filled">O ideal &eacute; encontrar uma forma mais r&aacute;pida de fazer isso.</div>
+          <div class="card filled">N&atilde;o faz sentido continuar sofrendo para fazer uma tarefa simples.</div>
+          <div class="card filled">Vale procurar uma solu&ccedil;&atilde;o que funcione na vida real.</div>
+          <div class="card filled">Comprar certo evita comprar duas vezes.</div>
+          <div class="card filled">A ferramenta certa muda completamente o trabalho.</div>
+          <div class="card filled">Quanto menos esfor&ccedil;o, melhor o resultado.</div>
+          <div class="card filled">Agora s&oacute; existe um jeito de saber se isso realmente resolve: testando.</div>
+          <div class="card filled">Teste vale mais que propaganda.</div>
+          <div class="card filled">Quero descobrir se funciona na pr&aacute;tica.</div>
+          <div class="card filled">Vamos deixar o teste responder por n&oacute;s.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">1. ECONOMIA DE TEMPO <span>1&ndash;10</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">O ideal &eacute; encontrar uma forma mais r&aacute;pida de fazer isso.</div>
+          <div class="card filled">Existe um jeito de economizar bastante tempo.</div>
+          <div class="card filled">D&aacute; para resolver isso em muito menos tempo.</div>
+          <div class="card filled">N&atilde;o faz sentido continuar perdendo horas com isso.</div>
+          <div class="card filled">Hoje existem maneiras muito mais pr&aacute;ticas.</div>
+          <div class="card filled">O caminho &eacute; simplificar o trabalho.</div>
+          <div class="card filled">Vale procurar uma solu&ccedil;&atilde;o mais eficiente.</div>
+          <div class="card filled">Quanto menos etapas, melhor.</div>
+          <div class="card filled">Trabalhar de forma inteligente faz diferen&ccedil;a.</div>
+          <div class="card filled">A ideia &eacute; facilitar a tarefa.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">2. MENOS ESFOR&Ccedil;O <span>11&ndash;20</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">O ideal &eacute; deixar o trabalho mais leve.</div>
+          <div class="card filled">N&atilde;o precisa fazer tanta for&ccedil;a.</div>
+          <div class="card filled">Existe uma maneira muito mais confort&aacute;vel.</div>
+          <div class="card filled">Vale reduzir o esfor&ccedil;o.</div>
+          <div class="card filled">A ferramenta certa muda tudo.</div>
+          <div class="card filled">Trabalhar com menos esfor&ccedil;o rende mais.</div>
+          <div class="card filled">O segredo &eacute; facilitar o processo.</div>
+          <div class="card filled">N&atilde;o faz sentido sofrer para fazer algo simples.</div>
+          <div class="card filled">Quanto menos esfor&ccedil;o, melhor.</div>
+          <div class="card filled">D&aacute; para trabalhar com muito mais conforto.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">3. ECONOMIA <span>21&ndash;30</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">O barato s&oacute; vale a pena quando resolve.</div>
+          <div class="card filled">Comprar certo evita gastar duas vezes.</div>
+          <div class="card filled">Vale investir uma vez e usar por muito tempo.</div>
+          <div class="card filled">O melhor &eacute; escolher pensando no longo prazo.</div>
+          <div class="card filled">Custo-benef&iacute;cio &eacute; mais importante que pre&ccedil;o.</div>
+          <div class="card filled">Pesquisar antes evita arrependimento.</div>
+          <div class="card filled">Uma boa escolha economiza dinheiro.</div>
+          <div class="card filled">Vale pensar antes de comprar.</div>
+          <div class="card filled">O ideal &eacute; investir no que realmente funciona.</div>
+          <div class="card filled">Economizar come&ccedil;a escolhendo bem.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">4. PRATICIDADE <span>31&ndash;40</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">O objetivo &eacute; tornar tudo mais simples.</div>
+          <div class="card filled">Quanto mais pr&aacute;tico, melhor.</div>
+          <div class="card filled">O ideal &eacute; resolver sem complica&ccedil;&atilde;o.</div>
+          <div class="card filled">Pequenas facilidades fazem diferen&ccedil;a.</div>
+          <div class="card filled">Praticidade economiza tempo.</div>
+          <div class="card filled">Resolver r&aacute;pido muda o dia.</div>
+          <div class="card filled">Menos complica&ccedil;&atilde;o significa mais produtividade.</div>
+          <div class="card filled">Vale facilitar a rotina.</div>
+          <div class="card filled">A solu&ccedil;&atilde;o precisa funcionar na vida real.</div>
+          <div class="card filled">O simples costuma funcionar melhor.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">5. QUALIDADE <span>41&ndash;50</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Vale escolher algo que dure.</div>
+          <div class="card filled">O ideal &eacute; confiar no equipamento.</div>
+          <div class="card filled">Melhor usar algo que aguente o uso di&aacute;rio.</div>
+          <div class="card filled">Durabilidade tamb&eacute;m faz parte da economia.</div>
+          <div class="card filled">A qualidade aparece no longo prazo.</div>
+          <div class="card filled">O importante &eacute; funcionar quando precisar.</div>
+          <div class="card filled">Vale pensar na resist&ecirc;ncia.</div>
+          <div class="card filled">Uma boa ferramenta acompanha voc&ecirc; por anos.</div>
+          <div class="card filled">O objetivo &eacute; evitar problemas futuros.</div>
+          <div class="card filled">Comprar certo evita dor de cabe&ccedil;a.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">6. ORGANIZA&Ccedil;&Atilde;O <span>51&ndash;60</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Tudo fica melhor quando est&aacute; organizado.</div>
+          <div class="card filled">Organiza&ccedil;&atilde;o tamb&eacute;m economiza tempo.</div>
+          <div class="card filled">O ideal &eacute; encontrar tudo rapidamente.</div>
+          <div class="card filled">Um espa&ccedil;o organizado facilita qualquer trabalho.</div>
+          <div class="card filled">Quanto menos bagun&ccedil;a, melhor.</div>
+          <div class="card filled">Trabalhar organizado rende mais.</div>
+          <div class="card filled">O segredo &eacute; manter tudo no lugar.</div>
+          <div class="card filled">Organiza&ccedil;&atilde;o evita retrabalho.</div>
+          <div class="card filled">Cada ferramenta precisa ter seu lugar.</div>
+          <div class="card filled">Organiza&ccedil;&atilde;o &eacute; produtividade.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">7. SEGURAN&Ccedil;A <span>61&ndash;70</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Seguran&ccedil;a vem antes da pressa.</div>
+          <div class="card filled">Vale usar a ferramenta certa.</div>
+          <div class="card filled">Trabalhar com seguran&ccedil;a faz diferen&ccedil;a.</div>
+          <div class="card filled">O ideal &eacute; reduzir riscos.</div>
+          <div class="card filled">Improviso nunca &eacute; a melhor solu&ccedil;&atilde;o.</div>
+          <div class="card filled">Seguran&ccedil;a tamb&eacute;m &eacute; efici&ecirc;ncia.</div>
+          <div class="card filled">Trabalhar tranquilo rende mais.</div>
+          <div class="card filled">Vale prevenir antes.</div>
+          <div class="card filled">Equipamento certo evita acidentes.</div>
+          <div class="card filled">Seguran&ccedil;a nunca &eacute; exagero.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">8. TESTE REAL <span>71&ndash;80</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Mas ser&aacute; que isso realmente resolve?</div>
+          <div class="card filled">S&oacute; existe um jeito de descobrir.</div>
+          <div class="card filled">Na teoria parece bom.</div>
+          <div class="card filled">Quero ver funcionando.</div>
+          <div class="card filled">Vamos colocar isso &agrave; prova.</div>
+          <div class="card filled">Agora come&ccedil;a a parte interessante.</div>
+          <div class="card filled">Hora de testar de verdade.</div>
+          <div class="card filled">Quero descobrir se funciona na pr&aacute;tica.</div>
+          <div class="card filled">Chegou o momento da verdade.</div>
+          <div class="card filled">Vamos ver se entrega tudo isso.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">9. DECIS&Atilde;O <span>81&ndash;90</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">O importante &eacute; fazer uma boa escolha.</div>
+          <div class="card filled">Comprar certo faz diferen&ccedil;a.</div>
+          <div class="card filled">Nem sempre o mais caro &eacute; o melhor.</div>
+          <div class="card filled">Nem sempre o mais barato compensa.</div>
+          <div class="card filled">Vale analisar antes.</div>
+          <div class="card filled">Informa&ccedil;&atilde;o ajuda a decidir.</div>
+          <div class="card filled">O objetivo &eacute; comprar sem arrependimento.</div>
+          <div class="card filled">Uma decis&atilde;o bem feita economiza dinheiro.</div>
+          <div class="card filled">Vale conhecer antes de decidir.</div>
+          <div class="card filled">Vamos descobrir juntos.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">10. CONFIAN&Ccedil;A <span>91&ndash;100</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">O melhor &eacute; confiar na pr&aacute;tica.</div>
+          <div class="card filled">Teste vale mais que propaganda.</div>
+          <div class="card filled">Resultado vale mais que promessa.</div>
+          <div class="card filled">Quero ver funcionando.</div>
+          <div class="card filled">A pr&aacute;tica sempre responde.</div>
+          <div class="card filled">O teste mostra a verdade.</div>
+          <div class="card filled">O uso real revela tudo.</div>
+          <div class="card filled">S&oacute; acredito depois de testar.</div>
+          <div class="card filled">Vamos deixar o teste responder.</div>
+          <div class="card filled">A resposta est&aacute; na pr&aacute;tica.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" data-section="demonstracao" style="border-left-color: #2a9d8f;">
+    <div class="section-header">
+      <span class="section-number" style="background:#2a9d8f;">7</span>
+      <span class="section-title">Demonstra&ccedil;&atilde;o</span>
+    </div>
+    <div class="section-desc">Mostrar o produto em uso real. <strong style="color:#e63946;">&ldquo;Esse produto realmente funciona na vida real?&rdquo;</strong></div>
+    <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+    <div class="card-grid">
+      <div class="subcat highlight">
+        <div class="subcat-title">TOP 10 &mdash; O Cara Testou <span>essenciais</span></div>
+        <div class="subcat-cards highlight-cards">
+          <div class="card filled">Vamos usar exatamente como qualquer comprador usaria.</div>
+          <div class="card filled">Nada de teoria, vamos direto para a pr&aacute;tica.</div>
+          <div class="card filled">Vou mostrar tudo sem cortar.</div>
+          <div class="card filled">Agora vamos comparar com o jeito antigo.</div>
+          <div class="card filled">Quero ver se realmente resolve esse problema.</div>
+          <div class="card filled">Olha a diferen&ccedil;a entre antes e depois.</div>
+          <div class="card filled">N&atilde;o precisa acreditar em mim, olha o resultado.</div>
+          <div class="card filled">Vou mostrar at&eacute; os pontos negativos.</div>
+          <div class="card filled">A pr&aacute;tica responde melhor do que qualquer propaganda.</div>
+          <div class="card filled">Tire suas pr&oacute;prias conclus&otilde;es.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">1. USO REAL <span>1&ndash;10</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Vamos usar do jeito que qualquer pessoa usaria.</div>
+          <div class="card filled">Vou testar exatamente como seria no dia a dia.</div>
+          <div class="card filled">Nada de laborat&oacute;rio, vamos para a pr&aacute;tica.</div>
+          <div class="card filled">Quero ver funcionando em uma situa&ccedil;&atilde;o real.</div>
+          <div class="card filled">Vou usar sem nenhuma prepara&ccedil;&atilde;o.</div>
+          <div class="card filled">Esse &eacute; o tipo de uso que realmente importa.</div>
+          <div class="card filled">Vou testar como qualquer comprador faria.</div>
+          <div class="card filled">Nada de cen&aacute;rio perfeito.</div>
+          <div class="card filled">Vamos descobrir na vida real.</div>
+          <div class="card filled">Esse &eacute; o teste que interessa.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">2. PASSO A PASSO <span>11&ndash;20</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Vamos come&ccedil;ar do zero.</div>
+          <div class="card filled">Primeiro vou fazer isso.</div>
+          <div class="card filled">Agora presta aten&ccedil;&atilde;o nessa parte.</div>
+          <div class="card filled">Esse detalhe faz diferen&ccedil;a.</div>
+          <div class="card filled">Vou mostrar tudo sem cortar.</div>
+          <div class="card filled">Quero que voc&ecirc; veja exatamente como foi.</div>
+          <div class="card filled">Vou fazer igual qualquer pessoa faria.</div>
+          <div class="card filled">Cada etapa conta.</div>
+          <div class="card filled">Vamos acompanhar juntos.</div>
+          <div class="card filled">N&atilde;o vou esconder nada.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">3. COMPARA&Ccedil;&Atilde;O <span>21&ndash;30</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Agora vamos comparar com o jeito antigo.</div>
+          <div class="card filled">Quero ver a diferen&ccedil;a na pr&aacute;tica.</div>
+          <div class="card filled">Vamos colocar lado a lado.</div>
+          <div class="card filled">Agora fica f&aacute;cil perceber.</div>
+          <div class="card filled">Veja como muda.</div>
+          <div class="card filled">A diferen&ccedil;a aparece r&aacute;pido.</div>
+          <div class="card filled">Os dois fazem o mesmo trabalho.</div>
+          <div class="card filled">Agora voc&ecirc; compara.</div>
+          <div class="card filled">Qual ficou melhor?</div>
+          <div class="card filled">Acho que ficou bem claro.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">4. TESTE DE RESIST&Ecirc;NCIA <span>31&ndash;40</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Vamos ver at&eacute; onde aguenta.</div>
+          <div class="card filled">Quero testar o limite.</div>
+          <div class="card filled">Agora come&ccedil;a o teste pesado.</div>
+          <div class="card filled">Vamos exigir de verdade.</div>
+          <div class="card filled">Chegou a parte mais dif&iacute;cil.</div>
+          <div class="card filled">Hora de colocar press&atilde;o.</div>
+          <div class="card filled">Vamos ver se suporta.</div>
+          <div class="card filled">N&atilde;o vou aliviar.</div>
+          <div class="card filled">Agora &eacute; teste de verdade.</div>
+          <div class="card filled">Vamos descobrir o limite.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">5. VELOCIDADE <span>41&ndash;50</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Vamos medir quanto tempo leva.</div>
+          <div class="card filled">Quero ver se realmente economiza tempo.</div>
+          <div class="card filled">Olha a diferen&ccedil;a.</div>
+          <div class="card filled">Terminou muito mais r&aacute;pido.</div>
+          <div class="card filled">&Eacute; bem mais pr&aacute;tico.</div>
+          <div class="card filled">O servi&ccedil;o rende muito mais.</div>
+          <div class="card filled">Agora faz sentido.</div>
+          <div class="card filled">A diferen&ccedil;a aparece no rel&oacute;gio.</div>
+          <div class="card filled">Muito mais r&aacute;pido.</div>
+          <div class="card filled">Tempo tamb&eacute;m &eacute; dinheiro.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">6. FACILIDADE <span>51&ndash;60</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Qualquer pessoa consegue usar.</div>
+          <div class="card filled">N&atilde;o tem segredo.</div>
+          <div class="card filled">&Eacute; bem intuitivo.</div>
+          <div class="card filled">Muito simples.</div>
+          <div class="card filled">N&atilde;o precisa de experi&ecirc;ncia.</div>
+          <div class="card filled">Basta fazer isso.</div>
+          <div class="card filled">Olha como &eacute; f&aacute;cil.</div>
+          <div class="card filled">Em poucos segundos voc&ecirc; aprende.</div>
+          <div class="card filled">O uso &eacute; bem tranquilo.</div>
+          <div class="card filled">Mais simples imposs&iacute;vel.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">7. ANTES E DEPOIS <span>61&ndash;70</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Olha como estava antes.</div>
+          <div class="card filled">Agora olha depois.</div>
+          <div class="card filled">A diferen&ccedil;a fala sozinha.</div>
+          <div class="card filled">Nem parece o mesmo servi&ccedil;o.</div>
+          <div class="card filled">O resultado mudou bastante.</div>
+          <div class="card filled">Agora faz sentido.</div>
+          <div class="card filled">Esse &eacute; o antes.</div>
+          <div class="card filled">Esse &eacute; o depois.</div>
+          <div class="card filled">Voc&ecirc; consegue perceber.</div>
+          <div class="card filled">A mudan&ccedil;a &eacute; evidente.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">8. HONESTIDADE <span>71&ndash;80</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Vou mostrar at&eacute; os pontos negativos.</div>
+          <div class="card filled">Nem tudo &eacute; perfeito.</div>
+          <div class="card filled">Quero ser bem sincero.</div>
+          <div class="card filled">Se tiver defeito, eu vou falar.</div>
+          <div class="card filled">N&atilde;o estou aqui para defender marca.</div>
+          <div class="card filled">Meu compromisso &eacute; mostrar a verdade.</div>
+          <div class="card filled">Vou mostrar tudo.</div>
+          <div class="card filled">Sem maquiagem.</div>
+          <div class="card filled">Sem roteiro escondido.</div>
+          <div class="card filled">O teste responde melhor do que eu.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">9. EXPERI&Ecirc;NCIA <span>81&ndash;90</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Minha primeira impress&atilde;o foi essa.</div>
+          <div class="card filled">Eu n&atilde;o esperava isso.</div>
+          <div class="card filled">Me surpreendeu.</div>
+          <div class="card filled">Achei que seria diferente.</div>
+          <div class="card filled">Gostei desse detalhe.</div>
+          <div class="card filled">Isso chamou minha aten&ccedil;&atilde;o.</div>
+          <div class="card filled">Esse ponto merece destaque.</div>
+          <div class="card filled">Aqui eu fiquei impressionado.</div>
+          <div class="card filled">Vale observar isso.</div>
+          <div class="card filled">N&atilde;o imaginei esse resultado.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">10. PROVA VISUAL <span>91&ndash;100</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">N&atilde;o precisa acreditar em mim.</div>
+          <div class="card filled">Olha o que aconteceu.</div>
+          <div class="card filled">As imagens falam por si.</div>
+          <div class="card filled">Tire suas pr&oacute;prias conclus&otilde;es.</div>
+          <div class="card filled">O resultado est&aacute; a&iacute;.</div>
+          <div class="card filled">Voc&ecirc; acabou de ver.</div>
+          <div class="card filled">N&atilde;o tem muito o que discutir.</div>
+          <div class="card filled">A pr&aacute;tica respondeu.</div>
+          <div class="card filled">O teste mostrou.</div>
+          <div class="card filled">Agora ficou f&aacute;cil decidir.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" data-section="wow" style="border-left-color: #2a9d8f;">
+    <div class="section-header">
+      <span class="section-number" style="background:#2a9d8f;">8</span>
+      <span class="section-title">Momento Wow</span>
+    </div>
+    <div class="section-desc">Superar expectativas. <strong style="color:#e63946;">&ldquo;O que esse produto fez que superou a expectativa?&rdquo;</strong></div>
+    <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+    <div class="card-grid">
+      <div class="subcat highlight">
+        <div class="subcat-title">TOP 10 &mdash; O Cara Testou <span>essenciais</span></div>
+        <div class="subcat-cards highlight-cards">
+          <div class="card filled">Agora vamos levar isso ao limite.</div>
+          <div class="card filled">Eu realmente n&atilde;o esperava esse resultado.</div>
+          <div class="card filled">Olha essa diferen&ccedil;a.</div>
+          <div class="card filled">Nem fez esfor&ccedil;o.</div>
+          <div class="card filled">A pr&aacute;tica respondeu melhor que a propaganda.</div>
+          <div class="card filled">Esse detalhe faz toda a diferen&ccedil;a.</div>
+          <div class="card filled">Agora compara com o jeito antigo.</div>
+          <div class="card filled">O antes e depois fala por si.</div>
+          <div class="card filled">Chegou o teste mais dif&iacute;cil.</div>
+          <div class="card filled">Foi muito melhor do que eu imaginava.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">1. EXAGERO CONTROLADO <span>1&ndash;10</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Agora vamos levar isso ao limite.</div>
+          <div class="card filled">Quero ver at&eacute; onde aguenta.</div>
+          <div class="card filled">Vamos exigir de verdade.</div>
+          <div class="card filled">Chegou o teste mais dif&iacute;cil.</div>
+          <div class="card filled">Agora acabou a moleza.</div>
+          <div class="card filled">Vamos aumentar o desafio.</div>
+          <div class="card filled">Quero ver se continua funcionando.</div>
+          <div class="card filled">Hora do teste pesado.</div>
+          <div class="card filled">Agora ficou interessante.</div>
+          <div class="card filled">Vamos descobrir o limite.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">2. VELOCIDADE <span>11&ndash;20</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Foi muito mais r&aacute;pido do que imaginei.</div>
+          <div class="card filled">Terminou antes do esperado.</div>
+          <div class="card filled">Nem deu tempo de perceber.</div>
+          <div class="card filled">Olha a velocidade disso.</div>
+          <div class="card filled">Achei que demoraria muito mais.</div>
+          <div class="card filled">Resolveu em segundos.</div>
+          <div class="card filled">Isso acelerou bastante o trabalho.</div>
+          <div class="card filled">Impressionante como foi r&aacute;pido.</div>
+          <div class="card filled">Economizou muito tempo.</div>
+          <div class="card filled">O cron&ocirc;metro fala por si.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">3. FOR&Ccedil;A <span>21&ndash;30</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Achei que n&atilde;o conseguiria.</div>
+          <div class="card filled">Passou f&aacute;cil.</div>
+          <div class="card filled">Nem fez esfor&ccedil;o.</div>
+          <div class="card filled">Resolveu sem dificuldade.</div>
+          <div class="card filled">Aguentou tranquilo.</div>
+          <div class="card filled">Eu esperava que travasse.</div>
+          <div class="card filled">Nem sofreu.</div>
+          <div class="card filled">Isso foi al&eacute;m do esperado.</div>
+          <div class="card filled">Muito mais forte do que parece.</div>
+          <div class="card filled">Surpreendeu.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">4. RESULTADO VISUAL <span>31&ndash;40</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Olha essa diferen&ccedil;a.</div>
+          <div class="card filled">Nem parece o mesmo objeto.</div>
+          <div class="card filled">Ficou muito melhor.</div>
+          <div class="card filled">O antes e depois impressiona.</div>
+          <div class="card filled">O resultado aparece na hora.</div>
+          <div class="card filled">Voc&ecirc; consegue ver claramente.</div>
+          <div class="card filled">Mudou completamente.</div>
+          <div class="card filled">Ficou acima da expectativa.</div>
+          <div class="card filled">A imagem fala sozinha.</div>
+          <div class="card filled">N&atilde;o precisa explicar.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">5. RESIST&Ecirc;NCIA <span>41&ndash;50</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Continua funcionando perfeitamente.</div>
+          <div class="card filled">Nem sinal de desgaste.</div>
+          <div class="card filled">Aguentou tudo.</div>
+          <div class="card filled">N&atilde;o apresentou nenhum problema.</div>
+          <div class="card filled">Passou no teste.</div>
+          <div class="card filled">Ainda continua firme.</div>
+          <div class="card filled">Resistiu muito bem.</div>
+          <div class="card filled">N&atilde;o perdeu desempenho.</div>
+          <div class="card filled">Parece novo.</div>
+          <div class="card filled">Isso chamou aten&ccedil;&atilde;o.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">6. COMPARA&Ccedil;&Atilde;O <span>51&ndash;60</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Agora compara com o m&eacute;todo antigo.</div>
+          <div class="card filled">A diferen&ccedil;a &eacute; enorme.</div>
+          <div class="card filled">N&atilde;o tem compara&ccedil;&atilde;o.</div>
+          <div class="card filled">Ficou muito melhor.</div>
+          <div class="card filled">Valeu cada segundo.</div>
+          <div class="card filled">Agora ficou f&aacute;cil escolher.</div>
+          <div class="card filled">Um lado fala por si.</div>
+          <div class="card filled">O resultado responde sozinho.</div>
+          <div class="card filled">Acho que ficou bem claro.</div>
+          <div class="card filled">Nem parece o mesmo trabalho.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">7. REA&Ccedil;&Atilde;O NATURAL <span>61&ndash;70</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Caramba...</div>
+          <div class="card filled">Eu realmente n&atilde;o esperava isso.</div>
+          <div class="card filled">Me surpreendeu.</div>
+          <div class="card filled">Confesso que gostei.</div>
+          <div class="card filled">Isso mudou minha opini&atilde;o.</div>
+          <div class="card filled">Achei que seria pior.</div>
+          <div class="card filled">Essa parte foi inesperada.</div>
+          <div class="card filled">Agora fiquei impressionado.</div>
+          <div class="card filled">Isso chamou minha aten&ccedil;&atilde;o.</div>
+          <div class="card filled">Valeu o teste.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">8. DETALHE ESCONDIDO <span>71&ndash;80</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Tem um detalhe que faz toda diferen&ccedil;a.</div>
+          <div class="card filled">Quase ningu&eacute;m percebe isso.</div>
+          <div class="card filled">Esse pequeno detalhe muda tudo.</div>
+          <div class="card filled">Foi isso que mais gostei.</div>
+          <div class="card filled">Esse recurso faz diferen&ccedil;a.</div>
+          <div class="card filled">N&atilde;o esperava encontrar isso.</div>
+          <div class="card filled">Foi o ponto mais interessante.</div>
+          <div class="card filled">Esse acabamento me surpreendeu.</div>
+          <div class="card filled">Esse detalhe merece destaque.</div>
+          <div class="card filled">Pouca gente fala disso.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">9. USO REAL <span>81&ndash;90</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">No uso do dia a dia isso faz diferen&ccedil;a.</div>
+          <div class="card filled">Agora imagina usando isso toda semana.</div>
+          <div class="card filled">D&aacute; para perceber a praticidade.</div>
+          <div class="card filled">Isso realmente facilita.</div>
+          <div class="card filled">Resolve exatamente o problema.</div>
+          <div class="card filled">Faz sentido agora.</div>
+          <div class="card filled">&Eacute; aqui que ele mostra seu valor.</div>
+          <div class="card filled">Agora entendi a proposta.</div>
+          <div class="card filled">Isso muda a experi&ecirc;ncia.</div>
+          <div class="card filled">Funciona como deveria.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">10. SURPRESA FINAL <span>91&ndash;100</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Essa foi a melhor parte.</div>
+          <div class="card filled">Eu n&atilde;o esperava esse resultado.</div>
+          <div class="card filled">Agora ficou claro.</div>
+          <div class="card filled">Acho que ningu&eacute;m imaginava isso.</div>
+          <div class="card filled">Valeu a pena testar.</div>
+          <div class="card filled">O teste respondeu.</div>
+          <div class="card filled">A pr&aacute;tica venceu a propaganda.</div>
+          <div class="card filled">O resultado surpreendeu.</div>
+          <div class="card filled">Essa parte fez diferen&ccedil;a.</div>
+          <div class="card filled">Agora voc&ecirc; entende por que eu quis testar.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" data-section="transformacao" style="border-left-color: #2a9d8f;">
+    <div class="section-header">
+      <span class="section-number" style="background:#2a9d8f;">9</span>
+      <span class="section-title">Transforma&ccedil;&atilde;o</span>
+    </div>
+    <div class="section-desc">Mostrar o resultado/benef&iacute;cio na pr&aacute;tica. <strong style="color:#e63946;">&ldquo;Como fica a vida da pessoa depois de usar esse produto?&rdquo;</strong></div>
+    <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+    <div class="card-grid">
+      <div class="subcat highlight">
+        <div class="subcat-title">TOP 10 &mdash; O Cara Testou <span>essenciais</span></div>
+        <div class="subcat-cards highlight-cards">
+          <div class="card filled">Agora voc&ecirc; resolve isso em minutos, n&atilde;o em horas.</div>
+          <div class="card filled">Voc&ecirc; para de depender dos outros para fazer um servi&ccedil;o simples.</div>
+          <div class="card filled">Compra certo na primeira vez.</div>
+          <div class="card filled">Economiza tempo e dinheiro ao mesmo tempo.</div>
+          <div class="card filled">Resolve o problema quando ele aparece.</div>
+          <div class="card filled">Trabalha com menos esfor&ccedil;o e mais resultado.</div>
+          <div class="card filled">A rotina fica muito mais pr&aacute;tica.</div>
+          <div class="card filled">Voc&ecirc; compra sabendo exatamente o que esperar.</div>
+          <div class="card filled">A decis&atilde;o deixa de ser um chute e passa a ser baseada em um teste real.</div>
+          <div class="card filled">No fim, voc&ecirc; n&atilde;o leva apenas um produto. Voc&ecirc; leva uma forma melhor de resolver um problema.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">1. ECONOMIA DE TEMPO <span>1&ndash;10</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Agora essa tarefa leva minutos, n&atilde;o horas.</div>
+          <div class="card filled">Voc&ecirc; ganha tempo para fazer outras coisas.</div>
+          <div class="card filled">O trabalho rende muito mais.</div>
+          <div class="card filled">Voc&ecirc; termina antes do esperado.</div>
+          <div class="card filled">O servi&ccedil;o deixa de ser cansativo.</div>
+          <div class="card filled">Resolver isso fica muito mais r&aacute;pido.</div>
+          <div class="card filled">Voc&ecirc; para de perder tempo.</div>
+          <div class="card filled">O dia rende mais.</div>
+          <div class="card filled">Tudo fica mais &aacute;gil.</div>
+          <div class="card filled">O tempo volta a trabalhar a seu favor.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">2. MENOS ESFOR&Ccedil;O <span>11&ndash;20</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; trabalha com muito menos esfor&ccedil;o.</div>
+          <div class="card filled">O servi&ccedil;o fica leve.</div>
+          <div class="card filled">N&atilde;o precisa fazer for&ccedil;a &agrave; toa.</div>
+          <div class="card filled">Voc&ecirc; termina sem se desgastar.</div>
+          <div class="card filled">Trabalhar deixa de ser cansativo.</div>
+          <div class="card filled">O corpo agradece.</div>
+          <div class="card filled">Voc&ecirc; resolve tudo com mais facilidade.</div>
+          <div class="card filled">Menos esfor&ccedil;o, mais resultado.</div>
+          <div class="card filled">O trabalho fica confort&aacute;vel.</div>
+          <div class="card filled">Voc&ecirc; sente a diferen&ccedil;a na primeira vez.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">3. ECONOMIA <span>21&ndash;30</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; compra certo uma vez.</div>
+          <div class="card filled">Para de gastar dinheiro &agrave; toa.</div>
+          <div class="card filled">Evita comprar duas vezes.</div>
+          <div class="card filled">Economiza no longo prazo.</div>
+          <div class="card filled">O investimento come&ccedil;a a fazer sentido.</div>
+          <div class="card filled">Cada real rende mais.</div>
+          <div class="card filled">Voc&ecirc; evita preju&iacute;zos.</div>
+          <div class="card filled">Comprar deixa de ser uma aposta.</div>
+          <div class="card filled">O custo-benef&iacute;cio aparece com o tempo.</div>
+          <div class="card filled">O bolso agradece.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">4. AUTONOMIA <span>31&ndash;40</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; resolve sozinho.</div>
+          <div class="card filled">N&atilde;o precisa mais pedir emprestado.</div>
+          <div class="card filled">Faz quando quiser.</div>
+          <div class="card filled">N&atilde;o depende de ningu&eacute;m.</div>
+          <div class="card filled">Resolve na hora.</div>
+          <div class="card filled">Ganha independ&ecirc;ncia.</div>
+          <div class="card filled">O problema deixa de esperar.</div>
+          <div class="card filled">Voc&ecirc; assume o controle.</div>
+          <div class="card filled">Trabalha no seu tempo.</div>
+          <div class="card filled">A liberdade faz diferen&ccedil;a.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">5. PRATICIDADE <span>41&ndash;50</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Tudo fica mais simples.</div>
+          <div class="card filled">Voc&ecirc; complica menos.</div>
+          <div class="card filled">Resolver vira rotina.</div>
+          <div class="card filled">O dia fica mais pr&aacute;tico.</div>
+          <div class="card filled">Menos dor de cabe&ccedil;a.</div>
+          <div class="card filled">Tudo acontece naturalmente.</div>
+          <div class="card filled">Voc&ecirc; ganha produtividade.</div>
+          <div class="card filled">Facilita qualquer tarefa.</div>
+          <div class="card filled">A rotina melhora.</div>
+          <div class="card filled">Pequenas facilidades fazem diferen&ccedil;a.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">6. CONFIAN&Ccedil;A <span>51&ndash;60</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Agora voc&ecirc; compra sabendo o que esperar.</div>
+          <div class="card filled">A decis&atilde;o fica mais f&aacute;cil.</div>
+          <div class="card filled">Voc&ecirc; compra com seguran&ccedil;a.</div>
+          <div class="card filled">N&atilde;o depende s&oacute; da propaganda.</div>
+          <div class="card filled">Confia no resultado.</div>
+          <div class="card filled">Escolhe com mais consci&ecirc;ncia.</div>
+          <div class="card filled">Voc&ecirc; sabe onde est&aacute; investindo.</div>
+          <div class="card filled">A d&uacute;vida desaparece.</div>
+          <div class="card filled">Comprar fica muito mais tranquilo.</div>
+          <div class="card filled">Informa&ccedil;&atilde;o gera confian&ccedil;a.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">7. QUALIDADE DE VIDA <span>61&ndash;70</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; ganha mais tempo para a fam&iacute;lia.</div>
+          <div class="card filled">Sobra tempo para descansar.</div>
+          <div class="card filled">O trabalho deixa de ser um problema.</div>
+          <div class="card filled">Voc&ecirc; aproveita melhor o dia.</div>
+          <div class="card filled">A rotina fica mais leve.</div>
+          <div class="card filled">Resolve e segue a vida.</div>
+          <div class="card filled">Menos estresse.</div>
+          <div class="card filled">Mais tranquilidade.</div>
+          <div class="card filled">Mais conforto.</div>
+          <div class="card filled">Mais qualidade de vida.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">8. RESULTADO <span>71&ndash;80</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">O resultado aparece na pr&aacute;tica.</div>
+          <div class="card filled">Voc&ecirc; percebe a diferen&ccedil;a rapidamente.</div>
+          <div class="card filled">O trabalho fica melhor.</div>
+          <div class="card filled">O acabamento melhora.</div>
+          <div class="card filled">O servi&ccedil;o fica profissional.</div>
+          <div class="card filled">Voc&ecirc; sente orgulho do resultado.</div>
+          <div class="card filled">O esfor&ccedil;o finalmente compensa.</div>
+          <div class="card filled">O resultado fala por si.</div>
+          <div class="card filled">Faz diferen&ccedil;a no dia a dia.</div>
+          <div class="card filled">Vale a pena.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">9. EMO&Ccedil;&Atilde;O <span>81&ndash;90</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">D&aacute; gosto de usar.</div>
+          <div class="card filled">Voc&ecirc; termina satisfeito.</div>
+          <div class="card filled">A sensa&ccedil;&atilde;o &eacute; completamente diferente.</div>
+          <div class="card filled">Agora faz sentido.</div>
+          <div class="card filled">D&aacute; confian&ccedil;a.</div>
+          <div class="card filled">Voc&ecirc; percebe a evolu&ccedil;&atilde;o.</div>
+          <div class="card filled">O trabalho fica prazeroso.</div>
+          <div class="card filled">D&aacute; vontade de fazer mais projetos.</div>
+          <div class="card filled">Voc&ecirc; entende o valor.</div>
+          <div class="card filled">&Eacute; uma experi&ecirc;ncia melhor.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">10. COMPRA INTELIGENTE <span>91&ndash;100</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Voc&ecirc; compra sabendo exatamente o que est&aacute; levando.</div>
+          <div class="card filled">N&atilde;o compra apenas pela propaganda.</div>
+          <div class="card filled">Compra baseado em teste real.</div>
+          <div class="card filled">Escolhe com informa&ccedil;&atilde;o.</div>
+          <div class="card filled">Evita arrependimentos.</div>
+          <div class="card filled">Compra com consci&ecirc;ncia.</div>
+          <div class="card filled">Investe melhor.</div>
+          <div class="card filled">Toma decis&otilde;es mais inteligentes.</div>
+          <div class="card filled">Faz escolhas melhores.</div>
+          <div class="card filled">Compra com confian&ccedil;a.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DECISÃO ============ -->
+  <div class="phase">
+    <span class="phase-tag">FASE 4 &mdash; DECIS&Atilde;O</span>
+    <div class="phase-line"></div>
+  </div>
+
+  <div class="section" data-section="veredito" style="border-left-color: #264653;">
+    <div class="section-header">
+      <span class="section-number" style="background:#264653;">10</span>
+      <span class="section-title">Veredito</span>
+    </div>
+    <div class="section-desc">Dar sua opini&atilde;o honesta: vale ou n&atilde;o vale. <strong style="color:#e63946;">&ldquo;Depois de testar, eu compraria?&rdquo;</strong></div>
+    <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.6rem;">
+      <span style="font-size:.7rem;background:#1a1a1a;color:#fff;padding:.15rem .45rem;border-radius:4px;font-weight:600;">🟢 Vale Muito ⭐⭐⭐⭐⭐</span>
+      <span style="font-size:.7rem;background:#1a1a1a;color:#fff;padding:.15rem .45rem;border-radius:4px;font-weight:600;">🟢 Vale ⭐⭐⭐⭐☆</span>
+      <span style="font-size:.7rem;background:#1a1a1a;color:#fff;padding:.15rem .45rem;border-radius:4px;font-weight:600;">🟡 Vale c/ ressalvas ⭐⭐⭐☆☆</span>
+      <span style="font-size:.7rem;background:#1a1a1a;color:#fff;padding:.15rem .45rem;border-radius:4px;font-weight:600;">🟠 S&oacute; em promo&ccedil;&atilde;o ⭐⭐☆☆☆</span>
+      <span style="font-size:.7rem;background:#1a1a1a;color:#fff;padding:.15rem .45rem;border-radius:4px;font-weight:600;">🔴 N&atilde;o Vale ⭐☆☆☆☆</span>
+    </div>
+    <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+    <div class="card-grid">
+      <div class="subcat highlight">
+        <div class="subcat-title">TOP 10 &mdash; O Cara Testou <span>essenciais</span></div>
+        <div class="subcat-cards highlight-cards">
+          <div class="card filled">Passou no teste.</div>
+          <div class="card filled">Eu compraria esse produto.</div>
+          <div class="card filled">Pelo pre&ccedil;o que custa, vale a pena.</div>
+          <div class="card filled">Para esse tipo de uso, est&aacute; aprovado.</div>
+          <div class="card filled">Recebeu o selo O Cara Testou&trade;.</div>
+          <div class="card filled">Superou minhas expectativas.</div>
+          <div class="card filled">Cumpriu exatamente o que prometeu.</div>
+          <div class="card filled">Vale colocar no carrinho.</div>
+          <div class="card filled">Eu indicaria para um amigo.</div>
+          <div class="card filled">No meu teste, foi aprovado.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">1. RECOMENDA&Ccedil;&Atilde;O <span>1&ndash;10</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Eu compraria.</div>
+          <div class="card filled">Eu teria esse produto.</div>
+          <div class="card filled">Entraria na minha caixa de ferramentas.</div>
+          <div class="card filled">Faz sentido comprar.</div>
+          <div class="card filled">Eu usaria no meu dia a dia.</div>
+          <div class="card filled">Vale entrar na cole&ccedil;&atilde;o.</div>
+          <div class="card filled">Eu levaria sem medo.</div>
+          <div class="card filled">Passou no meu teste.</div>
+          <div class="card filled">Aprovado.</div>
+          <div class="card filled">Esse eu usaria.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">2. CUSTO-BENEF&Iacute;CIO <span>11&ndash;20</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Pelo pre&ccedil;o, vale muito.</div>
+          <div class="card filled">Tem um &oacute;timo custo-benef&iacute;cio.</div>
+          <div class="card filled">Entrega mais do que custa.</div>
+          <div class="card filled">Vale cada real.</div>
+          <div class="card filled">Faz sentido pelo valor.</div>
+          <div class="card filled">&Eacute; um bom investimento.</div>
+          <div class="card filled">N&atilde;o achei caro pelo que entrega.</div>
+          <div class="card filled">O pre&ccedil;o combina com o desempenho.</div>
+          <div class="card filled">Vale o investimento.</div>
+          <div class="card filled">O custo-benef&iacute;cio &eacute; o ponto forte.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">3. P&Uacute;BLICO CERTO <span>21&ndash;30</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Para quem faz pequenos reparos, vale muito.</div>
+          <div class="card filled">Para quem trabalha com isso, faz sentido.</div>
+          <div class="card filled">Para uso dom&eacute;stico, eu recomendo.</div>
+          <div class="card filled">Para uso profissional, vale analisar.</div>
+          <div class="card filled">Para quem est&aacute; come&ccedil;ando, gostei bastante.</div>
+          <div class="card filled">Para quem usa de vez em quando, resolve bem.</div>
+          <div class="card filled">Para o dia a dia, funciona.</div>
+          <div class="card filled">Para quem busca praticidade, vale.</div>
+          <div class="card filled">Se esse &eacute; seu perfil, pode comprar.</div>
+          <div class="card filled">Para esse tipo de uso, est&aacute; aprovado.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">4. RESSALVAS <span>31&ndash;40</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Gostei, mas tem um detalhe.</div>
+          <div class="card filled">Funciona, por&eacute;m n&atilde;o &eacute; para todo mundo.</div>
+          <div class="card filled">Vale desde que voc&ecirc; saiba disso.</div>
+          <div class="card filled">Tem um ponto que merece aten&ccedil;&atilde;o.</div>
+          <div class="card filled">Eu compraria conhecendo essa limita&ccedil;&atilde;o.</div>
+          <div class="card filled">N&atilde;o &eacute; perfeito.</div>
+          <div class="card filled">Tem seus pontos fracos.</div>
+          <div class="card filled">Vale, mas com ressalvas.</div>
+          <div class="card filled">Depende do seu objetivo.</div>
+          <div class="card filled">Nem todo mundo precisa disso.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">5. HONESTIDADE <span>41&ndash;50</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">No meu teste, foi aprovado.</div>
+          <div class="card filled">Estou falando baseado no que vi.</div>
+          <div class="card filled">Essa &eacute; minha opini&atilde;o depois do teste.</div>
+          <div class="card filled">N&atilde;o estou falando de propaganda.</div>
+          <div class="card filled">Meu teste mostrou isso.</div>
+          <div class="card filled">Foi isso que aconteceu comigo.</div>
+          <div class="card filled">O resultado est&aacute; a&iacute;.</div>
+          <div class="card filled">Tire suas pr&oacute;prias conclus&otilde;es.</div>
+          <div class="card filled">Eu mostraria exatamente isso para um amigo.</div>
+          <div class="card filled">Essa foi minha experi&ecirc;ncia.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">6. COMPARA&Ccedil;&Atilde;O <span>51&ndash;60</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Melhor do que eu imaginava.</div>
+          <div class="card filled">Superou minhas expectativas.</div>
+          <div class="card filled">Achei melhor que outros da mesma faixa.</div>
+          <div class="card filled">Me surpreendeu positivamente.</div>
+          <div class="card filled">Ficou acima da m&eacute;dia.</div>
+          <div class="card filled">Cumpriu tudo que prometeu.</div>
+          <div class="card filled">Entregou o esperado.</div>
+          <div class="card filled">Fez exatamente o que eu queria.</div>
+          <div class="card filled">N&atilde;o decepcionou.</div>
+          <div class="card filled">Valeu o teste.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">7. APROVA&Ccedil;&Atilde;O <span>61&ndash;70</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Aprovado.</div>
+          <div class="card filled">Passou no teste.</div>
+          <div class="card filled">Est&aacute; liberado.</div>
+          <div class="card filled">Pode comprar tranquilo.</div>
+          <div class="card filled">Esse ganhou meu respeito.</div>
+          <div class="card filled">Esse merece recomenda&ccedil;&atilde;o.</div>
+          <div class="card filled">Foi aprovado com folga.</div>
+          <div class="card filled">Esse entrou para minha lista.</div>
+          <div class="card filled">Gostei bastante.</div>
+          <div class="card filled">Esse vale a pena.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">8. REPROVA&Ccedil;&Atilde;O <span>71&ndash;80</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Eu n&atilde;o compraria.</div>
+          <div class="card filled">N&atilde;o passou no teste.</div>
+          <div class="card filled">Esperava mais.</div>
+          <div class="card filled">N&atilde;o entrega o que promete.</div>
+          <div class="card filled">Ficou abaixo da expectativa.</div>
+          <div class="card filled">Nesse caso, eu procuraria outra op&ccedil;&atilde;o.</div>
+          <div class="card filled">N&atilde;o vale o pre&ccedil;o.</div>
+          <div class="card filled">Achei fraco.</div>
+          <div class="card filled">N&atilde;o me convenceu.</div>
+          <div class="card filled">Esse ficou devendo.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">9. DECIS&Atilde;O FINAL <span>81&ndash;90</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Minha resposta &eacute; sim.</div>
+          <div class="card filled">Minha resposta &eacute; n&atilde;o.</div>
+          <div class="card filled">Eu levaria.</div>
+          <div class="card filled">Eu passaria.</div>
+          <div class="card filled">Compraria novamente.</div>
+          <div class="card filled">N&atilde;o compraria novamente.</div>
+          <div class="card filled">Vale colocar no carrinho.</div>
+          <div class="card filled">Melhor deixar passar.</div>
+          <div class="card filled">Esse ganhou meu voto.</div>
+          <div class="card filled">Esse n&atilde;o entrou na lista.</div>
+        </div>
+      </div>
+
+      <div class="subcat highlight" style="border-color:#264653;">
+        <div class="subcat-title">ASSINATURA DO CANAL <span>91&ndash;100</span></div>
+        <div class="subcat-cards highlight-cards" style="border-color:#264653;">
+          <div class="card filled" style="border-color:#264653;">Passou no teste do O Cara Testou.</div>
+          <div class="card filled" style="border-color:#264653;">Recebeu o selo O Cara Testou.</div>
+          <div class="card filled" style="border-color:#264653;">Aprovado pelo teste real.</div>
+          <div class="card filled" style="border-color:#264653;">Testado e aprovado.</div>
+          <div class="card filled" style="border-color:#264653;">Testado e recomendado.</div>
+          <div class="card filled" style="border-color:#264653;">Hoje ele levou o selo do canal.</div>
+          <div class="card filled" style="border-color:#264653;">O teste respondeu.</div>
+          <div class="card filled" style="border-color:#264653;">Meu veredito est&aacute; dado.</div>
+          <div class="card filled" style="border-color:#264653;">Esse ganhou meu selo.</div>
+          <div class="card filled" style="border-color:#264653;">At&eacute; o pr&oacute;ximo teste.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" data-section="cta" style="border-left-color: #264653;">
+    <div class="section-header">
+      <span class="section-number" style="background:#264653;">11</span>
+      <span class="section-title">CTA &mdash; Chamada para A&ccedil;&atilde;o</span>
+    </div>
+    <div class="section-desc">Convidar para agir de forma natural. <strong style="color:#e63946;">&ldquo;Qual &eacute; a pr&oacute;xima a&ccedil;&atilde;o natural depois de assistir esse v&iacute;deo?&rdquo;</strong></div>
+    <button class="toggle-btn" onclick="toggleCards(this)">Mostrar varia&ccedil;&otilde;es</button>
+    <div class="card-grid">
+      <div class="subcat highlight">
+        <div class="subcat-title">TOP 10 &mdash; O Cara Testou <span>essenciais</span></div>
+        <div class="subcat-cards highlight-cards">
+          <div class="card filled">Se esse teste ajudou voc&ecirc; a decidir, o produto est&aacute; aqui no TikTok Shop.</div>
+          <div class="card filled">Se ainda tiver cupom dispon&iacute;vel, vale conferir agora.</div>
+          <div class="card filled">Agora a decis&atilde;o &eacute; sua, eu s&oacute; quis mostrar a realidade.</div>
+          <div class="card filled">Comenta qual produto voc&ecirc; quer ver no pr&oacute;ximo teste.</div>
+          <div class="card filled">Compartilha com quem pesquisa antes de comprar.</div>
+          <div class="card filled">Salva esse v&iacute;deo para consultar depois.</div>
+          <div class="card filled">Aqui a gente testa antes de voc&ecirc; comprar.</div>
+          <div class="card filled">Propaganda vende. Teste convence.</div>
+          <div class="card filled">Se fez sentido para voc&ecirc;, o link est&aacute; aqui embaixo.</div>
+          <div class="card filled">O Cara Testou&trade;. At&eacute; o pr&oacute;ximo teste.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">1. COMPRA NATURAL <span>1&ndash;10</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Se fez sentido para voc&ecirc;, o link est&aacute; aqui no TikTok Shop.</div>
+          <div class="card filled">Se esse teste ajudou, o produto est&aacute; aqui embaixo.</div>
+          <div class="card filled">Se voc&ecirc; estava procurando algo assim, &eacute; s&oacute; clicar no link.</div>
+          <div class="card filled">O produto est&aacute; dispon&iacute;vel aqui no v&iacute;deo.</div>
+          <div class="card filled">Se quiser conferir, deixei o link aqui.</div>
+          <div class="card filled">Est&aacute; tudo aqui no TikTok Shop.</div>
+          <div class="card filled">&Eacute; s&oacute; tocar no produto.</div>
+          <div class="card filled">O link est&aacute; logo abaixo.</div>
+          <div class="card filled">Voc&ecirc; encontra aqui mesmo no v&iacute;deo.</div>
+          <div class="card filled">Est&aacute; f&aacute;cil de acessar.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">2. DESCONTO <span>11&ndash;20</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">D&aacute; uma olhada porque pode ter cupom dispon&iacute;vel.</div>
+          <div class="card filled">Vale conferir se ainda tem desconto.</div>
+          <div class="card filled">&Agrave;s vezes aparece um cupom muito bom.</div>
+          <div class="card filled">Confere o pre&ccedil;o antes que mude.</div>
+          <div class="card filled">Pode valer mais a pena hoje.</div>
+          <div class="card filled">O TikTok Shop costuma liberar ofertas por tempo limitado.</div>
+          <div class="card filled">Se ainda estiver na promo&ccedil;&atilde;o, aproveita.</div>
+          <div class="card filled">Vale conferir porque os pre&ccedil;os mudam.</div>
+          <div class="card filled">D&aacute; uma olhada nas ofertas.</div>
+          <div class="card filled">Talvez voc&ecirc; encontre um desconto melhor agora.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">3. ESTOQUE <span>21&ndash;30</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Se ainda tiver dispon&iacute;vel, vale conferir.</div>
+          <div class="card filled">Alguns produtos acabam r&aacute;pido.</div>
+          <div class="card filled">Pode ser que o estoque mude.</div>
+          <div class="card filled">Se encontrar dispon&iacute;vel, aproveita.</div>
+          <div class="card filled">Vale olhar antes de decidir depois.</div>
+          <div class="card filled">O estoque costuma variar.</div>
+          <div class="card filled">N&atilde;o deixa para olhar muito tarde.</div>
+          <div class="card filled">Pode n&atilde;o ficar dispon&iacute;vel por muito tempo.</div>
+          <div class="card filled">Confere enquanto ainda est&aacute; dispon&iacute;vel.</div>
+          <div class="card filled">Vale dar uma olhada agora.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">4. DECIS&Atilde;O <span>31&ndash;40</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Agora a decis&atilde;o &eacute; sua.</div>
+          <div class="card filled">Voc&ecirc; viu o teste, agora escolha.</div>
+          <div class="card filled">Tire suas pr&oacute;prias conclus&otilde;es.</div>
+          <div class="card filled">Espero que esse teste tenha ajudado.</div>
+          <div class="card filled">Agora ficou mais f&aacute;cil decidir.</div>
+          <div class="card filled">O objetivo era mostrar a realidade.</div>
+          <div class="card filled">Quem decide &eacute; voc&ecirc;.</div>
+          <div class="card filled">Pelo menos agora voc&ecirc; sabe como funciona.</div>
+          <div class="card filled">Voc&ecirc; j&aacute; viu tudo.</div>
+          <div class="card filled">Agora &eacute; s&oacute; decidir.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">5. COMUNIDADE <span>41&ndash;50</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Comenta qual produto voc&ecirc; quer ver no pr&oacute;ximo teste.</div>
+          <div class="card filled">Escreve aqui embaixo qual produto merece um teste.</div>
+          <div class="card filled">Me ajuda escolhendo o pr&oacute;ximo produto.</div>
+          <div class="card filled">Qual teste voc&ecirc; quer assistir?</div>
+          <div class="card filled">Deixa sua sugest&atilde;o.</div>
+          <div class="card filled">O pr&oacute;ximo v&iacute;deo pode ser a sua indica&ccedil;&atilde;o.</div>
+          <div class="card filled">Quero testar o que voc&ecirc;s pedirem.</div>
+          <div class="card filled">Qual produto voc&ecirc; tem curiosidade?</div>
+          <div class="card filled">Seu coment&aacute;rio pode virar um v&iacute;deo.</div>
+          <div class="card filled">Me desafia para o pr&oacute;ximo teste.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">6. ENGAJAMENTO <span>51&ndash;60</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Compartilha com quem est&aacute; pensando em comprar isso.</div>
+          <div class="card filled">Salva esse v&iacute;deo para consultar depois.</div>
+          <div class="card filled">Marca aquele amigo que precisa ver esse teste.</div>
+          <div class="card filled">Envia para quem vive pesquisando antes de comprar.</div>
+          <div class="card filled">Se esse v&iacute;deo ajudou, compartilha.</div>
+          <div class="card filled">Salva porque esse teste pode ajudar depois.</div>
+          <div class="card filled">Manda para algu&eacute;m que est&aacute; em d&uacute;vida.</div>
+          <div class="card filled">Compartilha antes que algu&eacute;m compre sem pesquisar.</div>
+          <div class="card filled">Esse v&iacute;deo pode evitar um arrependimento.</div>
+          <div class="card filled">Ajuda outra pessoa a comprar melhor.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">7. IDENTIDADE DO CANAL <span>61&ndash;70</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Aqui a gente testa antes de voc&ecirc; comprar.</div>
+          <div class="card filled">At&eacute; o pr&oacute;ximo teste.</div>
+          <div class="card filled">Nos vemos no pr&oacute;ximo produto.</div>
+          <div class="card filled">Ainda tem muito teste pela frente.</div>
+          <div class="card filled">O pr&oacute;ximo teste pode surpreender.</div>
+          <div class="card filled">Continua acompanhando porque vem muita coisa.</div>
+          <div class="card filled">Aqui a propaganda nunca vence o teste.</div>
+          <div class="card filled">Mais um teste conclu&iacute;do.</div>
+          <div class="card filled">Nos vemos no pr&oacute;ximo review.</div>
+          <div class="card filled">O pr&oacute;ximo produto j&aacute; est&aacute; chegando.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">8. URG&Ecirc;NCIA <span>71&ndash;80</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Se ainda estiver com desconto, eu aproveitaria.</div>
+          <div class="card filled">Vale conferir antes que a oferta termine.</div>
+          <div class="card filled">Os cupons costumam mudar r&aacute;pido.</div>
+          <div class="card filled">Promo&ccedil;&otilde;es nem sempre duram muito.</div>
+          <div class="card filled">Se encontrar um bom pre&ccedil;o, aproveita.</div>
+          <div class="card filled">Melhor conferir agora do que se arrepender depois.</div>
+          <div class="card filled">&Agrave;s vezes o pre&ccedil;o muda de um dia para o outro.</div>
+          <div class="card filled">N&atilde;o custa conferir.</div>
+          <div class="card filled">Vale olhar enquanto o v&iacute;deo est&aacute; no ar.</div>
+          <div class="card filled">Talvez esse seja o melhor momento.</div>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-title">9. CONFIAN&Ccedil;A <span>81&ndash;90</span></div>
+        <div class="subcat-cards">
+          <div class="card filled">Eu mostrei exatamente o que aconteceu.</div>
+          <div class="card filled">Agora voc&ecirc; decide.</div>
+          <div class="card filled">Meu trabalho termina aqui.</div>
+          <div class="card filled">O teste respondeu.</div>
+          <div class="card filled">N&atilde;o precisa acreditar em mim, basta rever o v&iacute;deo.</div>
+          <div class="card filled">O importante era mostrar a realidade.</div>
+          <div class="card filled">Espero ter ajudado.</div>
+          <div class="card filled">Essa foi minha experi&ecirc;ncia.</div>
+          <div class="card filled">O resto &eacute; com voc&ecirc;.</div>
+          <div class="card filled">At&eacute; o pr&oacute;ximo teste.</div>
+        </div>
+      </div>
+
+      <div class="subcat highlight" style="border-color:#264653;">
+        <div class="subcat-title">ASSINATURA DO M&Eacute;TODO <span>91&ndash;100</span></div>
+        <div class="subcat-cards highlight-cards" style="border-color:#264653;">
+          <div class="card filled" style="border-color:#264653;">Aqui a gente testa antes de voc&ecirc; comprar.</div>
+          <div class="card filled" style="border-color:#264653;">Porque propaganda vende... teste convence.</div>
+          <div class="card filled" style="border-color:#264653;">Comprar no escuro nunca mais.</div>
+          <div class="card filled" style="border-color:#264653;">Teste vale mais que promessa.</div>
+          <div class="card filled" style="border-color:#264653;">O pr&oacute;ximo teste j&aacute; est&aacute; chegando.</div>
+          <div class="card filled" style="border-color:#264653;">A gente se v&ecirc; no pr&oacute;ximo produto.</div>
+          <div class="card filled" style="border-color:#264653;">At&eacute; o pr&oacute;ximo teste real.</div>
+          <div class="card filled" style="border-color:#264653;">Aqui quem fala &eacute; o teste.</div>
+          <div class="card filled" style="border-color:#264653;">Menos propaganda. Mais pr&aacute;tica.</div>
+          <div class="card filled" style="border-color:#264653;">O Cara Testou&trade;.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- top nav -->
+<div class="topnav">
+  <div class="topnav-brand"><span>O</span> Cara Testou</div>
+  <div style="display:flex;align-items:center;gap:.5rem;">
+    <div class="topnav-modes">
+      <a class="topnav-btn active">MODELO</a>
+      <a href="produtos.html" class="topnav-btn">PRODUTOS</a>
+      <a href="roteiros-criados.html" class="topnav-btn">CONTEUDOS</a>
+    </div>
+    <button class="topnav-toggle" id="topToggleBtn" onclick="togglePanel()">+ Roteiro</button>
+  </div>
+</div>
+
+<!-- floating panel -->
+<div class="panel" id="panel">
+  <div class="panel-header">
+    <div class="panel-title"><span>O</span> Criador</div>
+    <button class="panel-close" onclick="closePanel()">&times;</button>
+  </div>
+  <div class="panel-body">
+    <div class="counter" id="counter"></div>
+    <div id="panelList"></div>
+  </div>
+  <div class="panel-footer">
+    <button class="panel-btn btn-copy" onclick="copyRoteiro()">Copiar</button>
+    <button class="panel-btn btn-save" onclick="salvarRoteiro()">Salvar</button>
+    <button class="panel-btn btn-reset" onclick="resetAll()">Limpar</button>
+  </div>
+</div>
+
+<!-- modal salvar roteiro -->
+<div class="modal-overlay" id="saveModal" onclick="if(event.target===this)closeSaveModal()">
+  <div class="modal modal-save" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">Salvar Roteiro</div>
+      <button class="modal-close" onclick="closeSaveModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <label style="display:block;font-size:.82rem;font-weight:600;margin-bottom:.3rem;">Nome do roteiro</label>
+      <input type="text" id="saveNome" style="width:100%;padding:.5rem .7rem;border:1px solid #ddd;border-radius:8px;font-size:.85rem;font-family:inherit;outline:none;margin-bottom:1rem;box-sizing:border-box;" maxlength="100">
+      <label style="display:block;font-size:.82rem;font-weight:600;margin-bottom:.3rem;">Vincular produto</label>
+      <select id="saveProduto" style="width:100%;padding:.5rem .7rem;border:1px solid #ddd;border-radius:8px;font-size:.85rem;font-family:inherit;outline:none;margin-bottom:.3rem;box-sizing:border-box;background:#fff;">
+        <option value="">Nenhum (apenas roteiro)</option>
+      </select>
+      <div style="font-size:.75rem;color:#999;margin-bottom:.5rem;">Opcional. Selecione um produto para escolher cards dele no roteiro.</div>
+      <div id="prodCardSelector" style="display:none;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-save-modal" onclick="confirmSave()">Salvar</button>
+      <button class="btn-cancel-modal" onclick="closeSaveModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.5); z-index: 300;
+  justify-content: center; align-items: center;
+}
+.modal-overlay.open { display: flex; }
+
+.modal-overlay .modal {
+  background: #fff; border-radius: 14px; width: 100%;
+  max-width: 420px; box-shadow: 0 10px 40px rgba(0,0,0,.25);
+  animation: modalIn .2s ease;
+}
+.modal-overlay .modal-save { max-width: 560px; max-height: 85vh; display: flex; flex-direction: column; }
+.modal-overlay .modal-save .modal-body { overflow-y: auto; flex: 1; }
+@keyframes modalIn { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
+
+.modal-overlay .modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.3rem .5rem;
+}
+.modal-overlay .modal-title { font-size: 1rem; font-weight: 800; }
+.modal-overlay .modal-close {
+  background: none; border: none; font-size: 1.4rem; color: #999; cursor: pointer; line-height: 1;
+}
+.modal-overlay .modal-close:hover { color: #1a1a1a; }
+.modal-overlay .modal-body { padding: .5rem 1.3rem 1rem; }
+.modal-overlay .modal-footer { padding: 0 1.3rem 1rem; display: flex; gap: .5rem; }
+.btn-save-modal {
+  flex: 1; padding: .55rem; border: none; border-radius: 8px;
+  font-weight: 700; font-size: .85rem; cursor: pointer; font-family: inherit;
+  background: #e63946; color: #fff;
+}
+.btn-save-modal:hover { opacity: .85; }
+.btn-cancel-modal {
+  flex: 1; padding: .55rem; border: none; border-radius: 8px;
+  font-weight: 700; font-size: .85rem; cursor: pointer; font-family: inherit;
+  background: #eee; color: #666;
+}
+.btn-cancel-modal:hover { background: #ddd; }
+
+/* product card selector */
+.prod-card-group { margin-bottom: .6rem; }
+.prod-card-header {
+  font-weight: 700; font-size: .78rem; color: #555;
+  margin-bottom: .25rem; padding-bottom: .15rem;
+  border-bottom: 1px solid #eee;
+}
+.prod-card-items { display: flex; flex-wrap: wrap; gap: .25rem; }
+.prod-card-tag {
+  background: #f5f5f5; border: 1px solid #eee; border-radius: 6px;
+  padding: .25rem .5rem; font-size: .72rem; color: #555; cursor: pointer;
+  transition: all .15s; user-select: none; line-height: 1.3;
+}
+.prod-card-tag:hover { border-color: #e63946; color: #e63946; }
+.prod-card-tag.selected { background: #e63946; color: #fff; border-color: #e63946; }
+</style>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
+<script>
+// === configuração das seções (ordem do sidebar) ===
+const SECTIONS = [
+  { id: 'publico',   label: 'Público',         phase: 'Estratégia', emoji: '👥' },
+  { id: 'tema',      label: 'Tema',            phase: 'Estratégia', emoji: '📋' },
+  { id: 'tensao',    label: 'Tensão',          phase: 'Estratégia', emoji: '⚡' },
+  { id: 'objetivo',  label: 'Objetivo',        phase: 'Estratégia', emoji: '🎯' },
+  { id: 'gancho',    label: 'Gancho',          phase: '1 — Atenção', emoji: '🪝' },
+  { id: 'curiosidade', label: 'Curiosidade',   phase: '2 — Interesse', emoji: '🤔' },
+  { id: 'tema-central', label: 'Tema Central',  phase: '2 — Interesse', emoji: '📌' },
+  { id: 'problema',  label: 'Problema',        phase: '3 — Prova', emoji: '❌' },
+  { id: 'consequencia', label: 'Consequência', phase: '3 — Prova', emoji: '💥' },
+  { id: 'solucao',   label: 'Solução',         phase: '3 — Prova', emoji: '✅' },
+  { id: 'demonstracao', label: 'Demonstração', phase: '3 — Prova', emoji: '🛠️' },
+  { id: 'wow',       label: 'Momento Wow',     phase: '3 — Prova', emoji: '😮' },
+  { id: 'transformacao', label: 'Transformação', phase: '3 — Prova', emoji: '🌟' },
+  { id: 'veredito',  label: 'Veredito',        phase: '4 — Decisão', emoji: '🏆' },
+  { id: 'cta',       label: 'CTA',             phase: '4 — Decisão', emoji: '👇' },
+]
+
+const selected = {}
+let editingRoteiroId = null
+let _prodCache = []
+
+function renderPanel() {
+  const list = document.getElementById('panelList')
+  let filled = 0
+  list.innerHTML = SECTIONS.map(s => {
+    const text = selected[s.id]
+    if (text) filled++
+    const cls = text ? 'selected' : 'empty'
+    const num = s.emoji || (s.phase === 'Estratégia' ? '▸' : SECTIONS.indexOf(s) - 3)
+    return `<div class="m-item"><span class="m-num">${num}</span><span class="m-label">${s.label}</span><span class="m-text ${cls}">${text || '—'}</span></div>`
+  }).join('')
+  document.getElementById('counter').innerHTML = `<span>${filled}</span> de ${SECTIONS.length} etapas preenchidas`
+}
+
+function selectCard(sectionId, text) {
+  const prev = selected[sectionId]
+  if (prev) {
+    document.querySelectorAll(`.card[data-section="${sectionId}"]`).forEach(c => {
+      if (c.dataset.value === prev) c.classList.remove('selected')
+    })
+  }
+  if (prev === text) {
+    delete selected[sectionId]
+    renderPanel()
+    return
+  }
+  selected[sectionId] = text
+  document.querySelectorAll(`.card[data-section="${sectionId}"]`).forEach(c => {
+    if (c.dataset.value === text) c.classList.add('selected')
+  })
+  renderPanel()
+}
+
+function toggleCards(btn) {
+  const grid = btn.nextElementSibling
+  grid.classList.toggle('open')
+  btn.textContent = grid.classList.contains('open') ? 'Ocultar variações' : 'Mostrar variações'
+}
+
+function togglePanel() {
+  const panel = document.getElementById('panel')
+  const btn = document.getElementById('topToggleBtn')
+  panel.classList.toggle('open')
+  btn.textContent = panel.classList.contains('open') ? 'Fechar' : '+ Roteiro'
+  renderPanel()
+}
+
+function closePanel() {
+  document.getElementById('panel').classList.remove('open')
+}
+
+function esc(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+function resetAll() {
+  if (!confirm('Limpar todas as seleções?')) return
+  Object.keys(selected).forEach(k => delete selected[k])
+  document.querySelectorAll('.card.selected').forEach(c => c.classList.remove('selected'))
+  renderPanel()
+}
+
+function salvarRoteiro() {
+  const filled = Object.keys(selected).length
+  if (filled === 0) { alert('Selecione pelo menos um card antes de salvar.'); return }
+
+  const isEdit = editingRoteiroId !== null
+  const modalTitle = document.querySelector('#saveModal .modal-title')
+  const saveBtn = document.querySelector('.btn-save-modal')
+  modalTitle.textContent = isEdit ? 'Editar Roteiro' : 'Salvar Roteiro'
+  saveBtn.textContent = isEdit ? 'Atualizar' : 'Salvar'
+
+  // reset product card selector
+  document.getElementById('prodCardSelector').style.display = 'none'
+  document.getElementById('prodCardSelector').innerHTML = ''
+  // populate product dropdown
+  const sel = document.getElementById('saveProduto')
+  sel.innerHTML = '<option value="">Nenhum (apenas roteiro)</option>'
+  let selectedProdId = null
+  let selectedProdCards = null
+  let savedNome = ''
+  if (isEdit) {
+    const roteiros = _roteirosCache
+    const r = roteiros.find(x => x.id === editingRoteiroId)
+    if (r) {
+      savedNome = r.nome
+      selectedProdId = r.produtoId || null
+      selectedProdCards = r.selectedProdCards || null
+    }
+  }
+  const produtos = _prodCache || []
+  produtos.forEach(p => {
+      const opt = document.createElement('option')
+      opt.value = p.id
+      opt.textContent = p.nome + (p.categoria ? ' (' + p.categoria + ')' : '')
+      if (selectedProdId === p.id) opt.selected = true
+      sel.appendChild(opt)
+    })
+  document.getElementById('saveNome').value = savedNome || `Roteiro ${new Date().toLocaleDateString('pt-BR')}`
+  document.getElementById('saveNome').value = savedNome || `Roteiro ${new Date().toLocaleDateString('pt-BR')}`
+  document.getElementById('saveModal').classList.add('open')
+  setTimeout(() => document.getElementById('saveNome').focus(), 100)
+
+  // if editing with product, load product cards and restore selections
+  if (selectedProdId) {
+    setTimeout(() => {
+      onProdutoChange()
+      if (selectedProdCards) {
+        const tags = document.querySelectorAll('#prodCardSelector .prod-card-tag')
+        tags.forEach(tag => {
+          const catEl = tag.closest('.prod-card-group').querySelector('.prod-card-header')
+          const cat = catEl ? catEl.textContent.trim() : ''
+          const text = tag.textContent.trim()
+          const catItems = selectedProdCards[cat]
+          if (catItems && catItems.indexOf(text) !== -1) {
+            tag.classList.add('selected')
+          }
+        })
+      }
+    }, 50)
+  }
+}
+
+function closeSaveModal() {
+  document.getElementById('saveModal').classList.remove('open')
+}
+
+function onProdutoChange() {
+  const container = document.getElementById('prodCardSelector')
+  const sel = document.getElementById('saveProduto')
+  const val = sel.value
+  if (!val) { container.style.display = 'none'; container.innerHTML = ''; return }
+
+  const p = _prodCache.find(x => x.id === val)
+  if (!p || !p.cards || p.cards.length === 0) { container.style.display = 'none'; return }
+
+  let html = '<div style="font-size:.78rem;font-weight:700;color:#888;margin-bottom:.4rem;">Cards dispon&iacute;veis (clique para selecionar):</div>'
+  p.cards.forEach(c => {
+    const items = c.items || []
+    if (items.length === 0) return
+    html += '<div class="prod-card-group"><div class="prod-card-header">' + esc(c.cat) + '</div><div class="prod-card-items">'
+    items.forEach(item => {
+      html += '<span class="prod-card-tag" onclick="toggleProdCard(this)">' + esc(item) + '</span>'
+    })
+    html += '</div></div>'
+  })
+  container.innerHTML = html
+  container.style.display = 'block'
+}
+
+function toggleProdCard(el) {
+  el.classList.toggle('selected')
+}
+
+function getSelectedProdCards() {
+  const tags = document.querySelectorAll('#prodCardSelector .prod-card-tag.selected')
+  const map = {}
+  tags.forEach(t => {
+    const cat = t.closest('.prod-card-group').querySelector('.prod-card-header').textContent.trim()
+    const text = t.textContent.trim()
+    if (!map[cat]) map[cat] = []
+    map[cat].push(text)
+  })
+  return map
+}
+
+let _roteirosCache = []
+
+async function confirmSave() {
+  const nome = document.getElementById('saveNome').value.trim()
+  if (!nome) { alert('Digite um nome para o roteiro.'); return }
+  const produtoId = document.getElementById('saveProduto').value || null
+  const selectedProdCards = getSelectedProdCards()
+  const isEdit = editingRoteiroId !== null
+  const isEditObj = isEdit ? _roteirosCache.find(x => x.id === editingRoteiroId) : null
+
+  const data = {
+    nome: nome,
+    selections: { ...selected },
+    produtoId: produtoId,
+    selectedProdCards: Object.keys(selectedProdCards).length > 0 ? selectedProdCards : null
+  }
+
+  try {
+    const newId = await saveScript({ ...data, id: editingRoteiroId || null })
+    if (isEditObj) {
+      const idx = _roteirosCache.findIndex(x => x.id === editingRoteiroId)
+      if (idx >= 0) _roteirosCache[idx] = { ..._roteirosCache[idx], ...data }
+    } else {
+      _roteirosCache.unshift({ id: newId, ...data, data: new Date().toISOString() })
+    }
+  } catch(e) { alert('Erro ao salvar: ' + e.message); return }
+
+  editingRoteiroId = null
+  closeSaveModal()
+  closePanel()
+
+  if (isEdit) { window.location.href = 'roteiros-criados.html'; return }
+
+  const btn = document.querySelector('.btn-save')
+  btn.textContent = 'Salvo!'
+  btn.classList.add('saved')
+  setTimeout(() => { btn.textContent = 'Salvar'; btn.classList.remove('saved') }, 2000)
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('saveModal').classList.contains('open')) closeSaveModal()
+})
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('saveProduto').addEventListener('change', onProdutoChange)
+  document.querySelectorAll('.card.filled').forEach(c => {
+    c.classList.add('clickable')
+    const section = c.closest('[data-section]')
+    if (section) {
+      c.dataset.section = section.dataset.section
+      c.dataset.value = c.textContent.trim()
+      c.addEventListener('click', () => selectCard(c.dataset.section, c.dataset.value))
+    }
+  })
+
+})
+
+// init
+async function initModelo() {
+  try { _prodCache = await loadProducts(); _roteirosCache = await loadScripts() } catch(e) {}
+  const session = await getSession()
+  if (!session) injectAuthUI()
+  else {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('edit')) {
+      const r = _roteirosCache.find(x => x.id === params.get('edit'))
+      if (r) {
+        editingRoteiroId = params.get('edit')
+        Object.keys(r.selections).forEach(sectionId => {
+          const text = r.selections[sectionId]
+          document.querySelectorAll(`.card[data-section="${sectionId}"]`).forEach(c => {
+            if (c.dataset.value === text) selectCard(sectionId, text)
+          })
+        })
+        togglePanel()
+      }
+    }
+  }
+}
+
+window.onAuthReady = async function() {
+  try { _prodCache = await loadProducts(); _roteirosCache = await loadScripts() } catch(e) {}
+}
+
+initModelo()
+</script>
+
+</body>
+</html>

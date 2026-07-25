@@ -1,0 +1,3 @@
+// Supabase configuration
+window.SUPABASE_URL = 'https://kkgbvgobvwewbethhhnf.supabase.co'
+window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrZ2J2Z29idndld2JldGhoaG5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzIzMzMsImV4cCI6MjEwMDU0ODMzM30.0bVghZ0duVHnSCVsq02ASWra415-OwyED6Fnp85d6yQ'

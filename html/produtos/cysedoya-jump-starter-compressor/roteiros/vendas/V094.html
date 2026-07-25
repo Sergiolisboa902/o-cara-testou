@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>V094 | O CARA TESTOU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;900&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--preto:#111;--preto-claro:#1a1a1a;--preto-medio:#222;--amarelo:#FFC20E;--cinza:#8C8C8C;--branco:#FFF}
+body{font-family:'Inter',sans-serif;background:var(--preto);color:var(--branco);line-height:1.6}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.5}
+.topbar{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,#0a0a0a,var(--preto));border-bottom:2px solid var(--amarelo);padding:0.75rem 1.5rem;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap}
+.topbar .back{display:inline-flex;align-items:center;gap:0.3rem;background:var(--preto-medio);border:1px solid #333;border-radius:100px;padding:0.35rem 0.9rem;color:var(--cinza);text-decoration:none;font-size:0.75rem;font-weight:600;transition:all 0.3s}
+.topbar .back:hover{border-color:var(--amarelo);color:var(--amarelo)}
+.topbar .badge{margin-left:auto;font-family:'Anton',sans-serif;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;background:var(--amarelo);color:var(--preto);padding:0.25rem 0.5rem;border-radius:4px}
+.container{max-width:960px;margin:0 auto;padding:2rem 1.5rem 4rem}
+/* HEADER DO ROTEIRO */
+.roteiro-header{margin-bottom:2rem}
+.roteiro-header .agente{font-size:0.7rem;color:var(--cinza);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.roteiro-header h1{font-family:'Anton',sans-serif;font-size:2rem;text-transform:uppercase;color:var(--branco);letter-spacing:-1px;line-height:1.1;margin:0.3rem 0}
+.roteiro-header h1 span{color:var(--amarelo)}
+.roteiro-header .sub{color:var(--cinza);font-size:0.85rem;margin-top:0.5rem}
+/* INFO BAR */
+.info-bar{display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:2rem}
+.info-item{background:var(--preto-claro);border:1px solid #222;border-radius:8px;padding:0.6rem 1rem;flex:1;min-width:120px}
+.info-item .label{font-size:0.6rem;color:var(--cinza);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.info-item .value{font-size:0.85rem;font-weight:600;margin-top:0.15rem;color:var(--branco)}
+.info-item .value.agent{color:var(--amarelo)}
+/* TABELA */
+.tabela-scroll{overflow-x:auto;margin-bottom:2rem}
+table.roteiro{width:100%;border-collapse:collapse;font-size:0.85rem;min-width:640px}
+table.roteiro thead th{background:var(--preto-medio);color:var(--amarelo);font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;padding:0.6rem 0.75rem;text-align:left;font-weight:600;border-bottom:2px solid var(--amarelo)}
+table.roteiro tbody td{padding:0.7rem 0.75rem;border-bottom:1px solid #1a1a1a;vertical-align:top}
+table.roteiro tbody tr:hover{background:rgba(255,194,14,0.03)}
+table.roteiro tbody tr:last-child td{border-bottom:1px solid #333}
+table.roteiro .col-tempo{white-space:nowrap;font-family:'Roboto Mono',monospace;font-size:0.8rem;color:var(--amarelo);font-weight:600;width:60px}
+table.roteiro .col-tempo .bar{display:block;width:100%;height:3px;background:#222;border-radius:2px;margin-top:4px;overflow:hidden}
+table.roteiro .col-tempo .bar-fill{height:100%;background:var(--amarelo);border-radius:2px}
+table.roteiro .col-cena{color:#999;width:25%}
+table.roteiro .col-cena strong{color:var(--branco);font-weight:600}
+table.roteiro .col-audio{color:#ccc;width:35%;line-height:1.5}
+table.roteiro .col-audio .destaque{color:var(--amarelo);font-weight:600}
+table.roteiro .col-texto{color:var(--cinza);width:20%}
+table.roteiro .tag{display:inline-block;font-size:0.65rem;background:rgba(255,194,14,0.1);color:var(--amarelo);padding:0.15rem 0.5rem;border-radius:100px;border:1px solid rgba(255,194,14,0.2);margin:0.15rem}
+/* SECTION */
+.section{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #1a1a1a}
+.section-title{font-family:'Anton',sans-serif;font-size:1rem;text-transform:uppercase;color:var(--amarelo);letter-spacing:-0.3px;margin-bottom:0.75rem}
+.obs-box{background:var(--preto-claro);border:1px solid #222;border-radius:8px;padding:1rem 1.25rem;font-size:0.85rem;color:#aaa;line-height:1.7}
+.obs-box li{margin-left:1.25rem;padding:0.15rem 0}
+/* TIMELINE VISUAL */
+.timeline-visual{display:flex;gap:0.25rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.timeline-seg{flex:1;min-width:60px;text-align:center;padding:0.4rem 0.3rem;border-radius:6px;font-size:0.6rem;font-weight:600;color:var(--preto);position:relative}
+.timeline-seg.cta{background:var(--amarelo)}
+.timeline-seg.demo{background:#3b82f6}
+.timeline-seg.unbox{background:#8b5cf6}
+.timeline-seg.veredito{background:var(--amarelo)}
+.timeline-seg.analise{background:#22c55e}
+.timeline-seg.intro{background:#6366f1}
+.timeline-seg.dica{background:#f59e0b}
+.timeline-seg.comparacao{background:#ec4899}
+.timeline-seg.pergunta{background:#14b8a6}
+.timeline-seg span{display:block;font-size:0.5rem;text-transform:uppercase;margin-top:0.15rem;opacity:0.8}
+.footer{text-align:center;font-size:0.7rem;color:#444;margin-top:3rem;padding-top:1.5rem;border-top:1px solid #1a1a1a}
+</style>
+</head>
+<body>
+<div class="topbar">
+<a class="back" href="../../../../index.html">&larr; Dashboard</a>
+<a class="back" href="../../produto.html" style="margin-left:0.5rem;">Produto</a>
+<a class="back" href="../../conteudo/conteudo.html" style="margin-left:0.5rem;">Conteudo</a>
+<span class="badge">V094</span>
+</div>
+<div class="container">
+<div class='roteiro-header'><div class='agente'>A9 - Roteirista de Vendas</div><h1>A9 — Cysedoya Q18B | V094 — Comparacao vs Tradicional</h1><div class='sub'>Cysedoya Arrancador de Bateria com Compressor de Ar Portatil Q18B</div></div><div class='info-bar'><div class='info-item'><div class='label'>Duracao</div><div class='value'>60 segundos</div></div><div class='info-item'><div class='label'>Formato</div><div class='value'>TikTok / Reels</div></div><div class='info-item'><div class='label'>Agente</div><div class='value agent'>A9 - Roteirista de Vendas</div></div></div><div class='timeline-visual'><div class='timeline-seg intro' style='flex:3'>3s<span>Apresentador direto ...</span></div><div class='timeline-seg demo' style='flex:5'>5s<span>Cena ou gesto repres...</span></div><div class='timeline-seg demo' style='flex:4'>4s<span>Close no produto, se...</span></div><div class='timeline-seg demo' style='flex:23'>23s<span>Teste pratico do pro...</span></div><div class='timeline-seg demo' style='flex:10'>10s<span>Antes/Depois ou cont...</span></div><div class='timeline-seg intro' style='flex:10'>10s<span>Apresentador olhando...</span></div><div class='timeline-seg dica' style='flex:5'>5s<span>Apontar ou indicar l...</span></div></div><div class='tabela-scroll'><table class='roteiro'><thead><tr><th>Tempo</th><th>Cena</th><th>Audio (Fala)</th><th>Texto na Tela</th></tr></thead><tbody><tr><td class='col-tempo'>0s-3s<div class='bar'><div class='bar-fill' style='width:5%'></div></div></td><td class='col-cena'>Apresentador direto pra camera, produto na mao</td><td class='col-audio'>Todo mundo ta comprando esse arrancador portatil. Mas sera que presta ou e mais uma tranqueira?</td><td class='col-texto'><span class='tag'>**Curiosidade**</span></td></tr><tr><td class='col-tempo'>3s-8s<div class='bar'><div class='bar-fill' style='width:8%'></div></div></td><td class='col-cena'>Cena ou gesto representando o problema</td><td class='col-audio'>Precisou de uma chupeta e nao tem cabo. Pedir ajuda pros outros, ficar dependendo de estranho.</td><td class='col-texto'><span class='tag'>**O PROBLEMA**</span></td></tr><tr><td class='col-tempo'>8s-12s<div class='bar'><div class='bar-fill' style='width:7%'></div></div></td><td class='col-cena'>Close no produto, segurando com confianca. Mostrar as 4 funcoes</td><td class='col-audio'>4 em 1: arranca bateria 12V, enche pneu ate 150 PSI, carrega celular como power bank 8000mAh e ilumina com lanterna LED + SOS. E os grampos sao inteligentes — conecta reverso e nao acontece nada. Seguranca primeiro.</td><td class='col-texto'><span class='tag'>**Cysedoya Q18B — 4 EM 1**</span></td></tr><tr><td class='col-tempo'>12s-35s<div class='bar'><div class='bar-fill' style='width:38%'></div></div></td><td class='col-cena'>Teste pratico do produto em uso real. Plano detalhe</td><td class='col-audio'>Grampos inteligentes: conectar direto, reverso, o circuito protege. Indicador vermelho vs verde.</td><td class='col-texto'><span class='tag'>**FUNCAO + DADO**</span></td></tr><tr><td class='col-tempo'>35s-45s<div class='bar'><div class='bar-fill' style='width:17%'></div></div></td><td class='col-cena'>Antes/Depois ou contexto de uso. Apresentador olhando</td><td class='col-audio'>Antes: esperar 2h pelo guincho, perder o compromisso. Depois: resolveu em 3 minutos e foi embora.</td><td class='col-texto'><span class='tag'>**A TRANSFORMACAO**</span></td></tr><tr><td class='col-tempo'>45s-55s<div class='bar'><div class='bar-fill' style='width:17%'></div></div></td><td class='col-cena'>Apresentador olhando pra camera, produto na mao seguro</td><td class='col-audio'>Eu compraria sem pensar duas vezes. Principalmente quem viaja muito.</td><td class='col-texto'><span class='tag'>**SELO: VALE**</span></td></tr><tr><td class='col-tempo'>55s-60s<div class='bar'><div class='bar-fill' style='width:8%'></div></div></td><td class='col-cena'>Apontar ou indicar link. Tom natural, sem pressao</td><td class='col-audio'>Da uma olhada no link porque o valor promocional e limitado.</td><td class='col-texto'><span class='tag'>**LINK NA VITRINE**</span></td></tr></tbody></table></div><div class='section'><div class='section-title'>Observacoes de Producao</div><div class='obs-box'><ul><li><strong>Foco do video:</strong> Comparacao vs Tradicional</li><li><strong>Teste principal:</strong> T7</li><li>GANCHO deve ser entregue com energia — e o primeiro frame, sem introducao</li><li>Na PROMESSA, mostrar claramente as 4 funcoes do produto antes de focar na demonstracao</li><li>TESTE e a parte principal do video — caprichar nos takes de detalhe</li><li>Nao falar especificacoes tecnicas na TRANSFORMACAO. Falar o que muda na vida</li><li>VEREDITO: tom sincero, de amigo. Nao parecer vendedor</li><li>CTA: consequencia natural do teste, nao ordem de compra</li><li><strong>Texto na tela:</strong> usar <strong>Anton</strong> para titulos, <strong>Inter</strong> para corpo, <strong>Roboto Mono</strong> para numeros</li><li>Revisar se as 4 funcoes foram mencionadas na PROMESSA</li><li>[ ] O gancho faz alguem parar de rolar?</li><li>[ ] O problema gera identificacao com o publico?</li><li>[ ] As 4 funcoes foram citadas na promessa?</li><li>[ ] O teste e visual e claro?</li><li>[ ] O video mostra transformacao antes/depois?</li><li>[ ] Falei mais de beneficios do que de especificacoes?</li><li>[ ] O veredito parece honesto e sincero?</li><li>[ ] O CTA e consequencia natural do teste?</li></ul></div></div>
+<div class="footer">O CARA TESTOU &mdash; Roteiro gerado pelo sistema de agentes</div>
+</div>
+</body>
+</html>

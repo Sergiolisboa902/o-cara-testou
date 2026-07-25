@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>R088 | O CARA TESTOU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;900&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--preto:#111;--preto-claro:#1a1a1a;--preto-medio:#222;--amarelo:#FFC20E;--cinza:#8C8C8C;--branco:#FFF}
+body{font-family:'Inter',sans-serif;background:var(--preto);color:var(--branco);line-height:1.6}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.5}
+.topbar{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,#0a0a0a,var(--preto));border-bottom:2px solid var(--amarelo);padding:0.75rem 1.5rem;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap}
+.topbar .back{display:inline-flex;align-items:center;gap:0.3rem;background:var(--preto-medio);border:1px solid #333;border-radius:100px;padding:0.35rem 0.9rem;color:var(--cinza);text-decoration:none;font-size:0.75rem;font-weight:600;transition:all 0.3s}
+.topbar .back:hover{border-color:var(--amarelo);color:var(--amarelo)}
+.topbar .badge{margin-left:auto;font-family:'Anton',sans-serif;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;background:var(--amarelo);color:var(--preto);padding:0.25rem 0.5rem;border-radius:4px}
+.container{max-width:960px;margin:0 auto;padding:2rem 1.5rem 4rem}
+/* HEADER DO ROTEIRO */
+.roteiro-header{margin-bottom:2rem}
+.roteiro-header .agente{font-size:0.7rem;color:var(--cinza);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.roteiro-header h1{font-family:'Anton',sans-serif;font-size:2rem;text-transform:uppercase;color:var(--branco);letter-spacing:-1px;line-height:1.1;margin:0.3rem 0}
+.roteiro-header h1 span{color:var(--amarelo)}
+.roteiro-header .sub{color:var(--cinza);font-size:0.85rem;margin-top:0.5rem}
+/* INFO BAR */
+.info-bar{display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:2rem}
+.info-item{background:var(--preto-claro);border:1px solid #222;border-radius:8px;padding:0.6rem 1rem;flex:1;min-width:120px}
+.info-item .label{font-size:0.6rem;color:var(--cinza);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.info-item .value{font-size:0.85rem;font-weight:600;margin-top:0.15rem;color:var(--branco)}
+.info-item .value.agent{color:var(--amarelo)}
+/* TABELA */
+.tabela-scroll{overflow-x:auto;margin-bottom:2rem}
+table.roteiro{width:100%;border-collapse:collapse;font-size:0.85rem;min-width:640px}
+table.roteiro thead th{background:var(--preto-medio);color:var(--amarelo);font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;padding:0.6rem 0.75rem;text-align:left;font-weight:600;border-bottom:2px solid var(--amarelo)}
+table.roteiro tbody td{padding:0.7rem 0.75rem;border-bottom:1px solid #1a1a1a;vertical-align:top}
+table.roteiro tbody tr:hover{background:rgba(255,194,14,0.03)}
+table.roteiro tbody tr:last-child td{border-bottom:1px solid #333}
+table.roteiro .col-tempo{white-space:nowrap;font-family:'Roboto Mono',monospace;font-size:0.8rem;color:var(--amarelo);font-weight:600;width:60px}
+table.roteiro .col-tempo .bar{display:block;width:100%;height:3px;background:#222;border-radius:2px;margin-top:4px;overflow:hidden}
+table.roteiro .col-tempo .bar-fill{height:100%;background:var(--amarelo);border-radius:2px}
+table.roteiro .col-cena{color:#999;width:25%}
+table.roteiro .col-cena strong{color:var(--branco);font-weight:600}
+table.roteiro .col-audio{color:#ccc;width:35%;line-height:1.5}
+table.roteiro .col-audio .destaque{color:var(--amarelo);font-weight:600}
+table.roteiro .col-texto{color:var(--cinza);width:20%}
+table.roteiro .tag{display:inline-block;font-size:0.65rem;background:rgba(255,194,14,0.1);color:var(--amarelo);padding:0.15rem 0.5rem;border-radius:100px;border:1px solid rgba(255,194,14,0.2);margin:0.15rem}
+/* SECTION */
+.section{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #1a1a1a}
+.section-title{font-family:'Anton',sans-serif;font-size:1rem;text-transform:uppercase;color:var(--amarelo);letter-spacing:-0.3px;margin-bottom:0.75rem}
+.obs-box{background:var(--preto-claro);border:1px solid #222;border-radius:8px;padding:1rem 1.25rem;font-size:0.85rem;color:#aaa;line-height:1.7}
+.obs-box li{margin-left:1.25rem;padding:0.15rem 0}
+/* TIMELINE VISUAL */
+.timeline-visual{display:flex;gap:0.25rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.timeline-seg{flex:1;min-width:60px;text-align:center;padding:0.4rem 0.3rem;border-radius:6px;font-size:0.6rem;font-weight:600;color:var(--preto);position:relative}
+.timeline-seg.cta{background:var(--amarelo)}
+.timeline-seg.demo{background:#3b82f6}
+.timeline-seg.unbox{background:#8b5cf6}
+.timeline-seg.veredito{background:var(--amarelo)}
+.timeline-seg.analise{background:#22c55e}
+.timeline-seg.intro{background:#6366f1}
+.timeline-seg.dica{background:#f59e0b}
+.timeline-seg.comparacao{background:#ec4899}
+.timeline-seg.pergunta{background:#14b8a6}
+.timeline-seg span{display:block;font-size:0.5rem;text-transform:uppercase;margin-top:0.15rem;opacity:0.8}
+.footer{text-align:center;font-size:0.7rem;color:#444;margin-top:3rem;padding-top:1.5rem;border-top:1px solid #1a1a1a}
+</style>
+</head>
+<body>
+<div class="topbar">
+<a class="back" href="../../../../index.html">&larr; Dashboard</a>
+<a class="back" href="../../produto.html" style="margin-left:0.5rem;">Produto</a>
+<a class="back" href="../../conteudo/conteudo.html" style="margin-left:0.5rem;">Conteudo</a>
+<span class="badge">R088</span>
+</div>
+<div class="container">
+<div class='roteiro-header'><div class='agente'>Rapido - 6 etapas (GANCHO, PROBLEMA, PROMESSA 4EM1, TESTE, RESULTADO, CTA)</div><h1>R088 - Carro Antigo / Bateria Fraca - Cysedoya Q18B (Rapido)</h1><div class='sub'>Cysedoya Jump Starter Q18B - Compressor + Power Bank + Lanterna LED</div></div><div class='info-bar'><div class='info-item'><div class='label'>Duracao</div><div class='value'>45 segundos</div></div><div class='info-item'><div class='label'>Formato</div><div class='value'>TikTok / Reels</div></div><div class='info-item'><div class='label'>Agente</div><div class='value agent'>Rapido - 6 etapas (GANCHO, PROBLEMA, PROMESSA 4EM1, TESTE, RESULTADO, CTA)</div></div></div><div class='timeline-visual'><div class='timeline-seg intro' style='flex:5'>5s<span>**Abertura</span></div><div class='timeline-seg intro' style='flex:5'>5s<span>Apresentador fala di...</span></div><div class='timeline-seg demo' style='flex:6'>6s<span>Apresentador mostra ...</span></div><div class='timeline-seg demo' style='flex:19'>19s<span>**Teste</span></div><div class='timeline-seg intro' style='flex:5'>5s<span>Apresentador volta p...</span></div><div class='timeline-seg intro' style='flex:5'>5s<span>Apresentador aponta ...</span></div></div><div class='tabela-scroll'><table class='roteiro'><thead><tr><th>Tempo</th><th>Cena</th><th>Audio (Fala)</th><th>Texto na Tela</th></tr></thead><tbody><tr><td class='col-tempo'>0s-5s<div class='bar'><div class='bar-fill' style='width:11%'></div></div></td><td class='col-cena'><strong>Abertura.</strong> Produto ja na mao. Apresentador na garagem, fundo com ferramentas. Corte seco, sem intro. Energia de amigo que acabou de chegar.</td><td class='col-audio'>Nao compre esse negocio antes de ver isso aqui.</td><td class='col-texto'><span class='tag'>Nao compre esse negocio antes de ver isso aqui.</span></td></tr><tr><td class='col-tempo'>5s-10s<div class='bar'><div class='bar-fill' style='width:11%'></div></div></td><td class='col-cena'>Apresentador fala direto pra camera, tom de quem vai contar a real. ExpressÃ£o franzida, sincera.</td><td class='col-audio'>No escuro, sem lanterna, voce nao consegue nem achar o que caiu no chao. Quem nunca?</td><td class='col-texto'><span class='tag'>No escuro</span><span class='tag'>sem lanterna</span><span class='tag'>voce nao consegue nem achar o que caiu no chao. Quem nunca?</span></td></tr><tr><td class='col-tempo'>10s-16s<div class='bar'><div class='bar-fill' style='width:13%'></div></div></td><td class='col-cena'>Apresentador mostra o kit e aponta cada funcao: grampos (partida), mangueirinha (compressor), cabo USB (power bank), lanterna. Mostra cada uma.</td><td class='col-audio'>Ligar, encher, carregar e iluminar. Esse kit promete as 4. Minha missao e descobrir se cumpre.</td><td class='col-texto'><span class='tag'>4 EM 1: Partida + Compressor + Power Bank + Lanterna</span></td></tr><tr><td class='col-tempo'>16s-35s<div class='bar'><div class='bar-fill' style='width:42%'></div></div></td><td class='col-cena'><strong>Teste.</strong> Acao real do produto em uso. Cortes secos. Close nas funcoes funcionando. Nao e encenacao, e teste de verdade.</td><td class='col-audio'>Calibrei os 4 pneus com o compressor digital. Preciso, nao chutou nada. Confiavel.</td><td class='col-texto'><span class='tag'>Calibrei os 4 pneus com o compressor digital. Preciso</span><span class='tag'>nao chutou nada. Confiavel.</span></td></tr><tr><td class='col-tempo'>35s-40s<div class='bar'><div class='bar-fill' style='width:11%'></div></div></td><td class='col-cena'>Apresentador volta pra camera, segurando o kit. Expressao de "ja sei o veredito". Tom sincero, sem firula.</td><td class='col-audio'>Passou no teste. Entrega o que promete e nao da dor de cabeca.</td><td class='col-texto'><span class='tag'>Passou no teste. Entrega o que promete e nao da dor de cabeca.</span></td></tr><tr><td class='col-tempo'>40s-45s<div class='bar'><div class='bar-fill' style='width:11%'></div></div></td><td class='col-cena'>Apresentador aponta pra camera ou faz sinal de "link na bio". Ultimo frame congela com CTA.</td><td class='col-audio'>Dica de amigo: corre no TikTok Shop que vai acabar. Preco de lancamento.</td><td class='col-texto'><span class='tag'>Dica de amigo: corre no TikTok Shop que vai acabar. Preco de lancamento.</span></td></tr></tbody></table></div><div class='section'><div class='section-title'>Observacoes de Producao</div><div class='obs-box'><ul><li>Tom de amigo especialista: "Cara", "Mano", "Bora", "Raiz", "Tranqueira"</li><li>Primeiros 2 segundos precisam parar o scroll</li><li>Na etapa PROMESSA, mostrar VISUALMENTE cada funcao enquanto fala</li><li>O PROBLEMA precisa gerar identificacao: "eu ja passei por isso"</li><li>Ritmo acelerado: frases curtas, cortes secos, 150 palavras por minuto</li><li>Cena do teste precisa mostrar acao real, nao encenacao</li><li>Enquadramento: peito pra cima, produto sempre visivel</li><li>Nao usar "Fala galera", "Oi pessoal", "Sejam bem-vindos"</li><li>Nao falar "Adquira", "Promocao imperdivel", "Clique aqui"</li><li>CTA final com motivo claro + urgencia real</li><li>Encerrar com tom de quem ta indo embora: "Um abraco e ate o proximo teste"</li></ul></div></div>
+<div class="footer">O CARA TESTOU &mdash; Roteiro gerado pelo sistema de agentes</div>
+</div>
+</body>
+</html>
