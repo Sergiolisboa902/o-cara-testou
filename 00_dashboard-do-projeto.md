@@ -3,9 +3,9 @@
 > **Documento maestro.** Visão central de tudo: equipe, entregas, status e histórico.
 > Este MD é vivo — atualizado a cada avanço do projeto.
 
-**Ultima atualizacao:** 23/07/2026
-**Sprint atual:** Matriz de 200 roteiros de vendas (V001-V100 + R001-R100)
-**Proximo marco:** Integracao Supabase + Segundo produto do catalogo
+**Ultima atualizacao:** 25/07/2026
+**Sprint atual:** Migracao Supabase + Deploy Vercel
+**Proximo marco:** Segunda iteracao do app (cards dinamicos) + Segundo produto do catalogo
 
 ---
 
@@ -23,8 +23,8 @@
 | Roteiros Vendas (Classico 7 etapas) | 100 roteiros V001-V100 (60s) | 100% |
 | Roteiros Vendas (Rapido 6 etapas) | 100 roteiros R001-R100 (45s) com tom da marca | 100% |
 | PDFs consolidados | 2 HTMLs para exportar como PDF | 100% |
-| Site HTML estatico | Em pasta html/ com redirect | 100% |
-| Integracao Supabase | Pendente — proximo sprint | 0% |
+| Site HTML estatico | Deploy Vercel (o-cara-testou.vercel.app) | 100% |
+| Integracao Supabase | Concluido | 100% |
 
 ---
 
@@ -200,10 +200,11 @@ Dashboard (html/index.html)
 | Root index.html vira redirect | Coordenador | Concluído |
 | Build scripts atualizados | Coordenador | Concluído |
 
-### Proximo Sprint — Segundo Produto
+### Proximo Sprint — App Dinamico + Segundo Produto
 
 | Item | Responsavel | Status |
-|---|---|---|
+|---|---|---|---|
+| Cards das secoes no banco de dados | Coordenador | Pendente |
 | Novo link de produto da vitrine | Usuario | Pendente |
 | Catalogar no catalogo.json | Coordenador | Pendente |
 | Criar produto.md | Usuario | Pendente |
@@ -212,6 +213,19 @@ Dashboard (html/index.html)
 ---
 
 ## 6. DECISOES E HISTORICO DE AVANCOS
+
+### 25/07/2026 — Migracao Supabase + Deploy Vercel
+
+- Supabase integrado: auth (login/signup), banco de dados (products + scripts), RLS policies
+- 3 paginas migradas de localStorage para Supabase: `produtos.html`, `modelo-conteudo.html`, `roteiros-criados.html`
+- Tabela `products` com cards por categoria; tabela `scripts` com roteiros, vinculo de produto e cards selecionados
+- Overlay de login/signup injetado em todas as paginas com autenticacao persistente
+- Modal de salvamento com seletor de produto e cards via toggle
+- Edicao de roteiros via URL `?edit=ID` com restauracao de selecoes
+- Visualizador em duas colunas (roteiro + produto) no CONTEUDOS
+- Copia formatada para WhatsApp com emojis e *bold*
+- Repositorio GitHub criado: `github.com/Sergiolisboa902/o-cara-testou`
+- Deploy Vercel: `https://o-cara-testou.vercel.app` (auto-deploy via push)
 
 ### 23/07/2026 — Infraestrutura Final: html/, Renomeacoes, Links
 
@@ -293,6 +307,7 @@ Dashboard (html/index.html)
 
 Aguardando definicao do cliente:
 
+- [ ] Migrar cards fixos do HTML para o banco de dados (edicao via UI)
 - [ ] Enviar link do **segundo produto** da vitrine TikTok
 - [ ] Catalogar no `catalogo.json`
 - [ ] Preencher `produto.md` com dados do produto
