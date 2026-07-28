@@ -72,7 +72,7 @@
   .r-btn-view { background: #1a1a1a; color: #fff; }
   .r-btn-edit { background: #264653; color: #fff; }
   .r-btn-copy { background: #2a9d8f; color: #fff; }
-  .r-btn-del { background: #fee; color: #e63946; }
+  .r-btn-schedule { background: #1a73e8; color: #fff; }
 
   /* modal de visualização */
   .modal-overlay {
@@ -175,6 +175,25 @@
     .modal-columns { flex-direction: column; }
     .modal-col-divider { display: none; }
   }
+
+  /* agenda modal */
+  .agenda-modal { max-width: 380px; }
+  .agenda-modal label { display: block; font-size: .82rem; font-weight: 600; color: #555; margin-bottom: .3rem; margin-top: .8rem; }
+  .agenda-modal label:first-child { margin-top: 0; }
+  .agenda-modal input, .agenda-modal select {
+    width: 100%; padding: .5rem .7rem; border: 1px solid #ddd; border-radius: 8px;
+    font-size: .85rem; font-family: inherit; outline: none; box-sizing: border-box;
+  }
+  .agenda-modal input:focus, .agenda-modal select:focus { border-color: #1a73e8; }
+  .agenda-modal .agenda-actions { display: flex; gap: .5rem; margin-top: 1.2rem; }
+  .agenda-modal .agenda-actions button {
+    flex: 1; padding: .55rem; border: none; border-radius: 8px;
+    font-weight: 700; font-size: .82rem; cursor: pointer; font-family: inherit;
+  }
+  .agenda-modal .agenda-actions .btn-create { background: #1a73e8; color: #fff; }
+  .agenda-modal .agenda-actions .btn-create:hover { opacity: .85; }
+  .agenda-modal .agenda-actions .btn-cancel { background: #f5f5f5; color: #555; }
+  .agenda-modal .agenda-actions .btn-cancel:hover { background: #eee; }
 </style>
 </head>
 <body>
@@ -210,6 +229,7 @@
     <div class="modal-body" id="viewBody"></div>
     <div class="modal-footer">
       <button class="modal-btn modal-btn-copy" onclick="copyViewRoteiro()">Copiar roteiro</button>
+      <button class="modal-btn" style="background:#1a73e8;color:#fff;" onclick="agendarRoteiro(currentViewRoteiro)">Agendar</button>
     </div>
   </div>
 </div>
@@ -225,9 +245,37 @@
   </div>
 </div>
 
+<!-- agenda modal -->
+<div class="modal-overlay" id="agendaModal" onclick="if(event.target===this)closeAgendaModal()">
+  <div class="modal agenda-modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">Agendar Publica&ccedil;&atilde;o</div>
+      <button class="modal-close" onclick="closeAgendaModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:1.4rem;">
+      <label>Data</label>
+      <input type="date" id="agendaDate">
+      <label>Hor&aacute;rio</label>
+      <input type="time" id="agendaTime" value="10:00">
+      <label>Dura&ccedil;&atilde;o</label>
+      <select id="agendaDuration">
+        <option value="15">15 min</option>
+        <option value="30" selected>30 min</option>
+        <option value="60">1 hora</option>
+      </select>
+      <div class="agenda-actions">
+        <button class="btn-create" onclick="confirmAgendar()">Criar evento</button>
+        <button class="btn-cancel" onclick="closeAgendaModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
 <script src="supabase.js"></script>
+<script src="google-calendar.js"></script>
 <script>
 const SECTIONS = [
   { id: 'publico',   label: 'Público',         emoji: '👥' },
@@ -256,7 +304,7 @@ function catEmoji(cat) {
   return '📌 '
 }
 
-let currentDeleteId = null, currentViewRoteiro = null
+let currentDeleteId = null, currentViewRoteiro = null, _agendaTarget = null
 let _roteirosCache = [], _produtosCache = []
 
 async function loadAll() {
@@ -278,7 +326,7 @@ function carregar() {
     const data = new Date(r.data).toLocaleString('pt-BR')
     const prod = r.produtoId ? _produtosCache.find(p => p.id === r.produtoId) : null
     const prodName = prod ? escapeHtml(prod.nome) : null
-    return '<div class="r-card"><div class="r-info"><div class="r-nome">'+escapeHtml(r.nome)+'</div><div class="r-meta">'+data+' &mdash; <span>'+filled+'</span> de '+SECTIONS.length+' etapas'+(prodName?' &middot; '+prodName:'')+'</div></div><div class="r-actions"><button class="r-btn r-btn-view" onclick="verRoteiro(\''+r.id+'\')">Ver</button><button class="r-btn r-btn-edit" onclick="editarRoteiro(\''+r.id+'\')">Editar</button><button class="r-btn r-btn-copy" onclick="copiarRoteiro(\''+r.id+'\')">Copiar</button><button class="r-btn r-btn-del" onclick="pedirExclusao(\''+r.id+'\')">Excluir</button></div></div>'
+    return '<div class="r-card"><div class="r-info"><div class="r-nome">'+escapeHtml(r.nome)+'</div><div class="r-meta">'+data+' &mdash; <span>'+filled+'</span> de '+SECTIONS.length+' etapas'+(prodName?' &middot; '+prodName:'')+'</div></div><div class="r-actions"><button class="r-btn r-btn-view" onclick="verRoteiro(\''+r.id+'\')">Ver</button><button class="r-btn r-btn-edit" onclick="editarRoteiro(\''+r.id+'\')">Editar</button><button class="r-btn r-btn-copy" onclick="copiarRoteiro(\''+r.id+'\')">Copiar</button><button class="r-btn r-btn-schedule" onclick="agendarRoteiro(\''+r.id+'\')">Agendar</button><button class="r-btn r-btn-del" onclick="pedirExclusao(\''+r.id+'\')">Excluir</button></div></div>'
   }).join('') + '</div>'
 }
 
@@ -308,16 +356,16 @@ function copiarRoteiro(id) {
 
 function editarRoteiro(id) { window.location.href = 'modelo-conteudo.html?edit=' + id }
 
-function pedirExclusao(id) { deleteTargetId = id; document.getElementById('confirmOverlay').classList.add('open') }
+function pedirExclusao(id) { currentDeleteId = id; document.getElementById('confirmOverlay').classList.add('open') }
 
 async function confirmDelete() {
-  if (!deleteTargetId) return
-  try { await deleteScript(deleteTargetId); _roteirosCache = _roteirosCache.filter(r => r.id !== deleteTargetId) }
+  if (!currentDeleteId) return
+  try { await deleteScript(currentDeleteId); _roteirosCache = _roteirosCache.filter(r => r.id !== currentDeleteId) }
   catch(e) { alert(e.message) }
-  deleteTargetId = null; document.getElementById('confirmOverlay').classList.remove('open'); carregar()
+  currentDeleteId = null; document.getElementById('confirmOverlay').classList.remove('open'); carregar()
 }
 
-function cancelDelete() { deleteTargetId = null; document.getElementById('confirmOverlay').classList.remove('open') }
+function cancelDelete() { currentDeleteId = null; document.getElementById('confirmOverlay').classList.remove('open') }
 
 function verRoteiro(id) {
   const r = _roteirosCache.find(x => x.id === id)
@@ -366,15 +414,70 @@ function copyViewRoteiro() {
   navigator.clipboard.writeText(text).then(() => alert('✅ Roteiro copiado!'))
 }
 
-document.addEventListener('keydown', e => { if (e.key==='Escape') { closeViewModal(); cancelDelete() } })
+function agendarRoteiro(idOrObj) {
+  const r = typeof idOrObj === 'string' ? _roteirosCache.find(x => x.id === idOrObj) : idOrObj
+  if (!r) return
+  _agendaTarget = r
+  const d = new Date()
+  d.setDate(d.getDate() + 1)
+  document.getElementById('agendaDate').value = d.toISOString().split('T')[0]
+  document.getElementById('agendaTime').value = '10:00'
+  document.getElementById('agendaDuration').value = '30'
+  document.getElementById('agendaModal').classList.add('open')
+}
+
+function closeAgendaModal() { document.getElementById('agendaModal').classList.remove('open'); _agendaTarget = null }
+
+async function confirmAgendar() {
+  const r = _agendaTarget
+  if (!r) return
+  const date = document.getElementById('agendaDate').value
+  const time = document.getElementById('agendaTime').value
+  const dur = parseInt(document.getElementById('agendaDuration').value)
+  if (!date) { alert('Selecione uma data.'); return }
+  const startISO = new Date(date + 'T' + time + ':00').toISOString()
+  const endISO = new Date(new Date(date + 'T' + time + ':00').getTime() + dur * 60000).toISOString()
+
+  const lines = []
+  lines.push('📜 ' + r.nome)
+  lines.push('')
+  SECTIONS.forEach(s => { const t = r.selections ? r.selections[s.id] : null; if (t) lines.push(s.emoji+' *'+s.label+'* '+t) })
+  if (r.produtoId) {
+    const p = _produtosCache.find(x => x.id === r.produtoId)
+    if (p) {
+      lines.unshift(''); lines.unshift('📦 *Produto:* '+p.nome+(p.preco?' (R$ '+p.preco+')':''))
+      const sc = r.selectedProdCards||{}
+      if (Object.keys(sc).length > 0) {
+        lines.push(''); lines.push('📋 *Cards do Produto*')
+        Object.keys(sc).forEach(cat => { const items=sc[cat]; if(items&&items.length){lines.push(catEmoji(cat)+'*'+cat+'*');items.forEach(i=>lines.push('▸ '+i))} })
+      }
+    }
+  }
+
+  try {
+    const ev = await createGoogleEvent('Gravação: ' + r.nome, lines.join('\n'), startISO, endISO)
+    closeAgendaModal()
+    const url = ev.htmlLink
+    if (confirm('✅ Evento criado! Abrir no Google Agenda?')) window.open(url, '_blank')
+  } catch(e) {
+    if (e.message && e.message.includes('not a valid origin')) {
+      closeAgendaModal()
+      alert('⚠️ Para usar o Google Agenda, adicione a URL deste site nas "Origens JavaScript autorizadas" do seu projeto no Google Cloud Console.')
+    } else {
+      alert('Erro: ' + (e.message || 'falha ao criar evento'))
+    }
+  }
+}
+
+document.addEventListener('keydown', e => { if (e.key==='Escape') { closeViewModal(); closeAgendaModal(); cancelDelete() } })
 
 // init
-window.onAuthReady = async function() { await loadAll(); carregar() }
+window.onAuthReady = async function() { await loadAll(); carregar(); initGoogleCalendar() }
 
 ;(async function init() {
   const session = await getSession()
   if (!session) injectAuthUI()
-  else { await loadAll(); carregar() }
+  else { await loadAll(); carregar(); initGoogleCalendar() }
 })()
 </script>
 
