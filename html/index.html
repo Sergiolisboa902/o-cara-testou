@@ -4,9 +4,68 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>O Cara Testou</title>
-<script>location.href='produtos.html'</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #111; color: #fff; min-height: 100vh; display: flex; flex-direction: column; }
+  .hero {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 3rem 2rem; text-align: center;
+  }
+  .hero-brand { font-size: 2.5rem; font-weight: 900; letter-spacing: -.03em; }
+  .hero-brand span { color: #e63946; }
+  .hero-sub { color: #888; font-size: .95rem; margin-top: .3rem; max-width: 480px; line-height: 1.5; }
+  .nav-grid { display: flex; gap: .5rem; margin-top: 2rem; flex-wrap: wrap; justify-content: center; }
+  .nav-btn {
+    display: flex; flex-direction: column; align-items: center; gap: .2rem;
+    background: #1a1a1a; border: 1px solid #222; border-radius: 14px;
+    padding: 1.2rem 1.8rem; text-decoration: none; color: #fff;
+    transition: all .2s; min-width: 140px;
+  }
+  .nav-btn:hover { background: #222; border-color: #e63946; transform: translateY(-2px); }
+  .nav-btn .icon { font-size: 1.6rem; }
+  .nav-btn .label { font-weight: 700; font-size: .82rem; }
+  .nav-btn .desc { font-size: .7rem; color: #666; }
+
+  .docs-section { padding: 2rem; max-width: 700px; margin: 0 auto; width: 100%; }
+  .docs-title { font-size: .85rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: .08em; margin-bottom: .8rem; text-align: center; }
+  .docs-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .4rem; }
+  .docs-item {
+    display: block; background: #1a1a1a; border: 1px solid #222; border-radius: 8px;
+    padding: .55rem .8rem; text-decoration: none; color: #ccc; font-size: .78rem; font-weight: 600;
+    transition: all .2s;
+  }
+  .docs-item:hover { background: #222; border-color: #555; color: #fff; }
+
+  .footer { text-align: center; padding: 1.5rem; font-size: .72rem; color: #444; }
+  @media (max-width: 500px) {
+    .hero-brand { font-size: 1.8rem; }
+    .nav-btn { min-width: 100px; padding: .9rem 1.2rem; }
+  }
+</style>
 </head>
 <body>
-<p><a href="produtos.html">Ir para Produtos</a></p>
+<div class="hero">
+  <div class="hero-brand"><span>O</span> Cara Testou</div>
+  <div class="hero-sub">Sistema de cria&ccedil;&atilde;o de roteiros para TikTok &mdash; gere, salve e agende seu conte&uacute;do.</div>
+  <div class="nav-grid">
+    <a href="modelo-conteudo.html" class="nav-btn"><span class="icon">📝</span><span class="label">MODELO</span><span class="desc">Montar roteiro</span></a>
+    <a href="produtos.html" class="nav-btn"><span class="icon">📦</span><span class="label">PRODUTOS</span><span class="desc">Gerenciar produtos</span></a>
+    <a href="roteiros-criados.html" class="nav-btn"><span class="icon">📜</span><span class="label">CONTEUDOS</span><span class="desc">Roteiros salvos</span></a>
+  </div>
+</div>
+
+<div class="docs-section">
+  <div class="docs-title">Documentos do Projeto</div>
+  <div class="docs-list">
+    <a href="../00_dashboard-do-projeto.md" class="docs-item" target="_blank">📊 Dashboard do Projeto</a>
+    <a href="../brand-bible/fase-01-dna-estrategico.md" class="docs-item" target="_blank">📘 Brand Bible</a>
+    <a href="../base-de-conhecimento/01_base_de_conhecimento.md" class="docs-item" target="_blank">📚 Base de Conhecimento</a>
+    <a href="../agentes/00-sistema-de-agentes.md" class="docs-item" target="_blank">🤖 Sistema de Agentes</a>
+    <a href="../metodo_o_cara_testou.pdf" class="docs-item" target="_blank">📄 PDF do Método</a>
+  </div>
+</div>
+
+<div class="footer">O Cara Testou &mdash; Projeto em desenvolvimento</div>
 </body>
 </html>
