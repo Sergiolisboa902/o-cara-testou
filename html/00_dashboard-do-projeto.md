@@ -3,16 +3,16 @@
 > **Documento maestro.** Visão central de tudo: equipe, entregas, status e histórico.
 > Este MD é vivo — atualizado a cada avanço do projeto.
 
-**Ultima atualizacao:** 25/07/2026
-**Sprint atual:** Migracao Supabase + Deploy Vercel
-**Proximo marco:** Segunda iteracao do app (cards dinamicos) + Segundo produto do catalogo
+**Ultima atualizacao:** 28/07/2026
+**Sprint atual:** App Dinamico (Supabase + Google Calendar + Upload)
+**Proximo marco:** Segundo produto do catalogo + Inicio das gravacoes
 
 ---
 
 ## 1. STATUS GERAL DO PROJETO
 
 | Pilar | Status | Progresso |
-|---|---|---|
+|---|---|---|---|
 | Brand Bible (8 fases) | Concluido | 100% |
 | Base de Conhecimento (4 docs) | Concluido | 100% |
 | Diretrizes TikTok | Concluido | 100% |
@@ -22,9 +22,12 @@
 | Roteiros Produto #1 (A1-A10) | 10 roteiros de linha editorial | 90% (A8 bloqueado) |
 | Roteiros Vendas (Classico 7 etapas) | 100 roteiros V001-V100 (60s) | 100% |
 | Roteiros Vendas (Rapido 6 etapas) | 100 roteiros R001-R100 (45s) com tom da marca | 100% |
-| PDFs consolidados | 2 HTMLs para exportar como PDF | 100% |
+| Estrategia de Video | 20 modelos + 8 familias + grade 24h | 100% |
+| App Supabase (Auth + CRUD) | Login, produtos, roteiros, edicao | 100% |
+| Google Calendar | Agendamento de roteiros via OAuth | 100% |
+| Upload de Fotos | Storage Supabase + coluna foto nos produtos | 100% |
 | Site HTML estatico | Deploy Vercel (o-cara-testou.vercel.app) | 100% |
-| Integracao Supabase | Concluido | 100% |
+| Cleanup | 253 arquivos orfaos removidos | 100% |
 
 ---
 
@@ -32,10 +35,8 @@
 
 ```
 /
-├── index.html                    (Redirect → html/index.html)
 ├── 00_dashboard-do-projeto.md    (Voce esta aqui — o maestro)
-├── build-html.ps1                (Gera .html em html/ a partir dos .md na raiz)
-├── build-roteiros.ps1            (Gera scripts .html em html/.../roteiros/)
+├── estrategia-de-video.md        (20 modelos + 8 familias + grade 24h)
 │
 ├── brand-bible/  (A CONSTITUICAO — o que somos)
 │     ├── fase-01-dna-estrategico.md
@@ -61,58 +62,38 @@
 │     └── A10-lives.md                                     (Conteudo de Lives)
 │
 ├── produtos/
-│     ├── catalogo.json               (Base de dados de produtos)
 │     ├── _modelo-produto.md          (Template para novos produtos)
 │     └── cysedoya-jump-starter-compressor/  (Produto #1)
-│           ├── produto.md            (Info preenchida pelo usuario)
-│           ├── fotos/                (Imagens do produto)
-│           └── video/                (Videos do produto)
+│           ├── produto.md
+│           ├── testes/               (100 roteiros V001-V100 + R001-R100)
+│           └── fotos/
 │
-├── inspiracao/
-│     ├── Perfil.png
-│     ├── Perfil Antiga.png
-│     ├── Cenario Principal.png
-│     ├── Modelos de Cenario.png
-│     └── profile-logo-spec.json
-│
-└── html/  (Site estatico completo — funciona file://)
-      ├── index.html                  (Dashboard principal)
-      ├── 00_dashboard-do-projeto.html
-      ├── viewer.html                 (Visualizador de JSON/Raw)
-      ├── agentes/                    (Paginas dos agentes)
-      ├── brand-bible/                (Paginas da brand bible)
-      ├── base-de-conhecimento/       (Paginas da base de conhecimento)
-      ├── inspiracao/                 (Redirect para ../inspiracao/ — nao usado)
-      └── produtos/
-            ├── catalogo.html         (Lista de produtos — ex-produtos/index.html)
-            └── cysedoya-jump-starter-compressor/
-                  ├── produto.html     (Pagina do produto — ex-index.html)
-                  ├── conteudo/
-                  │     └── conteudo.html  (3 pilares — ex-index.html)
-                  └── roteiros/
-                        ├── roteiros.html  (Lista de scripts — ex-index.html)
-                        ├── 01-A1-review-classico.html
-                        ├── 02-A2-dica-rapida.html
-                        ├── ...
-                        └── 10-A10-lives.html
+└── html/  (Site estatico — public root do Vercel)
+      ├── index.html                  (Landing page com nav + docs)
+      ├── supabase.js                 (CRUD — auth, products, scripts, storage)
+      ├── config.js                   (Supabase URL + anon key)
+      ├── google-calendar.js          (Google OAuth + Calendar API)
+      ├── doc-viewer.html             (Visualizador de .md com nav + Voltar)
+      ├── produtos.html               (App Supabase — gerenciar produtos)
+      ├── modelo-conteudo.html        (App Supabase — montar roteiro)
+      ├── roteiros-criados.html       (App Supabase — roteiros salvos + agendar)
+      ├── 00_dashboard-do-projeto.md  (copia para web)
+      ├── estrategia-de-video.md      (copia para web)
+      ├── brand-bible/                (documentos .md para web)
+      ├── base-de-conhecimento/       (documentos .md para web)
+      ├── agentes/                    (documentos .md para web)
+      └── produtos/                   (documentos .md para web)
 ```
 
 ### Fluxo de navegacao no site
 
 ```
-Dashboard (html/index.html)
+Landing Page (html/index.html)
     │
-    ├── Catalogo (html/produtos/catalogo.html)
-    │       └── Produto (html/.../produto.html)
-    │               ├── Conteudo (html/.../conteudo/conteudo.html)
-    │               │       ├── Roteiro A1 (html/.../roteiros/01-A1-...html)
-    │               │       ├── Roteiro A2 (html/.../roteiros/02-A2-...html)
-    │               │       └── ...
-    │               └── Roteiros (html/.../roteiros/roteiros.html)
-    │
-    ├── Brand Bible (html/brand-bible/fase-01-...html)
-    ├── Base de Conhecimento (html/base-de-conhecimento/...)
-    └── Agentes (html/agentes/00-sistema-de-agentes.html)
+    ├── MODELO (html/modelo-conteudo.html)     — Montar roteiro
+    ├── PRODUTOS (html/produtos.html)           — Gerenciar produtos
+    ├── CONTEUDOS (html/roteiros-criados.html)  — Roteiros salvos + Agendar
+    └── Documentos (via doc-viewer.html)        — .md com nav e Voltar
 ```
 
 ---
@@ -166,53 +147,62 @@ Dashboard (html/index.html)
 **Especialistas:** E3
 
 ### Fase 4 — Producao de Conteudo (Em andamento)
-**O que é:** Criação de agentes, roteiros e sistema de 3 pilares
-**Entregues:** 10 agentes (A1-A10), 10 roteiros para Produto #1, site HTML estático
+**O que é:** Criacao de agentes, roteiros e sistema de 3 pilares
+**Entregues:** 10 agentes (A1-A10), 10 roteiros para Produto #1, app Supabase
 **Especialistas:** E12
 **Bloqueado:** A8 (Depois de Meses) — requer uso real do produto por meses
 
-### Fase 5 — Operacao e Crescimento (Futuro)
-**O que é:** Publicação, comunidade, métricas, otimização
+### Fase 5 — App e Automacao (Concluido)
+**O que é:** Migracao para Supabase, deploy Vercel, funcionalidades do app
+**Entregues:** Auth, CRUD, upload de fotos, Google Calendar, estrategia de video, cleanup
+
+### Fase 6 — Operacao e Crescimento (Futuro)
+**O que é:** Publicacao, comunidade, metricas, otimizacao
 **Especialistas:** E14, E16
 
-### Fase 6 — Monetizacao (Futuro)
-**O que é:** TikTok Shop, afiliados, patrocínios, produtos próprios
+### Fase 7 — Monetizacao (Futuro)
+**O que é:** TikTok Shop, afiliados, patrocinios, produtos proprios
 **Especialistas:** E17
 
 ---
 
 ## 5. SPRINT ATUAL
 
-### Sprint 002 — Produto #1 + Infraestrutura
+### Sprint 003 — App Funcional + Estrategia de Video
 
 | Item | Responsavel | Status |
 |---|---|---|
-| Agente A9 (Conteudo de Vendas) — template + script | Roteirista (E12) | Concluído |
-| Agente A10 (Conteudo de Lives) — template + script | Roteirista (E12) | Concluído |
-| Sistema de 3 pilares (Editorial, Vendas, Lives) | Coordenador | Concluído |
-| Pagina de Conteudo (3 pilares) | Coordenador | Concluído |
-| 10 scripts gerados para Produto #1 | Roteirista (E12) | Concluído |
-| A8 — Depois de Meses | Roteirista (E12) | Bloqueado (aguardando meses reais) |
-| Move todos HTML para pasta html/ | Coordenador | Concluído |
-| Renomeia index.html → catalogo, produto, conteudo, roteiros | Coordenador | Concluído |
-| Corrige links relativos entre paginas | Coordenador | Concluído |
-| Reordena dashboard (INSPIRACAO + CATALOGO no topo) | Coordenador | Concluído |
-| Root index.html vira redirect | Coordenador | Concluído |
-| Build scripts atualizados | Coordenador | Concluído |
+| Google Calendar Integration (OAuth + agendar) | Coordenador | Concluido |
+| Upload de fotos (Supabase Storage + coluna foto) | Coordenador | Concluido |
+| Cleanup de 253 arquivos orfaos | Coordenador | Concluido |
+| Estrategia de Video (20 modelos + 8 familias + grade 24h) | Especialista IA | Concluido |
+| Doc-viewer com navegacao e Voltar | Coordenador | Concluido |
+| Landing page (index.html com hero + nav + docs) | Coordenador | Concluido |
+| Docs copiados para html/ (acessiveis via web) | Coordenador | Concluido |
+| Documentacao atualizada (dashboard + index links) | Coordenador | Concluido |
 
-### Proximo Sprint — App Dinamico + Segundo Produto
+### Proximo Sprint — Segundo Produto + Operacao
 
 | Item | Responsavel | Status |
-|---|---|---|---|
-| Cards das secoes no banco de dados | Coordenador | Pendente |
-| Novo link de produto da vitrine | Usuario | Pendente |
-| Catalogar no catalogo.json | Coordenador | Pendente |
-| Criar produto.md | Usuario | Pendente |
-| Gerar 10 scripts via build | Coordenador | Pendente |
+|---|---|---|
+| Executar INSERT do Arrancador Q18B no Supabase | Usuario | Pendente |
+| Testar upload de foto em produto existente | Usuario | Pendente |
+| Iniciar gravacao dos primeiros videos | Usuario | Pendente |
+| Definir cronograma de postagem (24/dia) | Usuario | Pendente |
 
 ---
 
 ## 6. DECISOES E HISTORICO DE AVANCOS
+
+### 28/07/2026 — Estrategia de Video + Google Calendar + Upload + Cleanup
+
+- Documento `estrategia-de-video.md` criado com 20 modelos de video, 8 familias (Confronto, Investigacao, Transformacao, Descoberta, Resistencia, Comparacao, Experiencia, Ranking), grade de postagem 24h e metricas
+- Google Calendar integrado via `google-calendar.js`: OAuth + modal de agendamento (data, hora, duracao) + criacao de evento no Google Agenda com link do roteiro
+- Upload de fotos implementado: storage bucket `product-photos` no Supabase, coluna `foto` adicionada a tabela `products`, upload direto ou colar URL externa
+- Cleanup de 253 arquivos orfaos: pastas `html/agentes/`, `html/brand-bible/`, `html/base-de-conhecimento/`, `html/produtos/` (HTMLs estaticos antigos), scripts `.ps1`, PDF, mega-HTMLs, `index.html` antigo, `roteiros/` vazio
+- Landing page `index.html` recriada: hero + nav grid (MODELO, PRODUTOS, CONTEUDOS) + secao de documentos
+- Doc-viewer `html/doc-viewer.html` criado: renderiza .md com marked.js + barra de navegacao fixa + botao Voltar
+- Top nav com logo "O Cara Testou" linkando para index.html em todas as 3 paginas do app
 
 ### 25/07/2026 — Migracao Supabase + Deploy Vercel
 
@@ -305,15 +295,11 @@ Dashboard (html/index.html)
 
 ## 7. PROXIMOS PASSOS
 
-Aguardando definicao do cliente:
-
-- [ ] Migrar cards fixos do HTML para o banco de dados (edicao via UI)
-- [ ] Enviar link do **segundo produto** da vitrine TikTok
-- [ ] Catalogar no `catalogo.json`
-- [ ] Preencher `produto.md` com dados do produto
-- [ ] Rodar `build-roteiros.ps1` para gerar 10 scripts
+- [ ] Executar `html/sql/insert-arrancador.sql` no Supabase SQL Editor (adicionar Arrancador Q18B)
+- [ ] Testar upload de foto em produto existente
+- [ ] Iniciar gravacao dos primeiros videos seguindo a Estrategia de Video
+- [ ] Definir cronograma de postagem (24 videos/dia, 1 por hora)
 - [ ] Execucao do briefing visual com designer
-- [ ] Definicao de cronograma de gravacao
 - [ ] Estruturacao de perfis nas redes sociais
 - [ ] Plano de lancamento 0-6 meses
 
@@ -334,4 +320,4 @@ Aguardando definicao do cliente:
 
 ---
 
-*Este documento é atualizado a cada novo avanço do projeto. Próxima revisão: após próximo produto do catálogo.*
+*Este documento é atualizado a cada novo avanço do projeto. Próxima revisão: após proximo produto do catalogo ou inicio das gravacoes.*
