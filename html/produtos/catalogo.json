@@ -1,0 +1,43 @@
+[
+  {
+    "id": 1,
+    "slug": "cysedoya-jump-starter-compressor",
+    "pasta": "cysedoya-jump-starter-compressor",
+    "tiktok_id": "1735865952300860739",
+    "nome": "Cysedoya Arrancador de Bateria com Compressor de Ar Portatil Q18B",
+    "marca": "Cysedoya",
+    "modelo": "Q18B",
+    "preco": null,
+    "categoria": "Automotivo",
+    "descricao_curta": "Fonte de emergencia 4 em 1: jump starter 12V, compressor 150 PSI, power bank 8000mAh e lanterna SOS",
+    "diferenciais": [
+      "Jump starter 12V",
+      "Compressor digital 150 PSI",
+      "Power bank 8000mAh",
+      "Desligamento automatico",
+      "Protecao anti-inversao"
+    ],
+    "especificacoes": {
+      "capacidade": "8000mAh",
+      "partida": "12V",
+      "pressao_max": "150 PSI",
+      "precisao": "0,1 BAR",
+      "dimensoes": "200x108x60mm",
+      "recarga": "4-5h via USB Type-C 5V/3A",
+      "temp_operacao": "-20°C a 60°C",
+      "protecao": "Anti-inversao, anti-curto, anti-sobrecarga, superaquecimento 80°C"
+    },
+    "itens_inclusos": [
+      "Arrancador com compressor",
+      "Grampos inteligentes",
+      "Mangueira de alta pressao",
+      "Adaptadores (carro, moto, bicicleta, bolas)",
+      "Cabo USB Type-C",
+      "Bolsa portatil",
+      "Manual em portugues"
+    ],
+    "imagem_local": "cysedoya-jump-starter-compressor/fotos/produto-001.png",
+    "status": "catalogado",
+    "data_cadastro": "23/07/2026"
+  }
+]
