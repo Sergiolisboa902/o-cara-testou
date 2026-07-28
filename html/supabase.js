@@ -50,6 +50,7 @@ async function loadProducts() {
     preco: p.preco || '',
     link: p.link || '',
     resumo: p.resumo || '',
+    foto: p.foto || '',
     cards: p.cards || [],
     data: p.created_at
   }))
@@ -65,6 +66,7 @@ async function saveProduct(p) {
     preco: p.preco || '',
     link: p.link || '',
     resumo: p.resumo || '',
+    foto: p.foto || '',
     cards: p.cards || []
   }
   if (p.id && !p.id.startsWith('p_')) {
@@ -95,6 +97,21 @@ async function deleteProduct(id) {
     .eq('id', id)
     .eq('user_id', session.user.id)
   if (error) throw error
+}
+
+async function uploadProductPhoto(file, productId) {
+  const session = await getSession()
+  if (!session) throw new Error('Not authenticated')
+  const ext = file.name.split('.').pop()
+  const path = session.user.id + '/' + productId + '.' + ext
+  const { error } = await _supabase.storage
+    .from('product-photos')
+    .upload(path, file, { upsert: true })
+  if (error) throw error
+  const { data: { publicUrl } } = _supabase.storage
+    .from('product-photos')
+    .getPublicUrl(path)
+  return publicUrl
 }
 
 // === SCRIPTS ===

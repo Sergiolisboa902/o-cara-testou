@@ -10,6 +10,7 @@ CREATE TABLE products (
   preco TEXT DEFAULT '',
   link TEXT DEFAULT '',
   resumo TEXT DEFAULT '',
+  foto TEXT DEFAULT '',
   cards JSONB DEFAULT '[]',
   created_at TIMESTAMPTZ DEFAULT now()
 );
@@ -43,3 +44,31 @@ CREATE POLICY "Users can manage own scripts"
 -- Indexes for faster queries
 CREATE INDEX idx_products_user ON products(user_id);
 CREATE INDEX idx_scripts_user ON scripts(user_id);
+
+-- Add foto column if upgrading existing table
+ALTER TABLE products ADD COLUMN IF NOT EXISTS foto TEXT DEFAULT '';
+
+-- Storage bucket for product photos
+INSERT INTO storage.buckets (id, name, public) VALUES ('product-photos', 'product-photos', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Allow public read access to product photos
+CREATE POLICY "Public read product photos"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'product-photos');
+
+-- Allow authenticated users to upload their own photos
+CREATE POLICY "Users can upload product photos"
+  ON storage.objects FOR INSERT
+  WITH CHECK (
+    bucket_id = 'product-photos'
+    AND auth.role() = 'authenticated'
+  );
+
+-- Allow users to delete their own photos
+CREATE POLICY "Users can delete own product photos"
+  ON storage.objects FOR DELETE
+  USING (
+    bucket_id = 'product-photos'
+    AND auth.role() = 'authenticated'
+  );

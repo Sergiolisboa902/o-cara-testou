@@ -38,14 +38,22 @@
   .empty a { color: #e63946; font-weight: 700; cursor: pointer; }
 
   /* product list grid */
-  .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .7rem; }
+  .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: .7rem; }
   .p-card {
-    background: #fff; border-radius: 12px; padding: 1rem 1.2rem;
+    background: #fff; border-radius: 12px; overflow: hidden;
     box-shadow: 0 1px 4px rgba(0,0,0,.06);
-    border-left: 4px solid #e63946; cursor: pointer;
-    transition: box-shadow .2s, transform .2s;
+    cursor: pointer; transition: box-shadow .2s, transform .2s;
   }
   .p-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,.1); transform: translateY(-1px); }
+  .p-card-img {
+    width: 100%; height: 160px; object-fit: cover; display: block;
+    background: #f0f0f0;
+  }
+  .p-card-img-placeholder {
+    width: 100%; height: 160px; display: flex; align-items: center; justify-content: center;
+    background: #f0f0f0; color: #ccc; font-size: 2.5rem;
+  }
+  .p-card-body { padding: .8rem 1.2rem 1rem; }
   .p-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .2rem; }
   .p-card-nome { font-weight: 700; font-size: .9rem; }
   .p-card-cat { font-size: .7rem; color: #e63946; font-weight: 600; background: #fff4f4; padding: .15rem .5rem; border-radius: 10px; }
@@ -67,7 +75,11 @@
   .detail-header {
     background: #fff; border-radius: 14px; padding: 1.2rem 1.4rem;
     box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: 1rem;
-    display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+    display: flex; align-items: flex-start; gap: 1rem;
+  }
+  .detail-foto {
+    width: 120px; height: 120px; border-radius: 10px; object-fit: cover;
+    background: #f0f0f0; flex-shrink: 0;
   }
   .detail-info { flex: 1; }
   .detail-nome { font-weight: 800; font-size: 1.2rem; margin-bottom: .2rem; }
@@ -145,6 +157,16 @@
     cursor: pointer; font-family: inherit; margin-bottom: 1rem;
   }
   .add-prod-btn:hover { opacity: .85; }
+
+  .upload-area {
+    display: flex; align-items: center; gap: .5rem; margin-top: .5rem;
+  }
+  .upload-area input[type="file"] { font-size: .75rem; font-family: inherit; }
+  .upload-area button {
+    background: #1a73e8; color: #fff; border: none; border-radius: 6px;
+    padding: .35rem .7rem; font-size: .75rem; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .upload-area button:hover { opacity: .85; }
 
   @media (max-width: 600px) {
     .detail-header { flex-direction: column; }
@@ -230,7 +252,7 @@ function renderList() {
   if (!ps.length) { c.innerHTML = '<div class="empty"><p>Nenhum produto cadastrado.</p></div>'; return }
   c.innerHTML = '<div class="prod-grid">' + ps.map(p => {
     const tc = (p.cards||[]).reduce((s,x) => s + (x.items||[]).length, 0)
-    return '<div class="p-card" onclick="showDetail(\''+p.id+'\')"><div class="p-card-header"><span class="p-card-nome">'+esc(p.nome)+'</span><span class="p-card-cat">'+esc(p.categoria)+'</span></div><div class="p-card-meta">'+tc+' cards</div>'+(p.preco?'<div class="p-card-meta">R$ '+esc(p.preco)+'</div>':'')+'<div class="p-card-actions" onclick="event.stopPropagation()"><button class="p-btn p-btn-edit" onclick="showDetail(\''+p.id+'\')">Abrir</button><button class="p-btn p-btn-del" onclick="excluirProduto(\''+p.id+'\')">Excluir</button></div></div>'
+    return '<div class="p-card" onclick="showDetail(\''+p.id+'\')">'+(p.foto?'<img class="p-card-img" src="'+esc(p.foto)+'" alt="" loading="lazy">':'<div class="p-card-img-placeholder">📷</div>')+'<div class="p-card-body"><div class="p-card-header"><span class="p-card-nome">'+esc(p.nome)+'</span><span class="p-card-cat">'+esc(p.categoria)+'</span></div><div class="p-card-meta">'+tc+' cards</div>'+(p.preco?'<div class="p-card-meta">R$ '+esc(p.preco)+'</div>':'')+'<div class="p-card-actions" onclick="event.stopPropagation()"><button class="p-btn p-btn-edit" onclick="showDetail(\''+p.id+'\')">Abrir</button><button class="p-btn p-btn-del" onclick="excluirProduto(\''+p.id+'\')">Excluir</button></div></div></div>'
   }).join('') + '</div>'
 }
 
@@ -253,7 +275,7 @@ async function novoProduto() {
 function renderDetail(id) {
   const p = getP().find(x => x.id === id)
   if (!p) { showList(); return }
-  document.getElementById('detailHeader').innerHTML = '<div class="detail-info"><div class="detail-nome">'+esc(p.nome)+'</div><div class="detail-tags"><span class="detail-tag cat">'+esc(p.categoria)+'</span>'+(p.preco?'<span class="detail-tag preco">R$ '+esc(p.preco)+'</span>':'')+'</div>'+(p.link?'<div style="font-size:.78rem"><a href="'+esc(p.link)+'" target="_blank" style="color:#e63946">'+esc(p.link)+'</a></div>':'')+(p.resumo?'<div class="detail-resumo">'+esc(p.resumo)+'</div>':'')+'</div><div class="detail-actions"><button class="detail-back" onclick="showList()">&larr;</button><button class="p-btn p-btn-edit" onclick="editarProdutoInfo(\''+p.id+'\')">Editar</button><button class="p-btn p-btn-del" onclick="excluirProduto(\''+p.id+'\')">Excluir</button></div>'
+  document.getElementById('detailHeader').innerHTML = '<img class="detail-foto" src="'+(p.foto||'')+'" alt="" onerror="this.style.display=\'none\'"><div class="detail-info"><div class="detail-nome">'+esc(p.nome)+'</div><div class="detail-tags"><span class="detail-tag cat">'+esc(p.categoria)+'</span>'+(p.preco?'<span class="detail-tag preco">R$ '+esc(p.preco)+'</span>':'')+'</div>'+(p.link?'<div style="font-size:.78rem"><a href="'+esc(p.link)+'" target="_blank" style="color:#e63946">'+esc(p.link)+'</a></div>':'')+(p.resumo?'<div class="detail-resumo">'+esc(p.resumo)+'</div>':'')+'<div class="upload-area"><input type="file" id="fotoInput" accept="image/*"><button onclick="uploadFoto(\''+p.id+'\')">Upload</button><span style="font-size:.7rem;color:#999">ou</span><button onclick="colarUrlFoto(\''+p.id+'\')">Colar URL</button></div></div><div style="display:flex;flex-direction:column;gap:.3rem;flex-shrink:0"><button class="detail-back" onclick="showList()">&larr;</button><button class="p-btn p-btn-edit" onclick="editarProdutoInfo(\''+p.id+'\')">Editar</button><button class="p-btn p-btn-del" onclick="excluirProduto(\''+p.id+'\')">Excluir</button></div>'
   document.getElementById('detailBody').innerHTML = (p.cards||[]).map(c => '<div class="cat-section"><div class="cat-header"><span class="cat-title">'+esc(c.cat)+'</span><button class="cat-add" onclick="openAddCard(\''+p.id+'\',\''+esc(c.cat)+'\')">+</button></div><div class="cat-cards">'+((c.items||[]).length ? (c.items||[]).map((item,i)=>'<span class="cat-card">'+esc(item)+'<button class="rm" onclick="removerCard(\''+p.id+'\','+i+',\''+esc(c.cat)+'\')">&times;</button></span>').join('') : '<span class="cat-empty">Vazio</span>')+'</div></div>').join('')
 }
 
@@ -264,6 +286,26 @@ async function editarProdutoInfo(id) {
   const cat = prompt('Categoria:', p.categoria); const preco = prompt('Preço:', p.preco); const link = prompt('Link:', p.link); const resumo = prompt('Resumo:', p.resumo)
   p.nome = nome.trim(); p.categoria = (cat||'').trim(); p.preco = preco||''; p.link = link||''; p.resumo = resumo||''
   try { await saveProduct(p); renderDetail(id) } catch(e) { alert(e.message) }
+}
+
+async function uploadFoto(id) {
+  const file = document.getElementById('fotoInput').files[0]
+  if (!file) { alert('Selecione uma imagem.'); return }
+  const p = getP().find(x => x.id === id)
+  if (!p) return
+  try {
+    const url = await uploadProductPhoto(file, id)
+    p.foto = url; await saveProduct(p); renderDetail(id)
+  } catch(e) { alert(e.message) }
+}
+
+function colarUrlFoto(id) {
+  const url = prompt('Cole a URL da imagem:')
+  if (!url) return
+  const p = getP().find(x => x.id === id)
+  if (!p) return
+  p.foto = url.trim()
+  saveProduct(p).then(() => renderDetail(id)).catch(e => alert(e.message))
 }
 
 function openAddCard(prodId, cat) {
