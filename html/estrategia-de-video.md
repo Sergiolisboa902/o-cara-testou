@@ -5,6 +5,19 @@
 - Postagens programadas via agendador
 - Rotação entre os modelos para evitar repetição
 
+## Famílias de Formato
+
+| Família | Descrição |
+|---------|-----------|
+| Confronto | Produto versus problema, concorrente ou limite |
+| Investigação | Verificar se a promessa ou crença é verdadeira |
+| Transformação | Mudança antes e depois do uso |
+| Descoberta | Revelar benefícios inesperados durante o teste |
+| Resistência | Capacidade, durabilidade ou desempenho extremo |
+| Comparação | Duas ou mais soluções lado a lado |
+| Experiência | Uso real ao longo do tempo |
+| Ranking | Múltiplos produtos para identificar o melhor |
+
 ## Modelos de Vídeo
 
 ### 1. Review Completo
@@ -111,6 +124,51 @@ Mostra nota fiscal, garantia, suporte.
 - Formato: Documentos na tela + off-screen falando
 - Gancho: "Todo mundo pergunta: e se der problema?"
 - CTA: "Compra seguro — link na lojinha"
+
+### 16. A Última Chance
+O produto tem apenas uma oportunidade para provar seu valor.
+- Duração: 20-35s
+- Família: Confronto
+- Gancho: "Só vou dar UMA chance pra esse [produto]"
+- Psicologia: situações de "tudo ou nada" prendem a atenção
+- Momento WOW: resultado aparecer no limite da expectativa
+- Dificuldade: Baixa | Viral: 9/10 | Vendas: 9/10
+
+### 17. O Inimigo Perfeito
+O produto enfrenta exatamente o que costuma derrubar concorrentes.
+- Duração: 20-40s
+- Família: Confronto
+- Gancho: "A maior dificuldade de qualquer [produto] é [desafio] — vamos ver"
+- Psicologia: um "vilão" transforma o vídeo em história
+- Momento WOW: vencer um cenário considerado impossível
+- Dificuldade: Média | Viral: 10/10 | Vendas: 9/10
+
+### 18. Quanto Mais Eu Usava...
+Opinião evolui durante o uso — começa sem expectativa e termina surpreso.
+- Duração: 25-45s
+- Família: Descoberta
+- Gancho: "No começo não estava convencido, mas quanto mais usei..."
+- Psicologia: opinião que evolui soa mais honesta que elogio imediato
+- Momento WOW: benefício inesperado descoberto só com uso prolongado
+- Dificuldade: Média | Viral: 8/10 | Vendas: 10/10
+
+### 19. Será Que Todo Mundo Está Errado?
+Questiona uma crença popular sobre o produto e testa na prática.
+- Duração: 20-35s
+- Família: Investigação
+- Gancho: "Todo mundo fala que [produto] não funciona — será que é verdade?"
+- Psicologia: contestar uma crença conhecida gera debate e comentários
+- Momento WOW: resultado contradizer (ou confirmar surpreendentemente) a crença inicial
+- Dificuldade: Baixa | Viral: 9/10 | Vendas: 8/10
+
+### 20. O Limite do Produto
+Teste progressivo até o produto falhar ou superar todas as etapas.
+- Duração: 20-40s
+- Família: Resistência
+- Gancho: "Vou levar esse [produto] ao limite — até onde ele aguenta?"
+- Psicologia: explorar limites transmite honestidade e confiança
+- Momento WOW: superar uma etapa que parecia impossível
+- Dificuldade: Média | Viral: 10/10 | Vendas: 9/10
 
 ## Grade de Postagem (24h)
 
