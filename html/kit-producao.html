@@ -38,318 +38,94 @@
   .card-subtitle { font-size: .75rem; color: #999; font-weight: 600; margin-bottom: .3rem; text-transform: uppercase; letter-spacing: .06em; }
 
   .produto-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
-  .produto-item { }
-  .produto-item h3 { font-size: .85rem; font-weight: 700; color: #e63946; margin-bottom: .3rem; }
   .produto-item p { font-size: .85rem; color: #333; line-height: 1.5; }
   .produto-item .demo-list { font-size: .82rem; color: #555; margin-top: .2rem; padding-left: 1.2rem; }
 
   .tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   @media (max-width: 800px) { .tables-grid { grid-template-columns: 1fr; } }
 
-  .table-wrap { overflow-x: auto; }
+  .table-wrap { overflow-x: auto; max-height: 500px; overflow-y: auto; }
   table { width: 100%; border-collapse: collapse; font-size: .82rem; }
   th { background: #1a1a1a; color: #fff; font-weight: 700; text-align: left; padding: .4rem .6rem; position: sticky; top: 0; }
   td { padding: .35rem .6rem; border-bottom: 1px solid #eee; vertical-align: top; }
   tr:hover td { background: #f5f5f5; }
   .tag {
     display: inline-block; background: #1a1a1a; color: #fff;
-    font-size: .7rem; font-weight: 700; padding: .15rem .5rem; border-radius: 4px;
+    font-size: .7rem; font-weight: 700; padding: .15rem .5rem; border-radius: 4px; white-space: nowrap;
   }
-  .tag-verde { background: #2d6a4f; }
-  .tag-azul { background: #1d3557; }
 
+  .erro { text-align: center; padding: 3rem; color: #e63946; font-size: .9rem; }
   .footer { text-align: center; padding: 1.5rem; font-size: .72rem; color: #999; }
 </style>
 </head>
 <body>
 <div class="topnav">
   <div class="topnav-brand"><a href="index.html"><span>O</span> Cara Testou</a></div>
-  <a href="index.html" class="topnav-back">&larr; Voltar</a>
+  <a href="catalogo.html" class="topnav-back">&larr; Catálogo</a>
 </div>
-<div class="container">
-
-  <!-- INFORMAÇÕES DO PRODUTO -->
-  <div class="card">
-    <div class="card-title">Informações do Produto</div>
-    <p style="font-size:.82rem;color:#666;margin-bottom:1rem;">Arrancador de Bateria c/ Compressor de Ar Portátil Q18B</p>
-    <div class="produto-grid">
-      <div class="produto-item">
-        <div class="card-subtitle">Solução</div>
-        <p>Foi aí que eu conheci esse equipamento 4 em 1. Ele dá partida em carro ou moto com bateria descarregada, calibra pneus com precisão, funciona como power bank para carregar celular e ainda tem uma lanterna com modo SOS para emergências.</p>
-      </div>
-      <div class="produto-item">
-        <div class="card-subtitle">Demonstração</div>
-        <p>Mostrar recurso relacionado ao tema do vídeo:</p>
-        <ul class="demo-list">
-          <li>Ligando o compressor e calibrando um pneu</li>
-          <li>Mostrando o display digital</li>
-          <li>Conectando o celular na USB</li>
-          <li>Ligando a lanterna</li>
-          <li>Mostrando os cabos de partida</li>
-          <li>Tirando do porta-luvas</li>
-          <li>Mostrando o tamanho compacto</li>
-          <li>Abrindo a bolsa de transporte</li>
-        </ul>
-      </div>
-      <div class="produto-item">
-        <div class="card-subtitle">Momento WOW</div>
-        <p>O que mais me surpreendeu foi que um equipamento desse tamanho consegue resolver quatro problemas diferentes. É aquele tipo de produto que você compra esperando nunca precisar usar... mas quando precisa, faz toda a diferença.</p>
-      </div>
-      <div class="produto-item">
-        <div class="card-subtitle">Transformação</div>
-        <p>Em vez de depender de outra pessoa, chamar um guincho ou ficar parado esperando ajuda, você resolve boa parte desses imprevistos em poucos minutos e segue viagem com muito mais tranquilidade.</p>
-      </div>
-      <div class="produto-item">
-        <div class="card-subtitle">Veredito</div>
-        <p>Depois de testar, eu gostei da proposta. É um produto que eu teria no meu carro pela praticidade e pela segurança que oferece. Espero nunca precisar usar numa emergência, mas prefiro estar preparado do que ser pego de surpresa.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- TABELAS -->
-  <div class="tables-grid">
-    <!-- ÂNGULOS -->
-    <div class="card" style="margin-bottom:0;">
-      <div class="card-title">Ângulos</div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Ângulo</th><th>Descrição</th></tr></thead>
-          <tbody id="tabela-angulos"></tbody>
-        </table>
-      </div>
-    </div>
-    <!-- GANCHOS -->
-    <div class="card" style="margin-bottom:0;">
-      <div class="card-title">Ganchos</div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Categoria</th><th>Gancho</th></tr></thead>
-          <tbody id="tabela-ganchos"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-</div>
+<div class="container" id="app"></div>
 <div class="footer">O Cara Testou &mdash; Kit de Produção</div>
 
+<script src="dados-produtos.js"></script>
 <script>
-const angulos = [
-  ["Obrigatoriedade","Isso deveria ser obrigatório."],
-  ["Obrigatoriedade","Todo mundo deveria ter um."],
-  ["Obrigatoriedade","Isso deveria vir de fábrica."],
-  ["Obrigatoriedade","Você não pode ficar sem isso."],
-  ["Obrigatoriedade","Isso deveria estar em todo carro."],
-  ["Obrigatoriedade","Isso deveria fazer parte do kit básico."],
-  ["Obrigatoriedade","Eu acho um absurdo isso não ser obrigatório."],
-  ["Obrigatoriedade","Todo motorista deveria conhecer isso."],
-  ["Obrigatoriedade","Quem tem carro precisa disso."],
-  ["Obrigatoriedade","Isso deveria estar no porta-luvas de todo mundo."],
-  ["Gênio","O cara que inventou isso é um gênio."],
-  ["Gênio","Eu queria conhecer quem criou isso."],
-  ["Gênio","Como ninguém pensou nisso antes?"],
-  ["Gênio","Quem inventou isso merece um prêmio."],
-  ["Gênio","Isso foi muito inteligente."],
-  ["Gênio","Isso resolve um problema antigo."],
-  ["Gênio","A ideia é simples, mas genial."],
-  ["Gênio","É uma invenção brilhante."],
-  ["Gênio","Quem criou isso pensou em tudo."],
-  ["Gênio","Eu fiquei impressionado com essa ideia."],
-  ["Surpresa","Eu não sabia que isso existia."],
-  ["Surpresa","Descobri isso hoje."],
-  ["Surpresa","Fiquei impressionado."],
-  ["Surpresa","Nunca imaginei."],
-  ["Surpresa","Isso me surpreendeu."],
-  ["Surpresa","Achei que era mentira."],
-  ["Surpresa","Eu precisei testar."],
-  ["Surpresa","Não acreditei quando vi."],
-  ["Surpresa","Parece mentira."],
-  ["Surpresa","Isso é muito diferente."],
-  ["Arrependimento","Eu queria ter comprado isso antes."],
-  ["Arrependimento","Me arrependo de não ter conhecido antes."],
-  ["Arrependimento","Descobri tarde demais."],
-  ["Arrependimento","Isso teria evitado muito problema."],
-  ["Arrependimento","Se eu soubesse disso..."],
-  ["Arrependimento","Aprendi da pior forma."],
-  ["Arrependimento","Eu já passei por isso."],
-  ["Arrependimento","Nunca mais fico sem."],
-  ["Arrependimento","Agora sempre anda comigo."],
-  ["Arrependimento","Isso mudou minha forma de viajar."],
-  ["Utilidade","Você não percebe o quanto isso é útil."],
-  ["Utilidade","Isso resolve vários problemas."],
-  ["Utilidade","Parece simples..."],
-  ["Utilidade","É muito mais útil do que parece."],
-  ["Utilidade","Eu uso muito mais do que imaginava."],
-  ["Utilidade","Serve para muito mais coisa."],
-  ["Utilidade","O tamanho engana."],
-  ["Utilidade","É um daqueles produtos coringa."],
-  ["Utilidade","Sempre acaba sendo útil."],
-  ["Utilidade","É aquele tipo de compra inteligente."],
-  ["Economia","Isso pode economizar muito dinheiro."],
-  ["Economia","Sai mais barato do que um guincho."],
-  ["Economia","Pode evitar um prejuízo."],
-  ["Economia","O barato sai caro."],
-  ["Economia","Você economiza na primeira vez que usa."],
-  ["Economia","Vale pelo que evita gastar."],
-  ["Economia","Um produto que se paga."],
-  ["Economia","Economia de verdade."],
-  ["Economia","Menos gastos, mais tranquilidade."],
-  ["Economia","Vale cada centavo."],
-  ["Prevenção","Eu espero que você nunca precise disso."],
-  ["Prevenção","Mas se precisar..."],
-  ["Prevenção","Melhor ter e não usar."],
-  ["Prevenção","Prevenção nunca é demais."],
-  ["Prevenção","Você compra esperando nunca usar."],
-  ["Prevenção","Um dia você pode agradecer."],
-  ["Prevenção","Não espere acontecer."],
-  ["Prevenção","O problema nunca avisa."],
-  ["Prevenção","Quem se prepara sofre menos."],
-  ["Prevenção","Isso é tranquilidade."],
-  ["Curiosidade","Pouca gente conhece isso."],
-  ["Curiosidade","Quase ninguém fala desse produto."],
-  ["Curiosidade","Descobri uma função incrível."],
-  ["Curiosidade","Você sabia disso?"],
-  ["Curiosidade","Aposto que você nunca viu."],
-  ["Curiosidade","Tem um detalhe escondido."],
-  ["Curiosidade","Isso faz muito mais do que parece."],
-  ["Curiosidade","A melhor função ninguém comenta."],
-  ["Curiosidade","Existe um motivo para pouca gente conhecer."],
-  ["Curiosidade","Isso merece mais atenção."],
-  ["Autoridade","Depois de testar vários..."],
-  ["Autoridade","Eu finalmente encontrei um bom."],
-  ["Autoridade","Testei para você não gastar dinheiro."],
-  ["Autoridade","Coloquei à prova."],
-  ["Autoridade","Fiz questão de testar."],
-  ["Autoridade","Não gosto de indicar qualquer coisa."],
-  ["Autoridade","Só aprovo quando realmente funciona."],
-  ["Autoridade","Resolvi testar sem acreditar."],
-  ["Autoridade","Meu trabalho é testar isso."],
-  ["Autoridade","Vamos ver se presta."],
-  ["Opinião Forte","Eu acho um erro não ter isso."],
-  ["Opinião Forte","Todo mundo deveria conhecer."],
-  ["Opinião Forte","Eu não faria diferente."],
-  ["Opinião Forte","Essa é minha opinião depois do teste."],
-  ["Opinião Forte","Eu compraria de novo."],
-  ["Opinião Forte","Eu teria isso no meu carro."],
-  ["Opinião Forte","Vale a pena."],
-  ["Opinião Forte","Eu recomendo."],
-  ["Opinião Forte","Eu não sairia sem."],
-  ["Opinião Forte","Esse produto faz sentido."]
-]
+const params = new URLSearchParams(window.location.search)
+const prodId = params.get('produto') || 'arrancador-q18b'
+const prod = produtosDB[prodId]
 
-const ganchos = [
-  ["Emergência","Imagina entrar no carro e ele simplesmente não ligar."],
-  ["Emergência","Você só lembra desse produto quando já é tarde demais."],
-  ["Emergência","E se seu carro te deixar na mão hoje?"],
-  ["Emergência","Já pensou ficar parado no meio da estrada?"],
-  ["Emergência","A pior hora para descobrir que sua bateria acabou é essa."],
-  ["Emergência","Ninguém sai de casa pensando que vai precisar disso."],
-  ["Emergência","Cinco minutos podem mudar completamente sua viagem."],
-  ["Emergência","Tem uma situação que todo motorista morre de medo."],
-  ["Emergência","Isso pode acontecer com qualquer motorista."],
-  ["Emergência","Eu espero que você nunca precise usar isso."],
-  ["Quem tem carro","Se você tem carro, esse vídeo é obrigatório."],
-  ["Quem tem carro","Todo motorista deveria ter um desses no porta-luvas."],
-  ["Quem tem carro","Você gastou milhares no carro e esqueceu disso."],
-  ["Quem tem carro","Existe um item que todo carro deveria sair de fábrica."],
-  ["Quem tem carro","Se seu carro tem bateria, você precisa conhecer isso."],
-  ["Quem tem carro","Tem uma coisa que eu nunca viajo sem."],
-  ["Quem tem carro","Quem dirige todo dia vai entender esse vídeo."],
-  ["Quem tem carro","Eu não deixaria meu carro sem isso."],
-  ["Quem tem carro","O acessório mais importante do seu carro talvez seja esse."],
-  ["Quem tem carro","Se você dirige sozinho, presta atenção."],
-  ["Viagens","Vai pegar estrada nas férias?"],
-  ["Viagens","Antes de viajar, assiste esse vídeo."],
-  ["Viagens","O maior erro de quem pega estrada."],
-  ["Viagens","Você leva triângulo... mas esquece disso."],
-  ["Viagens","Se sua família viaja de carro, veja isso."],
-  ["Viagens","Tem um item que pode salvar sua viagem."],
-  ["Viagens","Eu não pegaria estrada sem isso."],
-  ["Viagens","Quem faz viagem longa precisa conhecer."],
-  ["Viagens","Essa dica vale ouro para quem gosta de viajar."],
-  ["Viagens","Leva menos espaço que uma garrafa de água."],
-  ["Economia","Quer economizar centenas de reais?"],
-  ["Economia","Isso pode evitar um guincho."],
-  ["Economia","Um produto pode evitar um prejuízo enorme."],
-  ["Economia","O barato pode sair caro... menos nesse caso."],
-  ["Economia","Você paga seguro, mas esquece disso."],
-  ["Economia","Tem gente pagando por um problema que resolveria em minutos."],
-  ["Economia","Esse produto pode se pagar na primeira emergência."],
-  ["Economia","Quanto custa ficar parado esperando socorro?"],
-  ["Economia","Muito mais barato do que chamar um guincho."],
-  ["Economia","Uma compra pode evitar muita dor de cabeça."],
-  ["Identificação","Você já ficou com bateria descarregada?"],
-  ["Identificação","Quem nunca passou por isso?"],
-  ["Identificação","Se você já pediu chupeta para alguém..."],
-  ["Identificação","Você conhece alguém que vive com pneu murcho?"],
-  ["Identificação","Quem nunca esqueceu de calibrar os pneus?"],
-  ["Identificação","Já ficou sem bateria no celular durante uma viagem?"],
-  ["Identificação","Você já passou por algum perrengue na estrada?"],
-  ["Identificação","Qual foi o maior sufoco que você já passou com o carro?"],
-  ["Identificação","Aposto que isso já aconteceu com você."],
-  ["Identificação","Se ainda não aconteceu... um dia pode acontecer."],
-  ["Curiosidade","Descobri um equipamento que faz quatro coisas diferentes."],
-  ["Curiosidade","Eu achei que isso servia para uma coisa só."],
-  ["Curiosidade","Tem uma função escondida que ninguém comenta."],
-  ["Curiosidade","O tamanho desse equipamento engana."],
-  ["Curiosidade","Não parece, mas isso pode salvar uma viagem."],
-  ["Curiosidade","Cabe no porta-luvas e resolve um problemão."],
-  ["Curiosidade","Eu fiquei surpreso com tudo que ele faz."],
-  ["Curiosidade","O recurso mais útil nem é o principal."],
-  ["Curiosidade","Parece simples... até você precisar."],
-  ["Curiosidade","Esse pode ser o acessório mais inteligente para carro."],
-  ["Família","Se você anda com sua família no carro..."],
-  ["Família","Quem tem filhos deveria pensar nisso."],
-  ["Família","A última coisa que você quer é ficar parado com a família."],
-  ["Família","Segurança também é estar preparado."],
-  ["Família","Sua esposa vai agradecer quando isso acontecer."],
-  ["Família","Quem viaja com crianças entende."],
-  ["Família","Eu prefiro prevenir do que remediar."],
-  ["Família","Um pai de família deveria conhecer isso."],
-  ["Família","É um daqueles produtos que traz tranquilidade."],
-  ["Família","Eu compraria só pela paz de espírito."],
-  ["Moto","Quem anda de moto precisa ver isso."],
-  ["Moto","Motoboy, presta atenção."],
-  ["Moto","Você depende da moto para trabalhar?"],
-  ["Moto","Uma bateria descarregada pode acabar com seu dia."],
-  ["Moto","Se sua moto parar, você faz o quê?"],
-  ["Moto","Esse produto deveria acompanhar toda moto."],
-  ["Moto","Para quem vive sobre duas rodas."],
-  ["Moto","Seu trabalho depende da sua moto?"],
-  ["Moto","Você já ficou na mão por causa da bateria?"],
-  ["Moto","Esse pode ser seu melhor companheiro de viagem."],
-  ["Medo","O problema nunca avisa quando vai acontecer."],
-  ["Medo","O imprevisto sempre escolhe a pior hora."],
-  ["Medo","Você nunca acha que vai acontecer com você."],
-  ["Medo","O dia que isso acontecer, você vai lembrar desse vídeo."],
-  ["Medo","Não espere precisar para comprar."],
-  ["Medo","A prevenção sempre custa menos."],
-  ["Medo","Tem coisa que a gente compra esperando nunca usar."],
-  ["Medo","Eu espero que você nunca precise disso."],
-  ["Medo","Mas se precisar..."],
-  ["Medo","Você vai agradecer por ter comprado."],
-  ["Desafio/Teste","Será que isso realmente dá partida em um carro?"],
-  ["Desafio/Teste","Vamos descobrir se isso funciona de verdade."],
-  ["Desafio/Teste","Eu resolvi testar esse equipamento."],
-  ["Desafio/Teste","Promete fazer quatro funções... será?"],
-  ["Desafio/Teste","Vale mesmo os quase R$ 200?"],
-  ["Desafio/Teste","Bora colocar à prova."],
-  ["Desafio/Teste","Hoje eu vou tentar fazer ele falhar."],
-  ["Desafio/Teste","Será que ele entrega o que promete?"],
-  ["Desafio/Teste","O Cara Testou... e olha o resultado."],
-  ["Desafio/Teste","Vamos ver se isso merece ser aprovado."]
-]
-
-function montarTabela(id, dados, col1, col2) {
-  const tbody = document.getElementById(id)
-  dados.forEach(([a,b]) => {
-    const tr = document.createElement('tr')
-    tr.innerHTML = `<td><span class="tag">${a}</span></td><td>${b}</td>`
-    tbody.appendChild(tr)
-  })
+if (!prod) {
+  document.getElementById('app').innerHTML = '<div class="erro">Produto não encontrado.</div>'
+} else {
+  document.title = prod.nome + ' — Kit de Produção'
+  document.getElementById('app').innerHTML = `
+    <div class="card">
+      <div class="card-title">Informações do Produto</div>
+      <p style="font-size:.82rem;color:#666;margin-bottom:1rem;">${prod.nome}</p>
+      <div class="produto-grid">
+        <div class="produto-item">
+          <div class="card-subtitle">Solução</div>
+          <p>${prod.info.solucao}</p>
+        </div>
+        <div class="produto-item">
+          <div class="card-subtitle">Demonstração</div>
+          <p>Mostrar recurso relacionado ao tema do vídeo:</p>
+          <ul class="demo-list">${prod.info.demonstracao.map(d => `<li>${d}</li>`).join('')}</ul>
+        </div>
+        <div class="produto-item">
+          <div class="card-subtitle">Momento WOW</div>
+          <p>${prod.info.momWow}</p>
+        </div>
+        <div class="produto-item">
+          <div class="card-subtitle">Transformação</div>
+          <p>${prod.info.transformacao}</p>
+        </div>
+        <div class="produto-item">
+          <div class="card-subtitle">Veredito</div>
+          <p>${prod.info.veredito}</p>
+        </div>
+      </div>
+    </div>
+    <div class="tables-grid">
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-title">Ângulos</div>
+        <div class="table-wrap"><table><thead><tr><th>Ângulo</th><th>Descrição</th></tr></thead><tbody id="tabela-angulos"></tbody></table></div>
+      </div>
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-title">Ganchos</div>
+        <div class="table-wrap"><table><thead><tr><th>Categoria</th><th>Gancho</th></tr></thead><tbody id="tabela-ganchos"></tbody></table></div>
+      </div>
+    </div>
+  `
+  function montar(id, dados) {
+    const tbody = document.getElementById(id)
+    dados.forEach(([a,b]) => {
+      const tr = document.createElement('tr')
+      tr.innerHTML = `<td><span class="tag">${a}</span></td><td>${b}</td>`
+      tbody.appendChild(tr)
+    })
+  }
+  montar('tabela-angulos', prod.angulos)
+  montar('tabela-ganchos', prod.ganchos)
 }
-montarTabela('tabela-angulos', angulos, 'Ângulo', 'Descrição')
-montarTabela('tabela-ganchos', ganchos, 'Categoria', 'Gancho')
 </script>
 </body>
 </html>
