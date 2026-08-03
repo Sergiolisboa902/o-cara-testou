@@ -44,6 +44,13 @@
   .tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   @media (max-width: 800px) { .tables-grid { grid-template-columns: 1fr; } }
 
+  .temas-grid { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .tema-chip {
+    background: #f0f0f0; border: 1px solid #e0e0e0; border-radius: 6px;
+    padding: .3rem .7rem; font-size: .78rem; font-weight: 600; color: #333;
+  }
+  .tema-chip:hover { background: #e63946; color: #fff; border-color: #e63946; }
+
   .table-wrap { overflow-x: auto; max-height: 500px; overflow-y: auto; }
   table { width: 100%; border-collapse: collapse; font-size: .82rem; }
   th { background: #1a1a1a; color: #fff; font-weight: 700; text-align: left; padding: .4rem .6rem; position: sticky; top: 0; }
@@ -103,6 +110,10 @@ if (!prod) {
           <p>${prod.info.veredito}</p>
         </div>
       </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Temas</div>
+      <div class="temas-grid">${prod.temas.map(t => `<span class="tema-chip">${t}</span>`).join('')}</div>
     </div>
     <div class="tables-grid">
       <div class="card" style="margin-bottom:0;">
