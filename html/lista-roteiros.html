@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Roteiros — O Cara Testou</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f9f9f9; color: #1a1a1a; }
+  .topnav {
+    background: #1a1a1a; padding: .6rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topnav-brand { font-weight: 800; color: #fff; font-size: .9rem; }
+  .topnav-brand span { color: #e63946; }
+  .topnav-brand a { color: inherit; text-decoration: none; }
+  .topnav-back {
+    background: #333; border: none; padding: .4rem .9rem;
+    font-size: .78rem; font-weight: 600; font-family: inherit;
+    color: #ccc; cursor: pointer; border-radius: 6px; text-decoration: none;
+    transition: all .2s;
+  }
+  .topnav-back:hover { background: #e63946; color: #fff; }
+  .container { max-width: 760px; margin: 0 auto; padding: 1.5rem; }
+  .page-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.2rem; }
+  .page-title span { color: #e63946; }
+  .page-title .count { font-size: .8rem; color: #999; font-weight: 600; }
+
+  .clear-row { text-align: right; margin-bottom: .8rem; }
+  .clear-btn {
+    background: #eee; border: 1px solid #ddd; border-radius: 6px;
+    padding: .35rem .8rem; font-size: .75rem; font-weight: 700; color: #e63946;
+    cursor: pointer; transition: all .15s;
+  }
+  .clear-btn:hover { background: #ffe3e3; }
+
+  .filtros { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .filtro {
+    background: #eee; border: 1px solid #ddd; border-radius: 6px;
+    padding: .3rem .7rem; font-size: .75rem; font-weight: 700; color: #444;
+    cursor: pointer; transition: all .15s;
+  }
+  .filtro.sel { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+  .roteiro-card {
+    background: #fff; border-radius: 12px; padding: .9rem 1.2rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: .7rem;
+    border: 1px solid #eee; cursor: pointer; transition: all .15s;
+  }
+  .roteiro-card:hover { border-color: #e63946; transform: translateX(3px); }
+  .rc-head { display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap; }
+  .rc-title { font-size: .85rem; font-weight: 800; }
+  .rc-title span { color: #e63946; }
+  .rc-time { font-size: .7rem; color: #999; }
+  .rc-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
+  .rc-tag {
+    background: #f0f0f0; border-radius: 5px; padding: .15rem .5rem;
+    font-size: .7rem; font-weight: 600; color: #444;
+  }
+  .rc-tag.ang { background: #1a1a1a; color: #fff; }
+
+  .vazio { text-align: center; padding: 3rem; color: #aaa; font-size: .85rem; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6);
+    z-index: 200; align-items: center; justify-content: center; padding: 1.5rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 14px; max-width: 640px; width: 100%;
+    max-height: 86vh; display: flex; flex-direction: column; overflow: hidden;
+  }
+  .modal-head {
+    padding: 1rem 1.5rem; border-bottom: 1px solid #eee;
+    display: flex; align-items: center; justify-content: space-between; gap: .8rem;
+  }
+  .modal-title { font-size: .9rem; font-weight: 800; }
+  .modal-close {
+    background: #eee; border: none; border-radius: 6px; cursor: pointer;
+    font-size: .9rem; padding: .3rem .6rem; font-weight: 700; color: #333;
+  }
+  .modal-body { padding: 1rem 1.5rem; overflow-y: auto; }
+  .modal-footer {
+    padding: .9rem 1.5rem; border-top: 1px solid #eee;
+    display: flex; gap: .6rem; flex-wrap: wrap;
+  }
+  .m-btn {
+    background: #e63946; border: none; border-radius: 8px; cursor: pointer;
+    font-size: .82rem; font-weight: 700; padding: .55rem 1rem; color: #fff; transition: all .2s;
+  }
+  .m-btn:hover { background: #c82d3a; }
+  .m-btn.ghost { background: #eee; color: #1a1a1a; }
+  .m-btn.ghost:hover { background: #ddd; }
+  .m-btn.del { background: #ffe3e3; color: #e63946; }
+  .m-btn.del:hover { background: #ffd0d0; }
+
+  .roteiro-item { display: flex; gap: .6rem; padding: .45rem 0; border-bottom: 1px solid #f0f0f0; font-size: .85rem; line-height: 1.5; }
+  .roteiro-item:last-child { border-bottom: none; }
+  .roteiro-ico { flex-shrink: 0; }
+  .roteiro-label { font-weight: 700; color: #e63946; min-width: 105px; }
+
+  .footer { text-align: center; padding: 1.5rem; font-size: .72rem; color: #999; }
+</style>
+</head>
+<body>
+<div class="topnav">
+  <div class="topnav-brand"><a href="index.html"><span>O</span> Cara Testou</a></div>
+  <a href="criar-roteiro.html" class="topnav-back">✨ Criar novo</a>
+</div>
+<div class="container">
+  <div class="page-title"><span>Roteiros</span> Criados <span class="count" id="contador"></span></div>
+  <div class="filtros" id="filtros"></div>
+  <div class="clear-row"><button class="clear-btn" onclick="limparTodos()">🗑 Limpar todos</button></div>
+  <div id="lista"></div>
+</div>
+<div class="footer">O Cara Testou &mdash; Lista de Roteiros</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="m-titulo"></div>
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+    </div>
+    <div class="modal-body" id="m-body"></div>
+    <div class="modal-footer">
+      <button class="m-btn" onclick="copiarAtual()">📋 Copiar</button>
+      <button class="m-btn ghost" onclick="baixarAtual()">⬇ Baixar .txt</button>
+      <button class="m-btn del" onclick="removerAtual()">🗑 Excluir</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LS_KEY = 'roteiros_criados'
+const filtro = { produto: 'todos', tema: 'todos' }
+let atualId = null
+
+function carregar() { try { return JSON.parse(localStorage.getItem(LS_KEY)) || [] } catch(e) { return [] } }
+function salvar(lista) { localStorage.setItem(LS_KEY, JSON.stringify(lista)) }
+
+function listaFiltrada() {
+  return carregar().filter(r =>
+    (filtro.produto === 'todos' || r.produtoNome === filtro.produto) &&
+    (filtro.tema === 'todos' || r.tema === filtro.tema)
+  )
+}
+
+function renderFiltros() {
+  const todos = carregar()
+  const produtos = [...new Set(todos.map(r => r.produtoNome))]
+  const temas = [...new Set(todos.map(r => r.tema))]
+  document.getElementById('filtros').innerHTML =
+    `<button class="filtro ${filtro.produto==='todos'?'sel':''}" onclick="setFiltro('produto','todos')">Todos</button>` +
+    produtos.map(p => `<button class="filtro ${filtro.produto===p?'sel':''}" onclick="setFiltro('produto','${p}')">${p}</button>`).join('') +
+    `<span style="flex-basis:100%"></span>` +
+    `<button class="filtro ${filtro.tema==='todos'?'sel':''}" onclick="setFiltro('tema','todos')">Todos temas</button>` +
+    temas.map(t => `<button class="filtro ${filtro.tema===t?'sel':''}" onclick="setFiltro('tema','${t}')">${t}</button>`).join('')
+}
+
+function renderLista() {
+  const todos = carregar()
+  document.getElementById('contador').textContent = `(${todos.length})`
+  const lista = listaFiltrada()
+  renderFiltros()
+  const el = document.getElementById('lista')
+  if (!todos.length) { el.innerHTML = '<div class="vazio">Nenhum roteiro criado ainda. <br><a href="criar-roteiro.html" style="color:#e63946">✨ Criar roteiro</a></div>'; return }
+  if (!lista.length) { el.innerHTML = '<div class="vazio">Nenhum roteiro com esse filtro.</div>'; return }
+  el.innerHTML = lista.map(r => `
+    <div class="roteiro-card" onclick="abrirModal('${r.id}')">
+      <div class="rc-head">
+        <div class="rc-title"><span>${r.produtoNome}</span></div>
+        <div class="rc-time">${new Date(r.ts).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })}</div>
+      </div>
+      <div class="rc-tags">
+        <span class="rc-tag ang">🎯 ${r.angulo}</span>
+        <span class="rc-tag">🎣 ${r.gancho}</span>
+        <span class="rc-tag">👤 ${r.tema}</span>
+      </div>
+    </div>`).join('')
+}
+
+function setFiltro(tipo, valor) { filtro[tipo] = valor; renderLista() }
+
+function abrirModal(id) {
+  const r = carregar().find(x => x.id === id)
+  if (!r) return
+  atualId = id
+  document.getElementById('m-titulo').textContent = r.produtoNome
+  document.getElementById('m-body').innerHTML =
+    `<div class="rc-tags" style="margin-bottom:.8rem">
+      <span class="rc-tag ang">🎯 ${r.angulo}</span>
+      <span class="rc-tag">🎣 ${r.gancho}</span>
+      <span class="rc-tag">👤 ${r.tema}</span>
+    </div>` + r.html
+  document.getElementById('modal').classList.add('open')
+}
+function fecharModal() { document.getElementById('modal').classList.remove('open'); atualId = null }
+
+function textoAtual() {
+  const r = carregar().find(x => x.id === atualId)
+  if (!r) return ''
+  return `ROTEIRO — ${r.produtoNome}\nÂngulo: ${r.angulo}\nGancho: ${r.gancho}\nTema: ${r.tema}\n\n` + r.html.replace(/<[^>]*>/g, '').replace(/\n{3,}/g, '\n\n').trim()
+}
+function copiarAtual() {
+  navigator.clipboard.writeText(textoAtual()).then(() => alert('Roteiro copiado!'))
+}
+function baixarAtual() {
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(new Blob([textoAtual()], { type: 'text/plain' }))
+  a.download = 'roteiro.txt'
+  a.click()
+}
+function removerAtual() {
+  if (confirm('Excluir este roteiro?')) {
+    salvar(carregar().filter(r => r.id !== atualId))
+    fecharModal()
+    renderLista()
+  }
+}
+function limparTodos() {
+  if (confirm('Excluir todos os roteiros?')) { salvar([]); renderLista() }
+}
+document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') fecharModal() })
+document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharModal() })
+
+renderLista()
+</script>
+</body>
+</html>

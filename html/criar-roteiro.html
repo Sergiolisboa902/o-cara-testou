@@ -74,42 +74,22 @@
   .roteiro-label { font-weight: 700; color: #e63946; min-width: 105px; }
   .hidden { display: none; }
   .footer { text-align: center; padding: 1.5rem; font-size: .72rem; color: #999; }
-
-  .roteiro-card {
-    background: #fff; border-radius: 12px; padding: .9rem 1.2rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: .8rem;
-    border: 1px solid #eee;
+  .topnav-right { display: flex; gap: .5rem; align-items: center; }
+  .topnav-link {
+    background: #e63946; color: #fff; text-decoration: none;
+    font-size: .78rem; font-weight: 700; padding: .4rem .9rem; border-radius: 6px;
+    transition: all .2s;
   }
-  .rc-head { display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap; }
-  .rc-title { font-size: .82rem; font-weight: 800; }
-  .rc-title span { color: #e63946; }
-  .rc-time { font-size: .7rem; color: #999; }
-  .rc-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
-  .rc-tag {
-    background: #f0f0f0; border-radius: 5px; padding: .15rem .5rem;
-    font-size: .7rem; font-weight: 600; color: #444;
-  }
-  .rc-tag.ang { background: #1a1a1a; color: #fff; }
-  .rc-actions { display: flex; gap: .4rem; margin-top: .6rem; }
-  .rc-btn {
-    background: #eee; border: none; border-radius: 6px;
-    padding: .3rem .7rem; font-size: .72rem; font-weight: 700; color: #333;
-    cursor: pointer; transition: all .15s;
-  }
-  .rc-btn:hover { background: #ddd; }
-  .rc-btn.del { color: #e63946; }
-  .rc-btn.del:hover { background: #ffe3e3; }
-  .rc-full { display: none; margin-top: .7rem; padding-top: .7rem; border-top: 1px dashed #ddd; }
-  .rc-full.open { display: block; }
-  .rc-full .roteiro-item { font-size: .8rem; }
-  .vazio { text-align: center; padding: 2rem; color: #aaa; font-size: .82rem; }
-  .clear-all { text-align: right; margin-bottom: .6rem; }
+  .topnav-link:hover { background: #c82d3a; }
 </style>
 </head>
 <body>
 <div class="topnav">
   <div class="topnav-brand"><a href="index.html"><span>O</span> Cara Testou</a></div>
-  <a href="catalogo.html" class="topnav-back">&larr; Catálogo</a>
+  <div class="topnav-right">
+    <a href="lista-roteiros.html" class="topnav-link">📋 Ver lista</a>
+    <a href="catalogo.html" class="topnav-back">&larr; Catálogo</a>
+  </div>
 </div>
 <div class="container" id="app"></div>
 <div class="footer">O Cara Testou &mdash; Criar Roteiro</div>
@@ -158,12 +138,6 @@ function render() {
     </div>
 
     <div id="area-roteiro" class="hidden" style="margin-top:1rem;"></div>
-
-    <div class="card" style="margin-top:1.5rem;">
-      <div class="card-title">📋 Roteiros Criados <span id="contador"></span></div>
-      <div class="clear-all"><button class="rc-btn del" onclick="limparTodos()">🗑 Limpar todos</button></div>
-      <div id="lista-roteiros"></div>
-    </div>
   `
 
   document.getElementById('sel-produto').addEventListener('change', e => {
@@ -173,37 +147,11 @@ function render() {
   })
   renderAngItens()
   renderGanItens()
-  renderLista()
 }
 
 const LS_KEY = 'roteiros_criados'
 function carregar() { try { return JSON.parse(localStorage.getItem(LS_KEY)) || [] } catch(e) { return [] } }
 function salvar(lista) { localStorage.setItem(LS_KEY, JSON.stringify(lista)) }
-
-function renderLista() {
-  const lista = carregar()
-  const el = document.getElementById('lista-roteiros')
-  document.getElementById('contador').textContent = `(${lista.length})`
-  if (!lista.length) { el.innerHTML = '<div class="vazio">Nenhum roteiro criado ainda. Gere um acima.</div>'; return }
-  el.innerHTML = lista.map(r => `
-    <div class="roteiro-card">
-      <div class="rc-head">
-        <div class="rc-title"><span>${r.produtoNome}</span></div>
-        <div class="rc-time">${new Date(r.ts).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })}</div>
-      </div>
-      <div class="rc-tags">
-        <span class="rc-tag ang">🎯 ${r.angulo}</span>
-        <span class="rc-tag">🎣 ${r.gancho}</span>
-        <span class="rc-tag">👤 ${r.tema}</span>
-      </div>
-      <div class="rc-full" id="full-${r.id}">${r.html}</div>
-      <div class="rc-actions">
-        <button class="rc-btn" onclick="expandir('${r.id}')">👁 Ver roteiro</button>
-        <button class="rc-btn" onclick="copiarSalvo('${r.id}')">📋 Copiar</button>
-        <button class="rc-btn del" onclick="remover('${r.id}')">🗑 Excluir</button>
-      </div>
-    </div>`).join('')
-}
 
 function salvarRoteiro() {
   const p = produtosDB[estado.produto]
@@ -219,26 +167,6 @@ function salvarRoteiro() {
   }
   lista.unshift(r)
   salvar(lista)
-  renderLista()
-}
-
-function expandir(id) {
-  const full = document.getElementById('full-' + id)
-  full.classList.toggle('open')
-}
-function remover(id) {
-  salvar(carregar().filter(r => r.id !== id))
-  renderLista()
-}
-function limparTodos() {
-  if (confirm('Excluir todos os roteiros?')) { salvar([]); renderLista() }
-}
-function textoSalvo(id) {
-  const r = carregar().find(x => x.id === id)
-  return `ROTEIRO — ${r.produtoNome}\nÂngulo: ${r.angulo}\nGancho: ${r.gancho}\nTema: ${r.tema}\n\n` + r.html.replace(/<[^>]*>/g, '').replace(/\n{3,}/g, '\n\n').trim()
-}
-function copiarSalvo(id) {
-  navigator.clipboard.writeText(textoSalvo(id)).then(() => alert('Roteiro copiado!'))
 }
 
 function renderAngItens() {
