@@ -25,6 +25,13 @@
   .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; }
   .page-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 1.5rem; }
   .page-title span { color: #e63946; }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: .7rem; }
+  .cta-btn {
+    display: inline-block; background: #e63946; color: #fff; text-decoration: none;
+    font-size: .82rem; font-weight: 700; padding: .6rem 1.1rem; border-radius: 8px;
+    transition: all .2s;
+  }
+  .cta-btn:hover { background: #c82d3a; transform: translateY(-1px); }
   .grid { display: grid; gap: 1rem; }
 
   .card {
@@ -53,7 +60,10 @@
   <a href="index.html" class="topnav-back">&larr; Voltar</a>
 </div>
 <div class="container">
-  <div class="page-title"><span>Catálogo</span> de Produtos</div>
+  <div class="top-bar">
+    <div class="page-title"><span>Catálogo</span> de Produtos</div>
+    <a href="criar-roteiro.html" class="cta-btn">✨ Criar Roteiro</a>
+  </div>
   <div class="grid" id="lista"></div>
 </div>
 <div class="footer">O Cara Testou &mdash; Catálogo</div>

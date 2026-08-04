@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Criar Roteiro — O Cara Testou</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f9f9f9; color: #1a1a1a; }
+  .topnav {
+    background: #1a1a1a; padding: .6rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topnav-brand { font-weight: 800; color: #fff; font-size: .9rem; }
+  .topnav-brand span { color: #e63946; }
+  .topnav-brand a { color: inherit; text-decoration: none; }
+  .topnav-back {
+    background: #333; border: none; padding: .4rem .9rem;
+    font-size: .78rem; font-weight: 600; font-family: inherit;
+    color: #ccc; cursor: pointer; border-radius: 6px; text-decoration: none;
+    transition: all .2s;
+  }
+  .topnav-back:hover { background: #e63946; color: #fff; }
+  .container { max-width: 1000px; margin: 0 auto; padding: 1.5rem; }
+
+  .card {
+    background: #fff; border-radius: 14px; padding: 1.5rem 2rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: 1.5rem;
+  }
+  .card-title {
+    font-size: 1rem; font-weight: 800; margin-bottom: 1rem;
+    padding-bottom: .5rem; border-bottom: 2px solid #e63946;
+    text-transform: uppercase; letter-spacing: .04em;
+  }
+
+  label { display: block; font-size: .75rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .05em; margin: .8rem 0 .3rem; }
+  select, button {
+    font-family: inherit; font-size: .85rem; padding: .55rem .7rem;
+    border-radius: 8px; border: 1px solid #ddd; background: #fff; width: 100%; color: #1a1a1a;
+  }
+  button { background: #1a1a1a; color: #fff; font-weight: 700; cursor: pointer; border: none; transition: all .2s; }
+  button:hover { background: #e63946; }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+
+  .btn-row { display: flex; gap: .7rem; margin-top: 1.5rem; }
+  .btn-ghost { background: #eee !important; color: #1a1a1a !important; }
+  .btn-ghost:hover { background: #ddd !important; }
+
+  .minibox {
+    background: #f5f5f5; border: 1px solid #eee; border-radius: 8px;
+    padding: .7rem .9rem; font-size: .85rem; color: #333; margin-top: .3rem;
+    min-height: 2.6rem; cursor: pointer; transition: all .15s;
+  }
+  .minibox:hover { border-color: #e63946; background: #fff; }
+  .minibox.sel { border-color: #e63946; background: #fff3f3; font-weight: 700; }
+  .minibox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: .5rem; }
+
+  .cat-btns { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .3rem; }
+  .cat-btn {
+    background: #eee; border: 1px solid #ddd; border-radius: 6px;
+    padding: .35rem .7rem; font-size: .75rem; font-weight: 700; color: #444;
+    cursor: pointer; transition: all .15s;
+  }
+  .cat-btn:hover { background: #ddd; }
+  .cat-btn.sel { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+  .roteiro {
+    background: #fff; border-radius: 14px; padding: 1.5rem 2rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: 1.5rem;
+    white-space: pre-wrap; line-height: 1.7; font-size: .9rem; color: #222;
+    outline: none; min-height: 200px;
+  }
+  .roteiro b { color: #e63946; }
+  .hidden { display: none; }
+  .aviso { text-align: center; padding: 2rem; color: #999; font-size: .85rem; }
+  .footer { text-align: center; padding: 1.5rem; font-size: .72rem; color: #999; }
+</style>
+</head>
+<body>
+<div class="topnav">
+  <div class="topnav-brand"><a href="index.html"><span>O</span> Cara Testou</a></div>
+  <a href="catalogo.html" class="topnav-back">&larr; Catálogo</a>
+</div>
+<div class="container" id="app"></div>
+<div class="footer">O Cara Testou &mdash; Criar Roteiro</div>
+
+<script src="dados-produtos.js"></script>
+<script>
+const app = document.getElementById('app')
+const ids = Object.keys(produtosDB)
+const estado = { produto: ids[0], angCat: null, angItem: null, ganCat: null, ganItem: null, tema: null }
+
+function render() {
+  const p = produtosDB[estado.produto]
+  const angCats = [...new Set(p.angulos.map(a => a[0]))]
+  const ganCats = [...new Set(p.ganchos.map(a => a[0]))]
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="card-title">1. Escolha o Produto</div>
+      <select id="sel-produto">
+        ${ids.map(id => `<option value="${id}" ${id===estado.produto?'selected':''}>${produtosDB[id].nome}</option>`).join('')}
+      </select>
+    </div>
+
+    <div class="card">
+      <div class="card-title">2. Escolha o Ângulo</div>
+      <div class="cat-btns" id="ang-cats">
+        ${angCats.map(c => `<button class="cat-btn ${estado.angCat===c?'sel':''}" onclick="selAngCat('${c}')">${c}</button>`).join('')}
+      </div>
+      <label>Categoria: <b id="ang-cat-label">${estado.angCat || 'selecione'}</b></label>
+      <div class="minibox-grid" id="ang-list"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">3. Escolha o Gancho</div>
+      <div class="cat-btns" id="gan-cats">
+        ${ganCats.map(c => `<button class="cat-btn ${estado.ganCat===c?'sel':''}" onclick="selGanCat('${c}')">${c}</button>`).join('')}
+      </div>
+      <label>Categoria: <b id="gan-cat-label">${estado.ganCat || 'selecione'}</b></label>
+      <div class="minibox-grid" id="gan-list"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">4. Escolha o Tema</div>
+      <div class="minibox-grid" id="tema-list">
+        ${p.temas.map((t,i) => `<div class="minibox ${estado.tema===t?'sel':''}" onclick="selTema(${i})">${t}</div>`).join('')}
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button id="btn-gerar" onclick="gerar()">✨ Gerar Roteiro</button>
+    </div>
+
+    <div id="area-roteiro" class="hidden" style="margin-top:1.5rem;">
+      <div class="card-title">Roteiro Gerado</div>
+      <div class="roteiro" id="roteiro" contenteditable="true"></div>
+      <div class="btn-row">
+        <button id="btn-copiar" onclick="copiar()">📋 Copiar</button>
+        <button class="btn-ghost" onclick="baixar()">⬇ Baixar .txt</button>
+        <button class="btn-ghost" onclick="gerar()">🎲 Sortear outra combinação</button>
+      </div>
+    </div>
+  `
+
+  document.getElementById('sel-produto').addEventListener('change', e => {
+    estado.produto = e.target.value
+    estado.angCat = estado.angItem = estado.ganCat = estado.ganItem = estado.tema = null
+    render()
+  })
+
+  if (estado.angCat) renderAngItens()
+  if (estado.ganCat) renderGanItens()
+}
+
+function renderAngItens() {
+  const p = produtosDB[estado.produto]
+  const itens = p.angulos.filter(a => a[0] === estado.angCat)
+  document.getElementById('ang-cat-label').textContent = estado.angCat
+  document.getElementById('ang-list').innerHTML = itens.map((a,i) =>
+    `<div class="minibox ${estado.angItem===a[1]?'sel':''}" onclick="selAngItem(${i})">${a[1]}</div>`).join('')
+}
+function renderGanItens() {
+  const p = produtosDB[estado.produto]
+  const itens = p.ganchos.filter(a => a[0] === estado.ganCat)
+  document.getElementById('gan-cat-label').textContent = estado.ganCat
+  document.getElementById('gan-list').innerHTML = itens.map((a,i) =>
+    `<div class="minibox ${estado.ganItem===a[1]?'sel':''}" onclick="selGanItem(${i})">${a[1]}</div>`).join('')
+}
+
+function selAngCat(c) { estado.angCat = c; estado.angItem = null; render() }
+function selGanCat(c) { estado.ganCat = c; estado.ganItem = null; render() }
+function selAngItem(i) {
+  const p = produtosDB[estado.produto]
+  estado.angItem = p.angulos.filter(a => a[0] === estado.angCat)[i][1]
+  render()
+}
+function selGanItem(i) {
+  const p = produtosDB[estado.produto]
+  estado.ganItem = p.ganchos.filter(a => a[0] === estado.ganCat)[i][1]
+  render()
+}
+function selTema(i) {
+  const p = produtosDB[estado.produto]
+  estado.tema = p.temas[i]
+  render()
+}
+
+function sortear(arr, indice) {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+
+function gerar() {
+  const p = produtosDB[estado.produto]
+  const falhas = []
+  if (!estado.angItem) falhas.push('Ângulo')
+  if (!estado.ganItem) falhas.push('Gancho')
+  if (!estado.tema) falhas.push('Tema')
+  if (falhas.length) { alert('Falta escolher: ' + falhas.join(', ')); return }
+
+  const angCat = estado.angItem
+  const gancho = estado.ganItem
+  const tema = estado.tema
+
+  const roteiro = `🎬 ROTEIRO — ${p.nome.toUpperCase()}
+Tema: ${tema}
+
+━━━━━━  PARTE 1 — EMOÇÃO  ━━━━━━
+
+🎯 ÂNGULO: ${angCat}
+
+🎣 GANCHO: ${gancho}
+
+🤔 CURIOSIDADE: Vou te mostrar por que esse detalhe muda tudo. Eu também não acreditava... até testar.
+
+👤 TEMA CENTRAL: (Situação do tema: ${tema})
+
+⚠ PROBLEMA: É aquele tipo de coisa que faz você perder tempo, fazer força e nunca ficar satisfeito com o resultado.
+
+💥 CONSEQUÊNCIA: O serviço vira estresse, o conserto fica adiado e no fim você acaba dependendo de alguém.
+
+━━━━━━  PARTE 2 — PRODUTO  ━━━━━━
+
+🔧 PRODUTO: ${p.info.solucao}
+
+🎬 DEMONSTRAÇÃO: ${p.info.demonstracao[0]}. ${p.info.demonstracaoFrase}
+
+🤯 MOMENTO WOW: ${p.info.momWow}
+
+✨ TRANSFORMAÇÃO: ${p.info.transformacao}
+
+✅ VEREDITO: ${p.info.veredito}
+
+🎯 CTA: O produto está aqui no TikTok Shop. Confere se ainda tem cupom ativo e me conta o que achou. Qual outro produto você quer que eu teste?`
+
+  document.getElementById('roteiro').innerHTML = roteiro
+  document.getElementById('area-roteiro').classList.remove('hidden')
+  document.getElementById('area-roteiro').scrollIntoView({ behavior: 'smooth' })
+}
+
+function copiar() {
+  const txt = document.getElementById('roteiro').innerText
+  navigator.clipboard.writeText(txt).then(() => alert('Roteiro copiado!'))
+}
+function baixar() {
+  const txt = document.getElementById('roteiro').innerText
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain' }))
+  a.download = 'roteiro.txt'
+  a.click()
+}
+
+render()
+</script>
+</body>
+</html>
