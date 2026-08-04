@@ -23,58 +23,56 @@
     transition: all .2s;
   }
   .topnav-back:hover { background: #e63946; color: #fff; }
-  .container { max-width: 1000px; margin: 0 auto; padding: 1.5rem; }
+  .container { max-width: 720px; margin: 0 auto; padding: 1.5rem; }
 
   .card {
-    background: #fff; border-radius: 14px; padding: 1.5rem 2rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: 1.5rem;
+    background: #fff; border-radius: 14px; padding: 1.2rem 1.5rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: 1rem;
   }
   .card-title {
-    font-size: 1rem; font-weight: 800; margin-bottom: 1rem;
-    padding-bottom: .5rem; border-bottom: 2px solid #e63946;
+    font-size: .9rem; font-weight: 800; margin-bottom: .8rem;
+    padding-bottom: .4rem; border-bottom: 2px solid #e63946;
     text-transform: uppercase; letter-spacing: .04em;
   }
 
-  label { display: block; font-size: .75rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .05em; margin: .8rem 0 .3rem; }
   select, button {
-    font-family: inherit; font-size: .85rem; padding: .55rem .7rem;
+    font-family: inherit; font-size: .85rem; padding: .5rem .7rem;
     border-radius: 8px; border: 1px solid #ddd; background: #fff; width: 100%; color: #1a1a1a;
   }
-  button { background: #1a1a1a; color: #fff; font-weight: 700; cursor: pointer; border: none; transition: all .2s; }
-  button:hover { background: #e63946; }
-  button:disabled { opacity: .4; cursor: not-allowed; }
-
-  .btn-row { display: flex; gap: .7rem; margin-top: 1.5rem; }
-  .btn-ghost { background: #eee !important; color: #1a1a1a !important; }
-  .btn-ghost:hover { background: #ddd !important; }
+  .btn-row { display: flex; gap: .6rem; margin-top: .2rem; }
+  button.primary { background: #e63946; color: #fff; font-weight: 700; cursor: pointer; border: none; transition: all .2s; }
+  button.primary:hover { background: #c82d3a; }
+  button.ghost { background: #eee !important; color: #1a1a1a !important; cursor: pointer; }
+  button.ghost:hover { background: #ddd !important; }
 
   .minibox {
     background: #f5f5f5; border: 1px solid #eee; border-radius: 8px;
-    padding: .7rem .9rem; font-size: .85rem; color: #333; margin-top: .3rem;
-    min-height: 2.6rem; cursor: pointer; transition: all .15s;
+    padding: .55rem .8rem; font-size: .82rem; color: #333; margin-top: .3rem;
+    cursor: pointer; transition: all .15s;
   }
   .minibox:hover { border-color: #e63946; background: #fff; }
   .minibox.sel { border-color: #e63946; background: #fff3f3; font-weight: 700; }
-  .minibox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: .5rem; }
-
-  .cat-btns { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .3rem; }
+  .cat-btns { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .3rem; }
   .cat-btn {
     background: #eee; border: 1px solid #ddd; border-radius: 6px;
-    padding: .35rem .7rem; font-size: .75rem; font-weight: 700; color: #444;
-    cursor: pointer; transition: all .15s;
+    padding: .3rem .6rem; font-size: .72rem; font-weight: 700; color: #444;
+    cursor: pointer; transition: all .15s; width: auto;
   }
   .cat-btn:hover { background: #ddd; }
   .cat-btn.sel { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
 
   .roteiro {
-    background: #fff; border-radius: 14px; padding: 1.5rem 2rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: 1.5rem;
-    white-space: pre-wrap; line-height: 1.7; font-size: .9rem; color: #222;
-    outline: none; min-height: 200px;
+    background: #fff; border-radius: 14px; padding: 1.2rem 1.5rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: 1rem;
   }
-  .roteiro b { color: #e63946; }
+  .roteiro-item {
+    display: flex; gap: .6rem; padding: .4rem 0;
+    border-bottom: 1px solid #f0f0f0; font-size: .85rem; line-height: 1.5;
+  }
+  .roteiro-item:last-child { border-bottom: none; }
+  .roteiro-ico { flex-shrink: 0; }
+  .roteiro-label { font-weight: 700; color: #e63946; min-width: 105px; }
   .hidden { display: none; }
-  .aviso { text-align: center; padding: 2rem; color: #999; font-size: .85rem; }
   .footer { text-align: center; padding: 1.5rem; font-size: .72rem; color: #999; }
 </style>
 </head>
@@ -99,50 +97,37 @@ function render() {
 
   app.innerHTML = `
     <div class="card">
-      <div class="card-title">1. Escolha o Produto</div>
+      <div class="card-title">Produto</div>
       <select id="sel-produto">
         ${ids.map(id => `<option value="${id}" ${id===estado.produto?'selected':''}>${produtosDB[id].nome}</option>`).join('')}
       </select>
     </div>
 
     <div class="card">
-      <div class="card-title">2. Escolha o Ângulo</div>
-      <div class="cat-btns" id="ang-cats">
-        ${angCats.map(c => `<button class="cat-btn ${estado.angCat===c?'sel':''}" onclick="selAngCat('${c}')">${c}</button>`).join('')}
-      </div>
-      <label>Categoria: <b id="ang-cat-label">${estado.angCat || 'selecione'}</b></label>
-      <div class="minibox-grid" id="ang-list"></div>
+      <div class="card-title">Ângulo</div>
+      <div class="cat-btns">${angCats.map(c => `<button class="cat-btn ${estado.angCat===c?'sel':''}" onclick="selAngCat('${c}')">${c}</button>`).join('')}</div>
+      <div id="ang-list"></div>
     </div>
 
     <div class="card">
-      <div class="card-title">3. Escolha o Gancho</div>
-      <div class="cat-btns" id="gan-cats">
-        ${ganCats.map(c => `<button class="cat-btn ${estado.ganCat===c?'sel':''}" onclick="selGanCat('${c}')">${c}</button>`).join('')}
-      </div>
-      <label>Categoria: <b id="gan-cat-label">${estado.ganCat || 'selecione'}</b></label>
-      <div class="minibox-grid" id="gan-list"></div>
+      <div class="card-title">Gancho</div>
+      <div class="cat-btns">${ganCats.map(c => `<button class="cat-btn ${estado.ganCat===c?'sel':''}" onclick="selGanCat('${c}')">${c}</button>`).join('')}</div>
+      <div id="gan-list"></div>
     </div>
 
     <div class="card">
-      <div class="card-title">4. Escolha o Tema</div>
-      <div class="minibox-grid" id="tema-list">
+      <div class="card-title">Tema</div>
+      <div id="tema-list">
         ${p.temas.map((t,i) => `<div class="minibox ${estado.tema===t?'sel':''}" onclick="selTema(${i})">${t}</div>`).join('')}
       </div>
     </div>
 
     <div class="btn-row">
-      <button id="btn-gerar" onclick="gerar()">✨ Gerar Roteiro</button>
+      <button class="primary" onclick="gerar()">✨ Gerar Roteiro</button>
+      <button class="ghost" onclick="sortear()">🎲 Sortear</button>
     </div>
 
-    <div id="area-roteiro" class="hidden" style="margin-top:1.5rem;">
-      <div class="card-title">Roteiro Gerado</div>
-      <div class="roteiro" id="roteiro" contenteditable="true"></div>
-      <div class="btn-row">
-        <button id="btn-copiar" onclick="copiar()">📋 Copiar</button>
-        <button class="btn-ghost" onclick="baixar()">⬇ Baixar .txt</button>
-        <button class="btn-ghost" onclick="gerar()">🎲 Sortear outra combinação</button>
-      </div>
-    </div>
+    <div id="area-roteiro" class="hidden" style="margin-top:1rem;"></div>
   `
 
   document.getElementById('sel-produto').addEventListener('change', e => {
@@ -150,22 +135,21 @@ function render() {
     estado.angCat = estado.angItem = estado.ganCat = estado.ganItem = estado.tema = null
     render()
   })
-
-  if (estado.angCat) renderAngItens()
-  if (estado.ganCat) renderGanItens()
+  renderAngItens()
+  renderGanItens()
 }
 
 function renderAngItens() {
   const p = produtosDB[estado.produto]
+  if (!estado.angCat) { document.getElementById('ang-list').innerHTML = ''; return }
   const itens = p.angulos.filter(a => a[0] === estado.angCat)
-  document.getElementById('ang-cat-label').textContent = estado.angCat
   document.getElementById('ang-list').innerHTML = itens.map((a,i) =>
     `<div class="minibox ${estado.angItem===a[1]?'sel':''}" onclick="selAngItem(${i})">${a[1]}</div>`).join('')
 }
 function renderGanItens() {
   const p = produtosDB[estado.produto]
+  if (!estado.ganCat) { document.getElementById('gan-list').innerHTML = ''; return }
   const itens = p.ganchos.filter(a => a[0] === estado.ganCat)
-  document.getElementById('gan-cat-label').textContent = estado.ganCat
   document.getElementById('gan-list').innerHTML = itens.map((a,i) =>
     `<div class="minibox ${estado.ganItem===a[1]?'sel':''}" onclick="selGanItem(${i})">${a[1]}</div>`).join('')
 }
@@ -188,66 +172,83 @@ function selTema(i) {
   render()
 }
 
-function sortear(arr, indice) {
-  return arr[Math.floor(Math.random() * arr.length)]
+function aleatorio(arr) { return arr[Math.floor(Math.random() * arr.length)] }
+function escolherAleatorio() {
+  const p = produtosDB[estado.produto]
+  const ang = aleatorio(p.angulos)
+  const gan = aleatorio(p.ganchos)
+  estado.angCat = ang[0]; estado.angItem = ang[1]
+  estado.ganCat = gan[0]; estado.ganItem = gan[1]
+  estado.tema = aleatorio(p.temas)
+}
+
+function sortear() {
+  escolherAleatorio()
+  render()
+  gerar()
+}
+
+function montarLista() {
+  const p = produtosDB[estado.produto]
+  const demo = p.info.demonstracao[0]
+  const itens = [
+    ['🎯','Ângulo', estado.angItem],
+    ['🎣','Gancho', estado.ganItem],
+    ['👤','Tema', estado.tema],
+    ['🔧','Produto', p.info.solucao],
+    ['🎬','Demo', demo + '. ' + p.info.demonstracaoFrase],
+    ['🤯','Wow', p.info.momWow],
+    ['✨','Transform', p.info.transformacao],
+    ['✅','Veredito', p.info.veredito],
+    ['🎯','CTA', 'O produto está no TikTok Shop. Confere o cupom e me conta o que achou.']
+  ]
+  return itens.map(([ico,label,txt]) => `
+    <div class="roteiro-item">
+      <span class="roteiro-ico">${ico}</span>
+      <span class="roteiro-label">${label}</span>
+      <span>${txt}</span>
+    </div>`).join('')
 }
 
 function gerar() {
-  const p = produtosDB[estado.produto]
   const falhas = []
   if (!estado.angItem) falhas.push('Ângulo')
   if (!estado.ganItem) falhas.push('Gancho')
   if (!estado.tema) falhas.push('Tema')
   if (falhas.length) { alert('Falta escolher: ' + falhas.join(', ')); return }
 
-  const angCat = estado.angItem
-  const gancho = estado.ganItem
-  const tema = estado.tema
-
-  const roteiro = `🎬 ROTEIRO — ${p.nome.toUpperCase()}
-Tema: ${tema}
-
-━━━━━━  PARTE 1 — EMOÇÃO  ━━━━━━
-
-🎯 ÂNGULO: ${angCat}
-
-🎣 GANCHO: ${gancho}
-
-🤔 CURIOSIDADE: Vou te mostrar por que esse detalhe muda tudo. Eu também não acreditava... até testar.
-
-👤 TEMA CENTRAL: (Situação do tema: ${tema})
-
-⚠ PROBLEMA: É aquele tipo de coisa que faz você perder tempo, fazer força e nunca ficar satisfeito com o resultado.
-
-💥 CONSEQUÊNCIA: O serviço vira estresse, o conserto fica adiado e no fim você acaba dependendo de alguém.
-
-━━━━━━  PARTE 2 — PRODUTO  ━━━━━━
-
-🔧 PRODUTO: ${p.info.solucao}
-
-🎬 DEMONSTRAÇÃO: ${p.info.demonstracao[0]}. ${p.info.demonstracaoFrase}
-
-🤯 MOMENTO WOW: ${p.info.momWow}
-
-✨ TRANSFORMAÇÃO: ${p.info.transformacao}
-
-✅ VEREDITO: ${p.info.veredito}
-
-🎯 CTA: O produto está aqui no TikTok Shop. Confere se ainda tem cupom ativo e me conta o que achou. Qual outro produto você quer que eu teste?`
-
-  document.getElementById('roteiro').innerHTML = roteiro
+  document.getElementById('area-roteiro').innerHTML = `
+    <div class="roteiro">${montarLista()}</div>
+    <div class="btn-row">
+      <button class="primary" onclick="copiar()">📋 Copiar</button>
+      <button class="ghost" onclick="baixar()">⬇ .txt</button>
+    </div>
+  `
   document.getElementById('area-roteiro').classList.remove('hidden')
   document.getElementById('area-roteiro').scrollIntoView({ behavior: 'smooth' })
 }
 
+function textoRoteiro() {
+  const p = produtosDB[estado.produto]
+  const demo = p.info.demonstracao[0]
+  return `ROTEIRO — ${p.nome}
+Ângulo: ${estado.angItem}
+Gancho: ${estado.ganItem}
+Tema: ${estado.tema}
+Produto: ${p.info.solucao}
+Demo: ${demo}. ${p.info.demonstracaoFrase}
+Wow: ${p.info.momWow}
+Transformação: ${p.info.transformacao}
+Veredito: ${p.info.veredito}
+CTA: O produto está no TikTok Shop. Confere o cupom e me conta o que achou.`
+}
+
 function copiar() {
-  const txt = document.getElementById('roteiro').innerText
-  navigator.clipboard.writeText(txt).then(() => alert('Roteiro copiado!'))
+  navigator.clipboard.writeText(textoRoteiro()).then(() => alert('Roteiro copiado!'))
 }
 function baixar() {
-  const txt = document.getElementById('roteiro').innerText
   const a = document.createElement('a')
-  a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain' }))
+  a.href = URL.createObjectURL(new Blob([textoRoteiro()], { type: 'text/plain' }))
   a.download = 'roteiro.txt'
   a.click()
 }
