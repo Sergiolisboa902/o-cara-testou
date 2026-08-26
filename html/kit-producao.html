@@ -37,9 +37,21 @@
   }
   .card-subtitle { font-size: .75rem; color: #999; font-weight: 600; margin-bottom: .3rem; text-transform: uppercase; letter-spacing: .06em; }
 
-  .produto-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
-  .produto-item p { font-size: .85rem; color: #333; line-height: 1.5; }
-  .produto-item .demo-list { font-size: .82rem; color: #555; margin-top: .2rem; padding-left: 1.2rem; }
+  .produto-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
+  .info-section { margin-bottom: 1.2rem; }
+  .info-section-title {
+    font-size: .78rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
+    color: #e63946; margin-bottom: .5rem; padding-bottom: .3rem; border-bottom: 1px solid #f0f0f0;
+  }
+  .info-section p { font-size: .85rem; color: #333; line-height: 1.6; }
+  .info-section ul { padding-left: 1.2rem; }
+  .info-section li { font-size: .82rem; color: #444; line-height: 1.5; margin-bottom: .25rem; }
+  .objecao-card {
+    background: #f9f9f9; border: 1px solid #eee; border-radius: 8px;
+    padding: .7rem .9rem; margin-bottom: .5rem;
+  }
+  .objecao-pergunta { font-size: .82rem; font-weight: 700; color: #1a1a1a; margin-bottom: .25rem; }
+  .objecao-resposta { font-size: .8rem; color: #555; line-height: 1.45; }
 
   .tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   @media (max-width: 800px) { .tables-grid { grid-template-columns: 1fr; } }
@@ -83,31 +95,57 @@ if (!prod) {
   document.getElementById('app').innerHTML = '<div class="erro">Produto não encontrado.</div>'
 } else {
   document.title = prod.nome + ' — Kit de Produção'
+  const info = prod.info
+  const lista = (arr) => arr.map(i => `<li>${i}</li>`).join('')
+  const objecoesHTML = info.objecoes.map(o => `
+    <div class="objecao-card">
+      <div class="objecao-pergunta">❓ ${o.pergunta}</div>
+      <div class="objecao-resposta">${o.resposta}</div>
+    </div>`).join('')
   document.getElementById('app').innerHTML = `
     <div class="card">
       <div class="card-title">Informações do Produto</div>
       <p style="font-size:.82rem;color:#666;margin-bottom:1rem;">${prod.nome}</p>
       <div class="produto-grid">
-        <div class="produto-item">
-          <div class="card-subtitle">Solução</div>
-          <p>${prod.info.solucao}</p>
+        <div class="info-section">
+          <div class="info-section-title">Resumo</div>
+          <p>${info.resumo}</p>
         </div>
-        <div class="produto-item">
-          <div class="card-subtitle">Demonstração</div>
-          <p>Mostrar recurso relacionado ao tema do vídeo:</p>
-          <ul class="demo-list">${prod.info.demonstracao.map(d => `<li>${d}</li>`).join('')}</ul>
+        <div class="info-section">
+          <div class="info-section-title">Problemas que Resolve</div>
+          <ul>${lista(info.problemas)}</ul>
         </div>
-        <div class="produto-item">
-          <div class="card-subtitle">Momento WOW</div>
-          <p>${prod.info.momWow}</p>
+        <div class="info-section">
+          <div class="info-section-title">Benefícios</div>
+          <ul>${lista(info.beneficios)}</ul>
         </div>
-        <div class="produto-item">
-          <div class="card-subtitle">Transformação</div>
-          <p>${prod.info.transformacao}</p>
+        <div class="info-section">
+          <div class="info-section-title">Características Importantes</div>
+          <ul>${lista(info.caracteristicas)}</ul>
         </div>
-        <div class="produto-item">
-          <div class="card-subtitle">Veredito</div>
-          <p>${prod.info.veredito}</p>
+        <div class="info-section">
+          <div class="info-section-title">Diferenciais</div>
+          <ul>${lista(info.diferenciais)}</ul>
+        </div>
+        <div class="info-section">
+          <div class="info-section-title">Possíveis Testes</div>
+          <ul>${lista(info.testes)}</ul>
+        </div>
+        <div class="info-section">
+          <div class="info-section-title">Possíveis Momentos WOW</div>
+          <ul>${lista(info.momentosWow)}</ul>
+        </div>
+        <div class="info-section">
+          <div class="info-section-title">Público Ideal</div>
+          <ul>${lista(info.publicoIdeal)}</ul>
+        </div>
+        <div class="info-section">
+          <div class="info-section-title">Objeções do Comprador</div>
+          ${objecoesHTML}
+        </div>
+        <div class="info-section">
+          <div class="info-section-title">Curiosidades</div>
+          <ul>${lista(info.curiosidades)}</ul>
         </div>
       </div>
     </div>
