@@ -369,53 +369,78 @@ const produtosDB = {
       "O tio de todos os consertos"
     ],
     info: {
-      solucao: "Foi aí que eu resolvi testar essa furadeira/parafusadeira. Ela promete facilitar desde pequenos reparos até montagens completas, economizando tempo, esforço e deixando o trabalho muito mais prático.",
-      demonstracao: [
-        "Montando um guarda-roupa",
-        "Montando uma mesa",
-        "Montando uma cadeira",
-        "Montando um armário",
-        "Montando uma estante",
-        "Apertando parafusos",
-        "Fixando puxadores",
-        "Montando um criado-mudo",
-        "Instalando uma sapateira",
-        "Ajustando portas",
-        "Instalando um quadro",
-        "Instalando uma prateleira",
-        "Suporte de TV",
-        "Suporte de micro-ondas",
-        "Cortina",
-        "Espelho",
-        "Nicho",
-        "Organizador",
-        "Painel",
-        "Cabideiro",
-        "Trocar dobradiça",
-        "Ajustar porta",
-        "Apertar parafusos",
-        "Fixar suporte",
-        "Ajustar móveis",
-        "Consertar cadeira",
-        "Trocar puxador",
-        "Reparo em janela",
-        "Instalar luminária",
-        "Fixar acessórios",
-        "Comparação: chave de fenda vs furadeira",
-        "Mostrando a pegada",
-        "Mostrando o peso",
-        "Mostrando o tamanho",
-        "Mostrando o gatilho",
-        "Ajustando o torque",
-        "Mostrando a reversão",
-        "Mostrando a iluminação LED",
-        "Trocando a broca",
-        "Mostrando a bateria"
+      resumo: "Parafusadeira Furadeira 48V com 2 baterias, maleta e kit de acessórios. Indicada para perfurar e parafusar em materiais como madeira, metal e plástico, oferecendo praticidade tanto para uso doméstico quanto para bricolagem e trabalhos profissionais.",
+      problemas: [
+        "Facilita a montagem de móveis e instalações.",
+        "Elimina o esforço de apertar ou soltar parafusos manualmente.",
+        "Permite perfurar diferentes materiais com uma única ferramenta.",
+        "Aumenta a mobilidade por funcionar com bateria.",
+        "Evita interrupções frequentes graças à bateria extra."
       ],
-      demonstracaoFrase: "Olha como ela faz o trabalho muito mais rápido, sem precisar fazer força.",
-      momWow: "O que mais me surpreendeu foi a rapidez. Uma tarefa que normalmente levaria vários minutos ficou pronta em poucos segundos. Ela entregou exatamente o que prometeu.",
-      transformacao: "No fim das contas, não é só uma furadeira. É uma ferramenta que economiza tempo, reduz esforço e dá muito mais autonomia para resolver os pequenos serviços do dia a dia.",
-      veredito: "Depois de testar, eu gostei bastante. É uma ferramenta que facilita muito o dia a dia e faz sentido para quem gosta de resolver as coisas sem depender de ninguém."
+      beneficios: [
+        "Liberdade de uso sem depender de tomada durante o trabalho.",
+        "Mais conforto com design compacto e ergonômico.",
+        "Controle preciso com velocidade variável e reversível.",
+        "Ajuste de torque para diferentes tipos de serviço.",
+        "Maior produtividade com duas baterias inclusas.",
+        "Kit completo pronto para usar."
+      ],
+      caracteristicas: [
+        "Alimentação por bateria 48V.",
+        "Acompanha 2 baterias.",
+        "Mandril de aperto rápido 3/8\" (10 mm).",
+        "Velocidade variável de 0–400 e 0–1400 RPM.",
+        "Rotação reversível.",
+        "Torque ajustável (17+1 posições).",
+        "Torque máximo informado de 32 Nm.",
+        "Indicador de carga da bateria.",
+        "Carregador bivolt.",
+        "Acompanha maleta para transporte.",
+        "Inclui extensor flexível, bits, soquetes, brocas e demais acessórios descritos no anúncio."
+      ],
+      diferenciais: [
+        "Duas baterias inclusas para maior autonomia.",
+        "Kit com diversos acessórios em um único produto.",
+        "Mandril de aperto rápido, dispensando chave.",
+        "Maleta facilita organização e transporte.",
+        "Pode ser utilizada para perfuração e parafusamento."
+      ],
+      testes: [
+        "Parafusar e desparafusar um parafuso em madeira.",
+        "Demonstrar a troca rápida de brocas no mandril.",
+        "Mostrar o funcionamento da velocidade variável.",
+        "Testar a função reversível.",
+        "Exibir todos os acessórios organizados na maleta.",
+        "Mostrar a troca entre as duas baterias."
+      ],
+      momentosWow: [
+        "Abrir a maleta revelando todos os acessórios.",
+        "Mostrar a ferramenta funcionando sem fio.",
+        "Trocar a bateria em poucos segundos.",
+        "Demonstrar a perfuração em diferentes materiais (madeira, metal ou plástico, conforme informado no anúncio).",
+        "Exibir o extensor flexível alcançando locais de difícil acesso."
+      ],
+      publicoIdeal: [
+        "Quem faz pequenos reparos em casa.",
+        "Pessoas que montam móveis.",
+        "Profissionais de construção e carpintaria.",
+        "Hobbistas e praticantes de bricolagem.",
+        "Quem procura uma ferramenta portátil e versátil."
+      ],
+      objecoes: [
+        { pergunta: "Será que a bateria dura o suficiente?", resposta: "O produto acompanha duas baterias, permitindo continuar o trabalho enquanto uma pode ser recarregada." },
+        { pergunta: "Ela vem pronta para usar?", resposta: "Sim, acompanha maleta, carregador e diversos acessórios descritos no anúncio." },
+        { pergunta: "Serve para diferentes tipos de trabalho?", resposta: "Foi desenvolvida para perfuração e parafusamento em madeira, metal e plástico." },
+        { pergunta: "É difícil trocar brocas?", resposta: "Não, o mandril é de aperto rápido, facilitando a troca de acessórios." },
+        { pergunta: "Vale a pena pelo kit?", resposta: "Além da ferramenta, o comprador recebe um kit completo de acessórios e maleta para transporte." }
+      ],
+      curiosidades: [
+        "O mandril de aperto rápido agiliza a troca de brocas e bits sem necessidade de chave.",
+        "A função reversível permite apertar e também remover parafusos.",
+        "O ajuste de torque (17+1) ajuda a adaptar a força conforme o tipo de trabalho.",
+        "O indicador de carga permite acompanhar o nível da bateria durante o uso.",
+        "O anúncio informa que a cor do produto é enviada de forma aleatória."
+      ]
     },
     angulos: [
       ["Obrigatoriedade","Isso deveria ser obrigatório em toda casa."],
