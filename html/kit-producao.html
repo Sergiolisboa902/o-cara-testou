@@ -52,6 +52,17 @@
   }
   .objecao-pergunta { font-size: .82rem; font-weight: 700; color: #1a1a1a; margin-bottom: .25rem; }
   .objecao-resposta { font-size: .8rem; color: #555; line-height: 1.45; }
+  .desc-box {
+    background: #1a1a1a; border-radius: 10px; padding: .9rem 1.2rem;
+    margin-bottom: 1.2rem; display: flex; align-items: center; justify-content: space-between; gap: .8rem;
+  }
+  .desc-text { font-size: .82rem; color: #ccc; line-height: 1.5; flex: 1; white-space: pre-line; }
+  .desc-btn {
+    background: #e63946; border: none; border-radius: 8px; cursor: pointer;
+    font-size: .75rem; font-weight: 700; padding: .5rem .9rem; color: #fff;
+    white-space: nowrap; transition: all .2s;
+  }
+  .desc-btn:hover { background: #c82d3a; }
 
   .tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   @media (max-width: 800px) { .tables-grid { grid-template-columns: 1fr; } }
@@ -103,6 +114,10 @@ if (!prod) {
       <div class="objecao-resposta">${o.resposta}</div>
     </div>`).join('')
   document.getElementById('app').innerHTML = `
+    <div class="desc-box">
+      <div class="desc-text">${info.descricao || ''}</div>
+      <button class="desc-btn" onclick="copiarDescricao()">📋 Copiar</button>
+    </div>
     <div class="card">
       <div class="card-title">Informações do Produto</div>
       <p style="font-size:.82rem;color:#666;margin-bottom:1rem;">${prod.nome}</p>
@@ -174,6 +189,14 @@ if (!prod) {
   }
   montar('tabela-angulos', prod.angulos)
   montar('tabela-ganchos', prod.ganchos)
+}
+function copiarDescricao() {
+  const texto = document.querySelector('.desc-text').textContent.trim()
+  navigator.clipboard.writeText(texto).then(() => {
+    const btn = document.querySelector('.desc-btn')
+    btn.textContent = '✓ Copiado!'
+    setTimeout(() => { btn.textContent = '📋 Copiar' }, 1200)
+  })
 }
 </script>
 <script src="fechamentos.js"></script>

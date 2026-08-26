@@ -4,6 +4,7 @@
 const produtosDB = {
   "arrancador-q18b": {
     nome: "Arrancador de Bateria c/ Compressor de Ar Portátil Q18B",
+    descricao: "Auxiliar de partida para baterias de 12V, com compressor de ar portátil digital de 150 PSI. Powerbank e lanterna SOS. #viraltiktokshop #ferramentas #homem #mecanica #carro",
     temas: [
       "O motorista precavido",
       "Quem faz viagem longa",
@@ -331,6 +332,7 @@ const produtosDB = {
   },
   "furadeira-parafusadeira": {
     nome: "Furadeira/Parafusadeira",
+    descricao: "Parafusadeira e Furadeira de Impacto com 2 Baterias de 48V. Kit completo com maleta, brocas, bits e acessórios. #parafusadeira #furadeira #kitdeferramentas #diy #bricolagem #tiktokshop",
     temas: [
       "Recém-casado montando a casa",
       "O pai que resolve tudo",
@@ -649,6 +651,7 @@ const produtosDB = {
   },
   "pistola-pintura-hvlp800w": {
     nome: "Pistola de Pintura Elétrica HVLP 800W",
+    descricao: "Spray de tinta elétrico HVLP 800W com 3 modos de pulverização, recipiente de 800 ml e controle de fluxo ajustável. Ideal para móveis, paredes, cercas e projetos DIY. #pintura #spray #diy #reforma #bricolagem #ferramentas #tiktokshop",
     temas: [
       "O faz-tudo da família",
       "O reformador de móveis",
