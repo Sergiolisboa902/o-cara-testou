@@ -50,3 +50,9 @@ CREATE POLICY "Users can manage own missions"
 CREATE INDEX idx_ganchos_user ON ganchos(user_id);
 CREATE INDEX idx_ganchos_categoria ON ganchos(categoria);
 CREATE INDEX idx_missions_user ON missions(user_id);
+
+-- ============================================
+-- COLUNAS: Cenário e Figurino nas missões
+-- ============================================
+ALTER TABLE missions ADD COLUMN IF NOT EXISTS cenario TEXT DEFAULT '';
+ALTER TABLE missions ADD COLUMN IF NOT EXISTS figurino TEXT DEFAULT '';

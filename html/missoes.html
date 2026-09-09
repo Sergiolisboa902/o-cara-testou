@@ -49,6 +49,7 @@
   .missao-card.andamento { border-color: #e63946; }
   .missao-head { display: flex; align-items: flex-start; justify-content: space-between; gap: .6rem; }
   .missao-nome { font-size: .92rem; font-weight: 800; line-height: 1.35; }
+  .missao-sub { font-size: .72rem; color: #888; margin-top: .35rem; font-weight: 600; }
   .missao-status {
     display: inline-flex; align-items: center; gap: .35rem;
     font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
@@ -94,6 +95,7 @@
   }
   .modal-title { font-size: .95rem; font-weight: 800; }
   .modal-title span { color: #e63946; }
+  .modal-sub { font-size: .74rem; color: #999; font-weight: 600; margin-top: .2rem; }
   .modal-close {
     background: #eee; border: none; border-radius: 6px; cursor: pointer;
     font-size: .9rem; padding: .3rem .6rem; font-weight: 700; color: #333;
@@ -182,7 +184,10 @@
 <div class="modal-overlay" id="modal-detalhe">
   <div class="modal">
     <div class="modal-head">
-      <div class="modal-title" id="d-titulo"></div>
+      <div>
+        <div class="modal-title" id="d-titulo"></div>
+        <div class="modal-sub" id="d-sub"></div>
+      </div>
       <button class="modal-close" onclick="fecharModal('modal-detalhe')">✕</button>
     </div>
     <div class="modal-body">
@@ -213,6 +218,14 @@
       <div class="form-field">
         <label class="form-label">Produto</label>
         <select class="form-select" id="c-produto"></select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Cenário</label>
+        <input type="text" class="form-select" id="c-cenario" placeholder="ex: Garagem, estúdio, mesa de trabalho...">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Figurino</label>
+        <input type="text" class="form-select" id="c-figurino" placeholder="ex: Camisa preta + jaleco, regata cinza...">
       </div>
       <div class="form-field">
         <label class="form-label">Ganchos (um por linha)</label>
@@ -288,6 +301,7 @@ function renderLista() {
         <div class="missao-head">
           <div class="missao-nome">${m.produto}</div>
         </div>
+        <div class="missao-sub">${linhaMeta(m)}</div>
         <div class="missao-status ${completa ? 'completa' : 'andamento'}">${completa ? '● Completa' : '◐ Andamento'}</div>
         <div class="missao-progresso"><b>${feitos}/${total}</b> ganchos concluídos</div>
         <div class="barra"><div class="barra-fill ${completa ? 'completa' : 'andamento'}" style="width:${pct}%"></div></div>
@@ -304,6 +318,12 @@ function stats(m) {
   return [feitos, total, pct]
 }
 function progresso(m) { return stats(m)[2] }
+function linhaMeta(m) {
+  const partes = []
+  if (m.cenario) partes.push(`🎬 ${m.cenario}`)
+  if (m.figurino) partes.push(`👔 ${m.figurino}`)
+  return partes.join(' · ') || ''
+}
 
 // === DETALHE ===
 let detalheId = null
@@ -312,7 +332,9 @@ async function abrirDetalhe(id) {
   if (!m) return
   detalheId = id
   missaoAtual = m
-  document.getElementById('d-titulo').innerHTML = `${m.produto}`
+  document.getElementById('d-titulo').innerHTML = `<span>${m.produto}</span>`
+  const meta = linhaMeta(m)
+  document.getElementById('d-sub').textContent = meta
   document.getElementById('modal-detalhe').classList.add('open')
   renderDetalhe()
 }
@@ -378,11 +400,15 @@ async function persistirDetalhe() {
 // === CRIAR ===
 function abrirCriar() {
   document.getElementById('c-ganchos').value = ''
+  document.getElementById('c-cenario').value = ''
+  document.getElementById('c-figurino').value = ''
   document.getElementById('modal-criar').classList.add('open')
 }
 
 async function criarMissao() {
   const produtoId = document.getElementById('c-produto').value
+  const cenario = document.getElementById('c-cenario').value.trim()
+  const figurino = document.getElementById('c-figurino').value.trim()
   const linhas = document.getElementById('c-ganchos').value.split('\n').map(l => l.trim()).filter(Boolean)
   const produto = produtosDB[produtoId]
   if (!produto) { alert('Selecione um produto'); return }
@@ -391,7 +417,7 @@ async function criarMissao() {
   const ganchos = linhas.map(t => ({ texto: t, concluido: false, concluido_em: null }))
   const { data, error } = await _supabase
     .from('missions')
-    .insert({ user_id: session.user.id, produto: produto.nome, ganchos })
+    .insert({ user_id: session.user.id, produto: produto.nome, cenario, figurino, ganchos })
     .select()
     .single()
   if (error) { mostrarErro(error.message); return }
