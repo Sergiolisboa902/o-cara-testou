@@ -193,6 +193,7 @@
   }
   .cat-item input { margin-top: .15rem; accent-color: #e63946; cursor: pointer; flex-shrink: 0; }
   .cat-item label { font-size: .8rem; line-height: 1.4; color: #444; cursor: pointer; }
+  .cat-item .fav-star { color: #e6a23c; font-size: .8rem; }
   .cat-item.checked label { color: #e63946; font-weight: 700; }
   .cat-vazio { padding: 1.2rem; text-align: center; color: #aaa; font-size: .8rem; }
   .manual-collapse { margin-top: .55rem; }
@@ -351,11 +352,11 @@ async function carregarCatalogo() {
   if (!session) return
   const { data, error } = await _supabase
     .from('ganchos')
-    .select('id, categoria, texto')
+    .select('id, categoria, texto, favorito')
     .eq('user_id', session.user.id)
     .order('categoria', { ascending: true })
   if (error) { mostrarErro(error.message); return }
-  ganchosCatalogo = data || []
+  ganchosCatalogo = (data || []).sort((a, b) => (b.favorito ? 1 : 0) - (a.favorito ? 1 : 0))
   renderCatalogo()
 }
 
@@ -379,12 +380,13 @@ function renderCatalogo() {
   })
   el.innerHTML = Object.keys(grupos).map(cat => {
     const itens = grupos[cat]
+    const ordenados = [...itens].sort((a, b) => (b.favorito ? 1 : 0) - (a.favorito ? 1 : 0))
     return `<details class="cat-grupo">
       <summary>${esc(cat)} <span class="n">(${itens.filter(g => ganchosSelecionados.has(g.id)).length}/${itens.length})</span></summary>
-      ${itens.map(g => `
+      ${ordenados.map(g => `
         <div class="cat-item ${ganchosSelecionados.has(g.id) ? 'checked' : ''}">
           <input type="checkbox" id="cat-${g.id}" ${ganchosSelecionados.has(g.id) ? 'checked' : ''} onchange="toggleGanchoCat('${g.id}', this.checked)">
-          <label for="cat-${g.id}">${esc(g.texto)}</label>
+          <label for="cat-${g.id}">${g.favorito ? '<span class="fav-star">★</span> ' : ''}${esc(g.texto)}</label>
         </div>`).join('')}
     </details>`
   }).join('')

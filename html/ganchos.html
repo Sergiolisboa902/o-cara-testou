@@ -41,12 +41,21 @@
   .busca { width: 100%; max-width: 420px; border: 1px solid #ddd; border-radius: 10px; padding: .6rem .9rem; font-size: .85rem; font-family: inherit; outline: none; }
   .busca:focus { border-color: #e63946; }
 
-  .stats { display: flex; gap: .7rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+  .stats {
+    display: flex; gap: .7rem; margin-bottom: 1.2rem; flex-wrap: wrap;
+    align-items: center;
+  }
   .stat {
     background: #fff; border-radius: 12px; padding: .7rem 1.1rem;
     box-shadow: 0 1px 4px rgba(0,0,0,.06); font-size: .78rem; color: #888; font-weight: 600;
   }
   .stat b { display: block; font-size: 1.15rem; color: #1a1a1a; }
+  .fav-toggle {
+    background: #fff; border: 2px solid #eee; border-radius: 12px;
+    padding: .65rem 1rem; font-size: .78rem; font-weight: 700; cursor: pointer;
+    font-family: inherit; color: #999; transition: all .2s;
+  }
+  .fav-toggle.on { border-color: #e6a23c; color: #e6a23c; background: #fff8e6; }
 
   .cat-grupo {
     background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.06);
@@ -79,6 +88,9 @@
   .gancho-btn.editar:hover { background: #ffe3e3; }
   .gancho-btn.excluir { color: #ccc; }
   .gancho-btn.excluir:hover { color: #e63946; background: #ffe3e3; }
+  .gancho-btn.fav { color: #ccc; }
+  .gancho-btn.fav.on { color: #e6a23c; }
+  .gancho-btn.fav:hover { color: #e6a23c; background: #fff3d6; }
 
   .vazio {
     text-align: center; padding: 3rem; background: #fff; border-radius: 14px;
@@ -149,6 +161,8 @@
   <div class="stats">
     <div class="stat"><b id="stat-total">0</b>total</div>
     <div class="stat"><b id="stat-cats">0</b>categorias</div>
+    <div class="stat"><b id="stat-favs">0</b>favoritos</div>
+    <button class="fav-toggle" id="fav-filtro" onclick="toggleFavFiltro()">☆ Só favoritos</button>
   </div>
   <input type="text" class="busca" id="busca" placeholder="🔍 Buscar gancho ou categoria..." oninput="renderLista()" autocomplete="off">
   <div id="lista" style="margin-top:1rem"></div>
@@ -190,6 +204,7 @@
 <script>
 let todosGanchos = []
 let editandoId = null
+let soFavoritos = false
 
 window.onAuthReady = iniciar
 getSession().then(s => { if (s) iniciar(); else injectAuthUI() })
@@ -205,7 +220,7 @@ async function carregar() {
   if (!session) return
   const { data, error } = await _supabase
     .from('ganchos')
-    .select('id, categoria, texto')
+    .select('id, categoria, texto, favorito')
     .eq('user_id', session.user.id)
     .order('categoria', { ascending: true })
   if (error) { mostrarErro(error.message); return }
@@ -215,10 +230,13 @@ async function carregar() {
 
 function renderLista() {
   renderStats()
+  document.getElementById('fav-filtro').classList.toggle('on', soFavoritos)
   const termo = (document.getElementById('busca').value || '').toLowerCase().trim()
-  const filtrados = todosGanchos.filter(g =>
+  let filtrados = todosGanchos.filter(g =>
     !termo || g.texto.toLowerCase().includes(termo) || (g.categoria || '').toLowerCase().includes(termo)
   )
+  if (soFavoritos) filtrados = filtrados.filter(g => g.favorito)
+  filtrados.sort((a, b) => (b.favorito - a.favorito) || 0)
   const el = document.getElementById('lista')
   document.getElementById('contador').textContent = `(${todosGanchos.length})`
   if (!todosGanchos.length) {
@@ -247,6 +265,7 @@ function renderLista() {
             <span class="gancho-icon">🧲</span>
             <span class="gancho-texto">${esc(g.texto)}</span>
             <div class="gancho-actions">
+              <button class="gancho-btn fav ${g.favorito ? 'on' : ''}" title="${g.favorito ? 'Desmarcar favorito' : 'Marcar favorito'}" onclick="toggleFav('${g.id}', ${!!g.favorito})">${g.favorito ? '★' : '☆'}</button>
               <button class="gancho-btn editar" title="Editar" onclick="abrirEditar('${g.id}')">✏️</button>
               <button class="gancho-btn excluir" title="Excluir" onclick="excluir('${g.id}')">🗑</button>
             </div>
@@ -258,6 +277,26 @@ function renderLista() {
 function renderStats() {
   document.getElementById('stat-total').textContent = todosGanchos.length
   document.getElementById('stat-cats').textContent = new Set(todosGanchos.map(g => g.categoria).filter(Boolean)).size
+  document.getElementById('stat-favs').textContent = todosGanchos.filter(g => g.favorito).length
+}
+
+function toggleFavFiltro() {
+  soFavoritos = !soFavoritos
+  renderLista()
+}
+
+async function toggleFav(id, atual) {
+  const session = await getSession()
+  if (!session) return
+  const { error } = await _supabase
+    .from('ganchos')
+    .update({ favorito: !atual })
+    .eq('id', id)
+    .eq('user_id', session.user.id)
+  if (error) { mostrarErro(error.message); return }
+  const g = todosGanchos.find(x => x.id === id)
+  if (g) g.favorito = !atual
+  renderLista()
 }
 
 function preencherCategorias() {
