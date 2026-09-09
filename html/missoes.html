@@ -96,6 +96,13 @@
   .modal-title { font-size: .95rem; font-weight: 800; }
   .modal-title span { color: #e63946; }
   .modal-sub { font-size: .74rem; color: #999; font-weight: 600; margin-top: .2rem; }
+  .modal-desc {
+    display: flex; align-items: flex-start; gap: .4rem;
+    font-size: .8rem; color: #555; line-height: 1.45; background: #f9f9f9;
+    border: 1px solid #eee; border-radius: 8px; padding: .5rem .7rem; margin-top: .5rem; max-width: 460px;
+    font-weight: 400;
+  }
+  .modal-desc::before { content: "🎬"; flex-shrink: 0; }
   .modal-close {
     background: #eee; border: none; border-radius: 6px; cursor: pointer;
     font-size: .9rem; padding: .3rem .6rem; font-weight: 700; color: #333;
@@ -187,6 +194,7 @@
       <div>
         <div class="modal-title" id="d-titulo"></div>
         <div class="modal-sub" id="d-sub"></div>
+        <div class="modal-desc" id="d-descricao"></div>
       </div>
       <button class="modal-close" onclick="fecharModal('modal-detalhe')">✕</button>
     </div>
@@ -226,6 +234,10 @@
       <div class="form-field">
         <label class="form-label">Figurino</label>
         <input type="text" class="form-select" id="c-figurino" placeholder="ex: Camisa preta + jaleco, regata cinza...">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Descrição da Cena</label>
+        <textarea class="form-textarea" id="c-descricao" placeholder="ex: Mesa de trabalho com o produto à frente, enquadramento médio, luz natural..." style="min-height:70px"></textarea>
       </div>
       <div class="form-field">
         <label class="form-label">Ganchos (um por linha)</label>
@@ -333,8 +345,9 @@ async function abrirDetalhe(id) {
   detalheId = id
   missaoAtual = m
   document.getElementById('d-titulo').innerHTML = `<span>${m.produto}</span>`
-  const meta = linhaMeta(m)
-  document.getElementById('d-sub').textContent = meta
+  document.getElementById('d-sub').textContent = linhaMeta(m)
+  const dc = document.getElementById('d-descricao')
+  if (m.descricao_cena) { dc.textContent = m.descricao_cena; dc.style.display = 'flex' } else { dc.style.display = 'none' }
   document.getElementById('modal-detalhe').classList.add('open')
   renderDetalhe()
 }
@@ -402,6 +415,7 @@ function abrirCriar() {
   document.getElementById('c-ganchos').value = ''
   document.getElementById('c-cenario').value = ''
   document.getElementById('c-figurino').value = ''
+  document.getElementById('c-descricao').value = ''
   document.getElementById('modal-criar').classList.add('open')
 }
 
@@ -409,6 +423,7 @@ async function criarMissao() {
   const produtoId = document.getElementById('c-produto').value
   const cenario = document.getElementById('c-cenario').value.trim()
   const figurino = document.getElementById('c-figurino').value.trim()
+  const descricaoCena = document.getElementById('c-descricao').value.trim()
   const linhas = document.getElementById('c-ganchos').value.split('\n').map(l => l.trim()).filter(Boolean)
   const produto = produtosDB[produtoId]
   if (!produto) { alert('Selecione um produto'); return }
@@ -417,7 +432,7 @@ async function criarMissao() {
   const ganchos = linhas.map(t => ({ texto: t, concluido: false, concluido_em: null }))
   const { data, error } = await _supabase
     .from('missions')
-    .insert({ user_id: session.user.id, produto: produto.nome, cenario, figurino, ganchos })
+    .insert({ user_id: session.user.id, produto: produto.nome, cenario, figurino, descricao_cena: descricaoCena, ganchos })
     .select()
     .single()
   if (error) { mostrarErro(error.message); return }
