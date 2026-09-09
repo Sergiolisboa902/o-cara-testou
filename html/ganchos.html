@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco de Ganchos — O Cara Testou</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; min-height: 100vh; }
+  .topnav {
+    background: #1a1a1a; padding: .6rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topnav-brand { font-weight: 800; color: #fff; font-size: .9rem; }
+  .topnav-brand span { color: #e63946; }
+  .topnav-brand a { color: inherit; text-decoration: none; }
+  .topnav-links { display: flex; gap: .5rem; }
+  .topnav-back {
+    background: #333; border: none; padding: .4rem .9rem;
+    font-size: .78rem; font-weight: 600; font-family: inherit;
+    color: #ccc; cursor: pointer; border-radius: 6px; text-decoration: none;
+    transition: all .2s;
+  }
+  .topnav-back:hover { background: #e63946; color: #fff; }
+  .topnav-back.ativo { background: #e63946; color: #fff; }
+  .container { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: .7rem; }
+  .page-title { font-size: 1.2rem; font-weight: 800; }
+  .page-title span { color: #e63946; }
+  .page-title .count { font-size: .8rem; color: #999; font-weight: 600; }
+  .cta-btn {
+    display: inline-block; background: #e63946; color: #fff; border: none;
+    font-size: .82rem; font-weight: 700; padding: .6rem 1.1rem; border-radius: 8px;
+    cursor: pointer; transition: all .2s; font-family: inherit; text-decoration: none;
+  }
+  .cta-btn:hover { background: #c82d3a; transform: translateY(-1px); }
+
+  .busca { width: 100%; max-width: 420px; border: 1px solid #ddd; border-radius: 10px; padding: .6rem .9rem; font-size: .85rem; font-family: inherit; outline: none; }
+  .busca:focus { border-color: #e63946; }
+
+  .stats { display: flex; gap: .7rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+  .stat {
+    background: #fff; border-radius: 12px; padding: .7rem 1.1rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06); font-size: .78rem; color: #888; font-weight: 600;
+  }
+  .stat b { display: block; font-size: 1.15rem; color: #1a1a1a; }
+
+  .cat-sec { margin-bottom: 1.4rem; }
+  .cat-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; gap: .6rem; flex-wrap: wrap; }
+  .cat-titulo { font-size: .95rem; font-weight: 800; }
+  .cat-titulo .n { font-size: .78rem; color: #999; font-weight: 600; }
+  .cat-count { font-size: .72rem; color: #999; font-weight: 600; }
+  .ganchos-list { display: flex; flex-direction: column; gap: .45rem; }
+  .gancho-row {
+    display: flex; align-items: center; gap: .8rem;
+    background: #fff; border-radius: 10px; padding: .7rem 1rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .gancho-icon { font-size: 1rem; flex-shrink: 0; }
+  .gancho-texto { flex: 1; font-size: .85rem; line-height: 1.45; color: #333; }
+  .gancho-actions { display: flex; gap: .3rem; flex-shrink: 0; }
+  .gancho-btn {
+    background: none; border: none; cursor: pointer; font-size: .85rem;
+    padding: .3rem .45rem; border-radius: 6px; transition: all .15s;
+  }
+  .gancho-btn.editar:hover { background: #ffe3e3; }
+  .gancho-btn.excluir { color: #ccc; }
+  .gancho-btn.excluir:hover { color: #e63946; background: #ffe3e3; }
+
+  .vazio {
+    text-align: center; padding: 3rem; background: #fff; border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06); color: #999; font-size: .9rem;
+  }
+  .vazio .big { font-size: 2rem; margin-bottom: .5rem; }
+  .vazio a { color: #e63946; font-weight: 700; cursor: pointer; }
+
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55);
+    z-index: 200; align-items: center; justify-content: center; padding: 1.2rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 16px; max-width: 480px; width: 100%;
+    max-height: 88vh; display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,.25); animation: modalIn .2s ease;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
+  .modal-head {
+    padding: 1rem 1.4rem; border-bottom: 1px solid #eee;
+    display: flex; align-items: center; justify-content: space-between; gap: .8rem;
+  }
+  .modal-title { font-size: .95rem; font-weight: 800; }
+  .modal-title span { color: #e63946; }
+  .modal-close {
+    background: #eee; border: none; border-radius: 6px; cursor: pointer;
+    font-size: .9rem; padding: .3rem .6rem; font-weight: 700; color: #333;
+  }
+  .modal-close:hover { background: #ddd; }
+  .modal-body { padding: 1rem 1.4rem; overflow-y: auto; }
+  .modal-footer { padding: .9rem 1.4rem; border-top: 1px solid #eee; display: flex; gap: .6rem; flex-wrap: wrap; }
+
+  .form-field { margin-bottom: .9rem; }
+  .form-label { display: block; font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: #999; margin-bottom: .35rem; }
+  .form-select, .form-textarea {
+    width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: .55rem .7rem;
+    font-size: .85rem; font-family: inherit; outline: none;
+  }
+  .form-select:focus, .form-textarea:focus { border-color: #e63946; }
+  .form-textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
+  .m-btn {
+    background: #e63946; border: none; border-radius: 8px; cursor: pointer;
+    font-size: .82rem; font-weight: 700; padding: .55rem 1.1rem; color: #fff; transition: all .2s; font-family: inherit;
+  }
+  .m-btn:hover { background: #c82d3a; }
+  .m-btn.ghost { background: #eee; color: #1a1a1a; }
+  .m-btn.ghost:hover { background: #ddd; }
+
+  .erro { text-align: center; padding: 3rem; color: #e63946; font-size: .9rem; }
+  .footer { text-align: center; padding: 1.5rem; font-size: .72rem; color: #999; }
+</style>
+</head>
+<body>
+<div class="topnav">
+  <div class="topnav-brand"><a href="index.html"><span>O</span> Cara Testou</a></div>
+  <div class="topnav-links">
+    <a href="ganchos.html" class="topnav-back ativo">🧲 Ganchos</a>
+    <a href="missoes.html" class="topnav-back">🎯 Missões</a>
+    <a href="index.html" class="topnav-back">Voltar</a>
+  </div>
+</div>
+<div class="container">
+  <div class="top-bar">
+    <div class="page-title"><span>Banco</span> de Ganchos <span class="count" id="contador"></span></div>
+    <button class="cta-btn" onclick="abrirNovo()">＋ Novo gancho</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><b id="stat-total">0</b>total</div>
+    <div class="stat"><b id="stat-cats">0</b>categorias</div>
+  </div>
+  <input type="text" class="busca" id="busca" placeholder="🔍 Buscar gancho ou categoria..." oninput="renderLista()" autocomplete="off">
+  <div id="lista" style="margin-top:1rem"></div>
+</div>
+<div class="footer">O Cara Testou &mdash; Banco de Ganchos</div>
+
+<div class="modal-overlay" id="modal-gancho">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="m-titulo"><span>Novo</span> Gancho</div>
+      <button class="modal-close" onclick="fecharModal('modal-gancho')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-label">Categoria</label>
+        <select class="form-select" id="e-categoria" onchange="categoriaToggle()"></select>
+      </div>
+      <div class="form-field" id="e-nova-cat-field" style="display:none">
+        <label class="form-label">Nova categoria</label>
+        <input type="text" class="form-select" id="e-nova-categoria" placeholder="ex: Presente, Status..." autocomplete="off">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Texto do gancho</label>
+        <textarea class="form-textarea" id="e-texto" placeholder="Imagina precisar disso no pior momento..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="m-btn" onclick="salvar()">Salvar</button>
+      <button class="m-btn ghost" onclick="fecharModal('modal-gancho')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="erro" id="erro" style="display:none"></div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
+<script>
+let todosGanchos = []
+let editandoId = null
+
+window.onAuthReady = iniciar
+getSession().then(s => { if (s) iniciar(); else injectAuthUI() })
+
+async function iniciar() {
+  const session = await getSession()
+  if (!session) return
+  await carregar()
+}
+
+async function carregar() {
+  const session = await getSession()
+  if (!session) return
+  const { data, error } = await _supabase
+    .from('ganchos')
+    .select('id, categoria, texto')
+    .eq('user_id', session.user.id)
+    .order('categoria', { ascending: true })
+  if (error) { mostrarErro(error.message); return }
+  todosGanchos = data || []
+  renderLista()
+}
+
+function renderLista() {
+  renderStats()
+  const termo = (document.getElementById('busca').value || '').toLowerCase().trim()
+  const filtrados = todosGanchos.filter(g =>
+    !termo || g.texto.toLowerCase().includes(termo) || (g.categoria || '').toLowerCase().includes(termo)
+  )
+  const el = document.getElementById('lista')
+  document.getElementById('contador').textContent = `(${todosGanchos.length})`
+  if (!todosGanchos.length) {
+    el.innerHTML = `<div class="vazio"><div class="big">🧲</div>Nenhum gancho cadastrado ainda.<br><br><a onclick="abrirNovo()">✨ Criar o primeiro gancho</a></div>`
+    return
+  }
+  if (!filtrados.length) {
+    el.innerHTML = '<div class="vazio">Nenhum gancho encontrado para a busca.</div>'
+    return
+  }
+  const grupos = {}
+  filtrados.forEach(g => {
+    const k = g.categoria || 'Sem categoria'
+    ;(grupos[k] = grupos[k] || []).push(g)
+  })
+  el.innerHTML = Object.keys(grupos).map(cat => `
+    <div class="cat-sec">
+      <div class="cat-head">
+        <div class="cat-titulo">🎯 ${esc(cat)} <span class="n">(${grupos[cat].length})</span></div>
+      </div>
+      <div class="ganchos-list">
+        ${grupos[cat].map(g => `
+          <div class="gancho-row">
+            <span class="gancho-icon">🧲</span>
+            <span class="gancho-texto">${esc(g.texto)}</span>
+            <div class="gancho-actions">
+              <button class="gancho-btn editar" title="Editar" onclick="abrirEditar('${g.id}')">✏️</button>
+              <button class="gancho-btn excluir" title="Excluir" onclick="excluir('${g.id}')">🗑</button>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('')
+}
+
+function renderStats() {
+  document.getElementById('stat-total').textContent = todosGanchos.length
+  document.getElementById('stat-cats').textContent = new Set(todosGanchos.map(g => g.categoria).filter(Boolean)).size
+}
+
+function preencherCategorias() {
+  const cats = [...new Set(todosGanchos.map(g => g.categoria).filter(Boolean))]
+  const sel = document.getElementById('e-categoria')
+  sel.innerHTML = cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('') +
+    '<option value="__nova__">＋ Nova categoria...</option>'
+}
+
+function abrirNovo() {
+  editandoId = null
+  document.getElementById('m-titulo').innerHTML = '<span>Novo</span> Gancho'
+  preencherCategorias()
+  document.getElementById('e-texto').value = ''
+  document.getElementById('e-nova-categoria').value = ''
+  categoriaToggle()
+  document.getElementById('modal-gancho').classList.add('open')
+}
+
+function abrirEditar(id) {
+  const g = todosGanchos.find(x => x.id === id)
+  if (!g) return
+  editandoId = id
+  document.getElementById('m-titulo').innerHTML = '<span>Editar</span> Gancho'
+  preencherCategorias()
+  const sel = document.getElementById('e-categoria')
+  if (g.categoria && [...sel.options].some(o => o.value === g.categoria)) {
+    sel.value = g.categoria
+  } else {
+    sel.value = '__nova__'
+    document.getElementById('e-nova-categoria').value = g.categoria || ''
+  }
+  document.getElementById('e-texto').value = g.texto
+  categoriaToggle()
+  document.getElementById('modal-gancho').classList.add('open')
+}
+
+function categoriaToggle() {
+  const isNova = document.getElementById('e-categoria').value === '__nova__'
+  document.getElementById('e-nova-cat-field').style.display = isNova ? 'block' : 'none'
+}
+
+async function salvar() {
+  const sel = document.getElementById('e-categoria')
+  const categoria = sel.value === '__nova__'
+    ? document.getElementById('e-nova-categoria').value.trim()
+    : sel.value
+  const texto = document.getElementById('e-texto').value.trim()
+  if (!texto) { alert('Digite o texto do gancho'); return }
+  if (!categoria) { alert('Defina a categoria'); return }
+  const session = await getSession()
+  if (!session) return
+  let error = null
+  if (editandoId) {
+    ;({ error } = await _supabase
+      .from('ganchos')
+      .update({ categoria, texto })
+      .eq('id', editandoId)
+      .eq('user_id', session.user.id))
+  } else {
+    ;({ error } = await _supabase
+      .from('ganchos')
+      .insert({ user_id: session.user.id, categoria, texto }))
+  }
+  if (error) { mostrarErro(error.message); return }
+  fecharModal('modal-gancho')
+  await carregar()
+}
+
+async function excluir(id) {
+  const g = todosGanchos.find(x => x.id === id)
+  if (!confirm(`Excluir este gancho?\n\n${g ? g.texto : ''}`)) return
+  const session = await getSession()
+  if (!session) return
+  const { error } = await _supabase
+    .from('ganchos')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', session.user.id)
+  if (error) { mostrarErro(error.message); return }
+  await carregar()
+}
+
+function fecharModal(id) { document.getElementById(id).classList.remove('open') }
+function mostrarErro(msg) { document.getElementById('erro').textContent = msg; document.getElementById('erro').style.display = 'block' }
+function esc(s) {
+  return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open') })
+})
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay').forEach(o => o.classList.remove('open')) })
+</script>
+<script src="fechamentos.js"></script>
+<script src="fechamento-modal.js"></script>
+</body>
+</html>

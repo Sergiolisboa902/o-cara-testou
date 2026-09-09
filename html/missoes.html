@@ -206,7 +206,10 @@
 <body>
 <div class="topnav">
   <div class="topnav-brand"><a href="index.html"><span>O</span> Cara Testou</a></div>
-  <a href="index.html" class="topnav-back">&larr; Voltar</a>
+  <div style="display:flex;gap:.5rem;align-items:center">
+    <a href="ganchos.html" class="topnav-back">🧲 Ganchos</a>
+    <a href="index.html" class="topnav-back">&larr; Voltar</a>
+  </div>
 </div>
 <div class="container">
   <div class="top-bar">
@@ -271,6 +274,9 @@
       </div>
       <div class="form-field">
         <label class="form-label">Ganchos</label>
+        <div style="display:flex;gap:.5rem;padding:.5rem 0">
+          <button class="add-btn" onclick="abrirNovoGancho()" type="button">＋ Novo gancho</button>
+        </div>
         <div class="sel-chips" id="c-chips"></div>
         <input type="text" class="form-select" id="c-busca" placeholder="🔍 Buscar gancho no catálogo..." oninput="renderCatalogo()" autocomplete="off">
         <div class="catalogo" id="catalogo"></div>
@@ -284,6 +290,34 @@
     <div class="modal-footer">
       <button class="m-btn" onclick="criarMissao()">Criar missão</button>
       <button class="m-btn ghost" onclick="fecharModal('modal-criar')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOVO GANCHO -->
+<div class="modal-overlay" id="modal-novo-gancho">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title"><span>Novo</span> Gancho</div>
+      <button class="modal-close" onclick="fecharModal('modal-novo-gancho')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-label">Categoria</label>
+        <select class="form-select" id="ng-categoria" onchange="ngCategoriaToggle()"></select>
+      </div>
+      <div class="form-field" id="ng-nova-cat-field" style="display:none">
+        <label class="form-label">Nova categoria</label>
+        <input type="text" class="form-select" id="ng-nova-categoria" placeholder="ex: Presente, Status..." autocomplete="off">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Texto do gancho</label>
+        <textarea class="form-textarea" id="ng-texto" placeholder="Imagina precisar disso no pior momento..." style="min-height:80px"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="m-btn" onclick="salvarNovoGancho()">Salvar gancho</button>
+      <button class="m-btn ghost" onclick="fecharModal('modal-novo-gancho')">Cancelar</button>
     </div>
   </div>
 </div>
@@ -383,6 +417,46 @@ function renderChips() {
 
 function esc(s) {
   return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
+// === NOVO GANCHO NO CATÁLOGO ===
+function abrirNovoGancho() {
+  const cats = [...new Set(ganchosCatalogo.map(g => g.categoria).filter(Boolean))]
+  const sel = document.getElementById('ng-categoria')
+  sel.innerHTML = cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('') +
+    '<option value="__nova__">＋ Nova categoria...</option>'
+  document.getElementById('ng-texto').value = ''
+  document.getElementById('ng-nova-categoria').value = ''
+  ngCategoriaToggle()
+  document.getElementById('modal-novo-gancho').classList.add('open')
+  document.getElementById('ng-texto').focus()
+}
+
+function ngCategoriaToggle() {
+  const isNova = document.getElementById('ng-categoria').value === '__nova__'
+  document.getElementById('ng-nova-cat-field').style.display = isNova ? 'block' : 'none'
+}
+
+async function salvarNovoGancho() {
+  const sel = document.getElementById('ng-categoria')
+  const categoria = sel.value === '__nova__'
+    ? document.getElementById('ng-nova-categoria').value.trim()
+    : sel.value
+  const texto = document.getElementById('ng-texto').value.trim()
+  if (!texto) { alert('Digite o texto do gancho'); return }
+  if (!categoria) { alert('Defina a categoria'); return }
+  const session = await getSession()
+  if (!session) return
+  const { data, error } = await _supabase
+    .from('ganchos')
+    .insert({ user_id: session.user.id, categoria, texto })
+    .select()
+    .single()
+  if (error) { mostrarErro(error.message); return }
+  await carregarCatalogo()
+  fecharModal('modal-novo-gancho')
+  document.getElementById('c-busca').value = ''
+  renderCatalogo()
 }
 
 function preencherProdutos() {
