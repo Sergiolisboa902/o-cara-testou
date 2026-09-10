@@ -64,6 +64,28 @@
   .vazio .big { font-size: 2rem; margin-bottom: .5rem; }
   .vazio a { color: #e63946; font-weight: 700; cursor: pointer; }
 
+  .assist-card {
+    background: #1a1a1a; border-radius: 14px; padding: 1rem 1.2rem;
+    margin-bottom: 1.2rem; color: #fff;
+  }
+  .assist-card .t {
+    font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+    color: #e63946; margin-bottom: .55rem; display: flex; align-items: center; gap: .4rem;
+  }
+  .assist-row { display: flex; gap: .5rem; align-items: center; }
+  .assist-row input {
+    flex: 1; border: none; border-radius: 8px; padding: .6rem .8rem;
+    font-size: .85rem; font-family: inherit; outline: none;
+  }
+  .assist-btn {
+    background: #e63946; color: #fff; border: none; border-radius: 8px;
+    padding: .6rem 1rem; font-size: .82rem; font-weight: 700; cursor: pointer;
+    font-family: inherit; white-space: nowrap;
+  }
+  .assist-btn:hover { background: #c82d3a; }
+  .assist-hint { font-size: .72rem; color: #aaa; margin-top: .45rem; line-height: 1.5; }
+  .assist-ok { color: #3ECF8E; font-weight: 700; margin-top: .45rem; display: none; font-size: .78rem; }
+
   .modal-overlay {
     display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55);
     z-index: 200; align-items: center; justify-content: center; padding: 1.2rem;
@@ -131,6 +153,15 @@
   <div class="top-bar">
     <div class="page-title"><span>Produtos</span> <span class="count" id="contador"></span></div>
     <button class="cta-btn" onclick="abrirNovo()">＋ Novo produto</button>
+  </div>
+  <div class="assist-card">
+    <div class="t">🤖 Assistente de Cadastro</div>
+    <div class="assist-row">
+      <input type="text" id="assist-link" placeholder="Cole o link do produto (ex: https://vt.tiktok.com/...)" autocomplete="off">
+      <button class="assist-btn" onclick="copiarPrompt()">📋 Copiar prompt</button>
+    </div>
+    <div class="assist-hint">Cola o link, clica em <b>Copiar prompt</b> e envia o texto copiado no chat do assistente (opencode). Ele gera os campos e cadastra direto no banco.</div>
+    <div class="assist-ok" id="assist-ok">✓ Prompt copiado! Cole no chat do assistente (opencode).</div>
   </div>
   <div class="lista-scroll">
     <div class="grid" id="grid"></div>
@@ -205,6 +236,52 @@
 <script>
 let todosProdutos = []
 let editandoId = null
+
+const PROMPT_BASE = `Analise o produto deste link no TikTok Shop e gere o cadastro completo dele no formato EXATO abaixo, em português do Brasil. Acesse o link, se não conseguir, pesquise o produto na web. Não invente o que não conseguir confirmar.
+
+NOME:
+DESCRICAO: (1-2 linhas + 5 a 8 hashtags separadas por espaço)
+RESUMO: (parágrafo de 3 a 5 frases)
+PROBLEMAS: (4 a 8 itens, 1 por linha, comece com verbo)
+BENEFICIOS: (4 a 8 itens, 1 por linha)
+CARACTERISTICAS: (o máximo de especificações visíveis, 1 por linha)
+DIFERENCIAIS: (3 a 6 itens, 1 por linha)
+TESTES: (4 a 8 itens, 1 por linha, comece com verbo)
+MOMENTOSWOW: (3 a 6 itens, 1 por linha)
+PUBLICOIDEAL: (5 a 8 itens, 1 por linha)
+OBJECOES: (4 a 7 itens, 1 por linha, formato: pergunta | resposta)
+CURIOSIDADES: (3 a 6 itens, 1 por linha)
+
+SEMPRE com os cabeçalhos NOME:, DESCRICAO:, RESUMO:, PROBLEMAS:, BENEFICIOS:, CARACTERISTICAS:, DIFERENCIAIS:, TESTES:, MOMENTOSWOW:, PUBLICOIDEAL:, OBJECOES:, CURIOSIDADES:, um item por linha, sem números e sem bullets. Não invente nada; se não der para saber, escreva "Informação não visível".
+
+Link do produto:
+`
+
+function copiarPrompt() {
+  const link = document.getElementById('assist-link').value.trim()
+  if (!link) { alert('Cole o link do produto primeiro'); return }
+  const texto = PROMPT_BASE + link
+  const ok = document.getElementById('assist-ok')
+  const copiar = () => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(texto).then(() => true, () => false)
+    }
+    const ta = document.createElement('textarea')
+    ta.value = texto
+    ta.style.position = 'fixed'
+    ta.style.opacity = '0'
+    document.body.appendChild(ta)
+    ta.select()
+    let r = false
+    try { r = document.execCommand('copy') } catch (e) {}
+    document.body.removeChild(ta)
+    return Promise.resolve(r)
+  }
+  copiar().then(r => {
+    ok.style.display = r ? 'block' : 'none'
+    if (!r) alert('Não foi possível copiar automaticamente. Selecione o prompt manualmente.')
+  })
+}
 
 window.onAuthReady = iniciar
 getSession().then(s => { if (s) iniciar(); else injectAuthUI() })
