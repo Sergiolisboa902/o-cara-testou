@@ -3,7 +3,7 @@
 > **Documento maestro.** Visão central de tudo: equipe, entregas, status e histórico.
 > Este MD é vivo — atualizado a cada avanço do projeto.
 
-**Ultima atualizacao:** 25/07/2026
+**Ultima atualizacao:** 10/09/2026
 **Sprint atual:** Migracao Supabase + Deploy Vercel
 **Proximo marco:** Segunda iteracao do app (cards dinamicos) + Segundo produto do catalogo
 
@@ -213,6 +213,20 @@ Dashboard (html/index.html)
 ---
 
 ## 6. DECISOES E HISTORICO DE AVANCOS
+
+### 10/09/2026 — Produtos DB: Categorias, Lista e Fila de Cadastro
+
+- Coluna `categoria` adicionada a tabela `produtos` (migracao `html/sql/produtos-categoria.sql`); schema base atualizado em `html/sql/produtos.sql`
+- Pagina de produtos migrada de cards para **lista agrupada por categoria**, com chips de filtro por categoria no topo
+- Produtos sem categoria aparecem no grupo "Sem categoria" (marcado em ambar) para identificar o que falta categorizar
+- Campo Categoria no modal de cadastro/edicao, com **datalist** de sugestoes das categorias ja usadas
+- Pagina redesenhada: corpo mostra so a lista de produtos; os fluxos viraram modais:
+  - **Assistente de Cadastro** (botao "assistente"): link + print → copiar prompt/imagem
+  - **Fila de Cadastro** (botao "fila"): links na fila com print base64 (tabela `fila_produtos` + RLS por usuario)
+  - **Novo/Editar**: modal de produto completo
+- **Fix critico**: payload do save usava `momentosWow`/`publicoIdeal`, mas a tabela tem colunas em minusculas (`momentoswow`/`publicoideal`) → erro `PGRST204` que **impedia salvar qualquer campo** pelo modal. Corrigido usando os nomes reais das colunas; edicao aceita os dois formatos
+- Validado via API (service key): INSERT 201 e UPDATE 200 gravam `categoria` corretamente
+- Script de inserção automatica (`scripts/inserir-produto.mjs`) atualizado para aceitar `categoria`
 
 ### 25/07/2026 — Migracao Supabase + Deploy Vercel
 
