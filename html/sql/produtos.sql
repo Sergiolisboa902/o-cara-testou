@@ -10,10 +10,7 @@ CREATE TABLE IF NOT EXISTS produtos (
   user_id UUID REFERENCES auth.users NOT NULL,
   nome TEXT NOT NULL,
   descricao TEXT DEFAULT '',
-  temas JSONB DEFAULT '[]',
   info JSONB DEFAULT '{}',
-  angulos JSONB DEFAULT '[]',
-  ganchos JSONB DEFAULT '[]',
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );

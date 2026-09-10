@@ -103,9 +103,6 @@
     border-top: 1px solid #eee; padding-top: .8rem; margin: 1.1rem 0 .1rem; display: flex; align-items: center; gap: .4rem;
   }
 
-  .json-box { border: 1px solid #eee; border-radius: 10px; padding: .8rem; background: #fafafa; margin-bottom: .8rem; }
-  .json-actions { display: flex; gap: .5rem; margin-bottom: .5rem; flex-wrap: wrap; }
-
   .m-btn {
     background: #e63946; border: none; border-radius: 8px; cursor: pointer;
     font-size: .82rem; font-weight: 700; padding: .5rem 1rem; color: #fff; transition: all .2s; font-family: inherit;
@@ -161,11 +158,6 @@
         <textarea class="form-textarea" id="p-descricao" placeholder="Descrição curta + #hashtags"></textarea>
       </div>
 
-      <div class="sec-titulo">🎯 Temas <span style="color:#bbb;font-weight:600;text-transform:none">(1 por linha)</span></div>
-      <div class="form-field">
-        <textarea class="form-textarea" id="p-temas" placeholder="O motorista precavido&#10;Quem faz viagem longa..."></textarea>
-      </div>
-
       <div class="sec-titulo">📋 Resumo</div>
       <div class="form-field">
         <textarea class="form-textarea" id="p-resumo" style="min-height:100px"></textarea>
@@ -183,26 +175,20 @@
       <div class="sec-titulo">Diferenciais <span style="color:#bbb;font-weight:600;text-transform:none">(1 por linha)</span></div>
       <textarea class="form-textarea" id="p-diferenciais" style="min-height:60px"></textarea>
 
+      <div class="sec-titulo">Testes (roteiro do vídeo) <span style="color:#bbb;font-weight:600;text-transform:none">(1 por linha)</span></div>
+      <textarea class="form-textarea" id="p-testes" style="min-height:60px"></textarea>
+
+      <div class="sec-titulo">🎬 Momentos Wow <span style="color:#bbb;font-weight:600;text-transform:none">(1 por linha)</span></div>
+      <textarea class="form-textarea" id="p-momentosWow" style="min-height:60px"></textarea>
+
+      <div class="sec-titulo">👥 Público Ideal <span style="color:#bbb;font-weight:600;text-transform:none">(1 por linha)</span></div>
+      <textarea class="form-textarea" id="p-publicoIdeal" style="min-height:60px"></textarea>
+
       <div class="sec-titulo">❓ Objeções <span style="color:#bbb;font-weight:600;text-transform:none">(formato: Pergunta | Resposta, 1 por linha)</span></div>
       <textarea class="form-textarea" id="p-objecoes" style="min-height:60px" placeholder="Será que realmente funciona? | Sim, foi testado..."></textarea>
 
-      <div class="sec-titulo">🧲 Ângulos (JSON)</div>
-      <div class="json-box">
-        <div class="json-actions">
-          <button class="m-btn ghost" onclick="exportarJson('p-angulos')">Exportar JSON</button>
-          <button class="m-btn ghost" onclick="importarJson('p-angulos')">Importar</button>
-        </div>
-        <textarea class="form-textarea" id="p-angulos" style="min-height:90px;font-family:monospace;font-size:.78rem" placeholder='[["Categoria","Frase"],...]'></textarea>
-      </div>
-
-      <div class="sec-titulo">🧲 Ganchos (JSON)</div>
-      <div class="json-box">
-        <div class="json-actions">
-          <button class="m-btn ghost" onclick="exportarJson('p-ganchos')">Exportar JSON</button>
-          <button class="m-btn ghost" onclick="importarJson('p-ganchos')">Importar</button>
-        </div>
-        <textarea class="form-textarea" id="p-ganchos" style="min-height:90px;font-family:monospace;font-size:.78rem" placeholder='[["Categoria","Gancho"],...]'></textarea>
-      </div>
+      <div class="sec-titulo">💡 Curiosidades <span style="color:#bbb;font-weight:600;text-transform:none">(1 por linha)</span></div>
+      <textarea class="form-textarea" id="p-curiosidades" style="min-height:60px"></textarea>
     </div>
     <div class="modal-footer">
       <button class="m-btn" onclick="salvar()">💾 Salvar produto</button>
@@ -254,9 +240,7 @@ function renderGrid() {
       <div class="prod-id">${esc(p.id)}</div>
       <div class="prod-nome">${esc(p.nome)}</div>
       <div class="prod-chips">
-        <span class="prod-chip">🎯 ${(p.temas||[]).length} temas</span>
-        <span class="prod-chip">🧲 ${(p.angulos||[]).length} ângulos</span>
-        <span class="prod-chip">🎣 ${(p.ganchos||[]).length} ganchos</span>
+        <span class="prod-chip">📋 ${Object.keys(p.info||{}).length} tópicos</span>
       </div>
       <div class="prod-actions">
         <button class="m-btn" onclick="abrirEditar('${p.id}')">✏️ Editar</button>
@@ -280,22 +264,23 @@ function abrirEditar(id) {
   document.getElementById('p-id').value = p.id
   document.getElementById('p-nome').value = p.nome || ''
   document.getElementById('p-descricao').value = p.descricao || ''
-  document.getElementById('p-temas').value = (p.temas || []).join('\n')
   const info = p.info || {}
   document.getElementById('p-resumo').value = info.resumo || ''
   document.getElementById('p-problemas').value = (info.problemas || []).join('\n')
   document.getElementById('p-beneficios').value = (info.beneficios || []).join('\n')
   document.getElementById('p-caracteristicas').value = (info.caracteristicas || []).join('\n')
   document.getElementById('p-diferenciais').value = (info.diferenciais || []).join('\n')
+  document.getElementById('p-testes').value = (info.testes || []).join('\n')
+  document.getElementById('p-momentosWow').value = (info.momentosWow || []).join('\n')
+  document.getElementById('p-publicoIdeal').value = (info.publicoIdeal || []).join('\n')
   document.getElementById('p-objecoes').value = (info.objecoes || []).map(o => `${o.pergunta} | ${o.resposta}`).join('\n')
-  document.getElementById('p-angulos').value = ''
-  document.getElementById('p-ganchos').value = ''
+  document.getElementById('p-curiosidades').value = (info.curiosidades || []).join('\n')
   document.getElementById('p-id').disabled = true
   document.getElementById('modal-produto').classList.add('open')
 }
 
 function limparCampos() {
-  ['p-id','p-nome','p-descricao','p-temas','p-resumo','p-problemas','p-beneficios','p-caracteristicas','p-diferenciais','p-objecoes','p-angulos','p-ganchos'].forEach(id => {
+  ['p-id','p-nome','p-descricao','p-resumo','p-problemas','p-beneficios','p-caracteristicas','p-diferenciais','p-testes','p-momentosWow','p-publicoIdeal','p-objecoes','p-curiosidades'].forEach(id => {
     const el = document.getElementById(id)
     el.value = ''
     if (id === 'p-id') el.disabled = false
@@ -306,39 +291,11 @@ function linhas(id) {
   return document.getElementById(id).value.split('\n').map(s => s.trim()).filter(Boolean)
 }
 
-function exportarJson(id) {
-  const p = todosProdutos.find(x => x.id === editandoId)
-  if (!p) return
-  const campo = id === 'p-angulos' ? 'angulos' : 'ganchos'
-  document.getElementById(id).value = JSON.stringify(p[campo] || [], null, 2)
-}
-
-function importarJson(id) {
-  const el = document.getElementById(id)
-  try {
-    const v = JSON.parse(el.value)
-    if (!Array.isArray(v)) throw new Error('Precisa ser um array')
-    el.value = JSON.stringify(v, null, 2)
-    el.style.borderColor = '#3ECF8E'
-    setTimeout(() => el.style.borderColor = '', 1500)
-  } catch (e) {
-    alert('JSON inválido: ' + e.message)
-  }
-}
-
 async function salvar() {
   const id = document.getElementById('p-id').value.trim().toLowerCase().replace(/\s+/g, '-')
   const nome = document.getElementById('p-nome').value.trim()
   if (!id) { alert('Informe o ID (slug)'); return }
   if (!nome) { alert('Informe o nome'); return }
-
-  let angulos = null, ganchos = null
-  try {
-    angulos = document.getElementById('p-angulos').value.trim() ? JSON.parse(document.getElementById('p-angulos').value) : null
-  } catch (e) { alert('JSON de ângulos inválido'); return }
-  try {
-    ganchos = document.getElementById('p-ganchos').value.trim() ? JSON.parse(document.getElementById('p-ganchos').value) : null
-  } catch (e) { alert('JSON de ganchos inválido'); return }
 
   const info = {
     resumo: document.getElementById('p-resumo').value.trim(),
@@ -346,20 +303,21 @@ async function salvar() {
     beneficios: linhas('p-beneficios'),
     caracteristicas: linhas('p-caracteristicas'),
     diferenciais: linhas('p-diferenciais'),
+    testes: linhas('p-testes'),
+    momentosWow: linhas('p-momentosWow'),
+    publicoIdeal: linhas('p-publicoIdeal'),
     objecoes: linhas('p-objecoes').map(l => {
       const [pergunta, ...resto] = l.split('|')
       return { pergunta: pergunta.trim(), resposta: resto.join('|').trim() }
-    })
+    }),
+    curiosidades: linhas('p-curiosidades')
   }
 
   const payload = {
     id,
     nome,
     descricao: document.getElementById('p-descricao').value.trim(),
-    temas: linhas('p-temas'),
-    info,
-    angulos: angulos !== null ? angulos : (editandoId ? (todosProdutos.find(x => x.id === editandoId) || {}).angulos || [] : []),
-    ganchos: ganchos !== null ? ganchos : (editandoId ? (todosProdutos.find(x => x.id === editandoId) || {}).ganchos || [] : [])
+    info
   }
 
   const session = await getSession()
@@ -368,7 +326,7 @@ async function salvar() {
   if (editandoId) {
     ;({ error } = await _supabase
       .from('produtos')
-      .update({ nome: payload.nome, descricao: payload.descricao, temas: payload.temas, info: payload.info, angulos: payload.angulos, ganchos: payload.ganchos, updated_at: new Date().toISOString() })
+      .update({ nome: payload.nome, descricao: payload.descricao, info: payload.info, updated_at: new Date().toISOString() })
       .eq('id', editandoId)
       .eq('user_id', session.user.id))
   } else {
