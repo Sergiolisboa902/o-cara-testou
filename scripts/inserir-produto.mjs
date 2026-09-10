@@ -47,7 +47,7 @@ const MAPA = {
   publicoIdeal: 'publicoideal'
 }
 const campos = [
-  'id', 'user_id', 'nome', 'descricao', 'resumo', 'problemas', 'beneficios',
+  'id', 'user_id', 'nome', 'categoria', 'descricao', 'resumo', 'problemas', 'beneficios',
   'caracteristicas', 'diferenciais', 'testes', 'momentosWow', 'publicoIdeal',
   'objecoes', 'curiosidades'
 ]

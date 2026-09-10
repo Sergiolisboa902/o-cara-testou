@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS produtos (
   id TEXT PRIMARY KEY,
   user_id UUID REFERENCES auth.users NOT NULL,
   nome TEXT NOT NULL,
+  categoria TEXT DEFAULT '',
   descricao TEXT DEFAULT '',
   resumo TEXT DEFAULT '',
   problemas TEXT DEFAULT '',

@@ -47,8 +47,58 @@
   .cta-btn.ghost .badge { background: #e63946; color: #fff; }
 
   .lista-scroll { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 1.5rem; border-top: 1px solid #ececec; padding-top: 1rem; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+
+  .cat-filtro { display: flex; gap: .45rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+  .chip-cat {
+    background: #fff; border: 2px solid #e8e8e8; border-radius: 20px;
+    padding: .45rem .9rem; font-size: .76rem; font-weight: 700; cursor: pointer;
+    font-family: inherit; color: #777; transition: all .15s;
+  }
+  .chip-cat:hover { border-color: #e63946; color: #e63946; }
+  .chip-cat.ativo { background: #e63946; border-color: #e63946; color: #fff; }
+
+  .cat-bloco { margin-bottom: 1.4rem; }
+  .cat-titulo {
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .84rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+    color: #1a1a1a; margin-bottom: .55rem;
+  }
+  .cat-titulo .n {
+    background: #e63946; color: #fff; border-radius: 20px;
+    font-size: .7rem; padding: .1rem .55rem;
+  }
+  .cat-titulo.sem { color: #999; }
+
+  .prod-rows { display: flex; flex-direction: column; }
+  .prod-row {
+    display: flex; align-items: center; gap: .8rem;
+    background: #fff; border: 1px solid #eee; border-bottom: none;
+    padding: .7rem .9rem; transition: all .15s;
+  }
+  .prod-rows .prod-row:first-child { border-radius: 12px 12px 0 0; }
+  .prod-rows .prod-row:last-child { border-radius: 0 0 12px 12px; border-bottom: 1px solid #eee; }
+  .prod-rows .prod-row:only-child { border-radius: 12px; }
+  .prod-row:hover { background: #fafafa; }
+  .prod-row-cab {
+    display: grid; grid-template-columns: 1fr 150px 40px; gap: .8rem; align-items: center;
+    flex: 1; min-width: 0; cursor: pointer;
+  }
+  .prod-row-nome { font-size: .88rem; font-weight: 700; line-height: 1.3; color: #1a1a1a; }
+  .prod-row-id { font-size: .68rem; font-weight: 700; color: #bbb; text-transform: uppercase; letter-spacing: .03em; margin-top: .15rem; }
+  .prod-row-data { font-size: .72rem; font-weight: 600; color: #888; text-align: right; white-space: nowrap; }
+  .prod-row-acoes { display: flex; gap: .35rem; justify-content: flex-end; }
+  .prod-row-acoes .mini {
+    background: #f0f0f0; border: none; border-radius: 6px; cursor: pointer;
+    font-size: .78rem; padding: .32rem .55rem; font-weight: 700; color: #333; font-family: inherit;
+  }
+  .prod-row-acoes .mini:hover { background: #e63946; color: #fff; }
+  .prod-row-acoes .mini.sem-cat { background: #fff3cd; color: #856404; }
+  .prod-row-acoes .mini.sem-cat:hover { background: #ffe9a8; color: #6d5300; }
+
+  @media (max-width: 600px) {
+    .prod-row-cab { grid-template-columns: 1fr 90px 40px; }
+    .prod-row-data { font-size: .66rem; }
+  }
 
   .prod-card {
     background: #fff; border-radius: 14px; padding: 1.1rem 1.3rem;
@@ -224,7 +274,8 @@
     </div>
   </div>
   <div class="lista-scroll">
-    <div class="grid" id="grid"></div>
+    <div class="cat-filtro" id="cat-filtro"></div>
+    <div id="lista-produtos"></div>
   </div>
 </div>
 <div class="footer">Estrutura paralela &mdash; tabela produtos no Supabase</div>
@@ -317,6 +368,11 @@
         <input type="text" class="form-select" id="p-nome" placeholder="Nome completo do produto">
       </div>
       <div class="form-field">
+        <label class="form-label">Categoria</label>
+        <input type="text" class="form-select" id="p-categoria" placeholder="ex: Ferramentas, Cozinha, Automotivo..." autocomplete="off" list="cat-list">
+        <datalist id="cat-list"></datalist>
+      </div>
+      <div class="form-field">
         <label class="form-label">Descrição + hashtags</label>
         <textarea class="form-textarea" id="p-descricao" placeholder="Descrição curta + #hashtags"></textarea>
       </div>
@@ -370,6 +426,7 @@ let todosProdutos = []
 let editandoId = null
 let filaProdutos = []
 let filaImgBlob = null
+let filtroCategoria = ''
 
 const PROMPT_BASE = `Analise o produto deste link no TikTok Shop e gere o cadastro completo dele no formato EXATO abaixo, em português do Brasil. Acesse o link, se não conseguir, pesquise o produto na web. Não invente o que não conseguir confirmar.
 
@@ -665,28 +722,79 @@ async function carregar() {
     .order('nome', { ascending: true })
   if (error) { mostrarErro(error.message); return }
   todosProdutos = (data || []).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))
-  renderGrid()
+  preencherDatalistCategorias()
+  renderFiltroCategorias()
+  renderLista()
 }
 
-function renderGrid() {
+function preencherDatalistCategorias() {
+  const cats = [...new Set(todosProdutos.map(p => (p.categoria || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'))
+  document.getElementById('cat-list').innerHTML = cats.map(c => `<option value="${esc(c)}">`).join('')
+}
+
+function renderFiltroCategorias() {
+  const el = document.getElementById('cat-filtro')
+  const cats = [...new Set(todosProdutos.map(p => (p.categoria || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'))
+  if (!cats.length) { el.innerHTML = ''; return }
+  const chips = [`<button class="chip-cat ${!filtroCategoria ? 'ativo' : ''}" onclick="setFiltroCategoria('')">Todas</button>`,
+    ...cats.map(c => `<button class="chip-cat ${filtroCategoria === c ? 'ativo' : ''}" onclick="setFiltroCategoria('${esc(c)}')">${esc(c)}</button>`)]
+  el.innerHTML = chips.join('')
+}
+
+function setFiltroCategoria(cat) {
+  filtroCategoria = cat
+  renderFiltroCategorias()
+  renderLista()
+}
+
+function renderLista() {
   document.getElementById('contador').textContent = `(${todosProdutos.length})`
-  const grid = document.getElementById('grid')
+  const el = document.getElementById('lista-produtos')
   if (!todosProdutos.length) {
-    grid.innerHTML = `<div class="vazio"><div class="big">📦</div>Nenhum produto ainda.<br><br><a onclick="abrirNovo()">✨ Criar o primeiro produto</a></div>`
+    el.innerHTML = `<div class="vazio"><div class="big">📦</div>Nenhum produto ainda.<br><br><a onclick="abrirNovo()">✨ Criar o primeiro produto</a></div>`
     return
   }
-  grid.innerHTML = todosProdutos.map(p => `
-    <div class="prod-card">
-      <div class="prod-id">${esc(p.id)}</div>
-      <div class="prod-nome">${esc(p.nome)}</div>
-      <div class="prod-chips">
-        <span class="prod-chip">📋 10 tópicos</span>
+  let lista = todosProdutos
+  if (filtroCategoria) lista = lista.filter(p => (p.categoria || '').trim() === filtroCategoria)
+  if (!lista.length) {
+    el.innerHTML = `<div class="vazio">Nenhum produto na categoria &ldquo;${esc(filtroCategoria)}&rdquo;.</div>`
+    return
+  }
+  const grupos = {}
+  lista.forEach(p => {
+    const k = (p.categoria || '').trim() || 'Sem categoria'
+    ;(grupos[k] = grupos[k] || []).push(p)
+  })
+  const ordemCats = Object.keys(grupos).sort((a, b) => {
+    if (a === 'Sem categoria') return 1
+    if (b === 'Sem categoria') return -1
+    return a.localeCompare(b, 'pt-BR')
+  })
+  el.innerHTML = ordemCats.map(cat => {
+    const itens = grupos[cat]
+    return `<div class="cat-bloco">
+      <div class="cat-titulo ${cat === 'Sem categoria' ? 'sem' : ''}">${cat === 'Sem categoria' ? '📦' : '🗂️'} ${esc(cat)} <span class="n">${itens.length}</span></div>
+      <div class="prod-rows">${itens.map(p => rowProduto(p)).join('')}</div>
+    </div>`
+  }).join('')
+}
+
+function rowProduto(p) {
+  const semCat = !(p.categoria || '').trim()
+  return `
+    <div class="prod-row">
+      <div class="prod-row-cab" onclick="abrirEditar('${p.id}')">
+        <div>
+          <div class="prod-row-nome">${esc(p.nome)}</div>
+          <div class="prod-row-id">${esc(p.id)} ${semCat ? '· sem categoria' : ''}</div>
+        </div>
+        <div class="prod-row-data">${new Date(p.created_at).toLocaleDateString('pt-BR')}</div>
+        <div class="prod-row-acoes">
+          <button class="mini ${semCat ? 'sem-cat' : ''}" onclick="event.stopPropagation();abrirEditar('${p.id}')" title="Editar">✏️</button>
+          <button class="mini" onclick="event.stopPropagation();excluir('${p.id}')" title="Excluir">🗑</button>
+        </div>
       </div>
-      <div class="prod-actions">
-        <button class="m-btn" onclick="abrirEditar('${p.id}')">✏️ Editar</button>
-        <button class="m-btn del" onclick="excluir('${p.id}')">🗑</button>
-      </div>
-    </div>`).join('')
+    </div>`
 }
 
 function abrirNovo() {
@@ -703,6 +811,7 @@ function abrirEditar(id) {
   document.getElementById('m-titulo').innerHTML = '<span>Editar</span> Produto'
   document.getElementById('p-id').value = p.id
   document.getElementById('p-nome').value = p.nome || ''
+  document.getElementById('p-categoria').value = p.categoria || ''
   document.getElementById('p-descricao').value = p.descricao || ''
   document.getElementById('p-resumo').value = p.resumo || ''
   document.getElementById('p-problemas').value = p.problemas || ''
@@ -719,7 +828,7 @@ function abrirEditar(id) {
 }
 
 function limparCampos() {
-  ['p-id','p-nome','p-descricao','p-resumo','p-problemas','p-beneficios','p-caracteristicas','p-diferenciais','p-testes','p-momentosWow','p-publicoIdeal','p-objecoes','p-curiosidades'].forEach(id => {
+  ['p-id','p-nome','p-categoria','p-descricao','p-resumo','p-problemas','p-beneficios','p-caracteristicas','p-diferenciais','p-testes','p-momentosWow','p-publicoIdeal','p-objecoes','p-curiosidades'].forEach(id => {
     const el = document.getElementById(id)
     el.value = ''
     if (id === 'p-id') el.disabled = false
@@ -735,6 +844,7 @@ async function salvar() {
   const payload = {
     id,
     nome,
+    categoria: document.getElementById('p-categoria').value.trim(),
     descricao: document.getElementById('p-descricao').value.trim(),
     resumo: document.getElementById('p-resumo').value.trim(),
     problemas: document.getElementById('p-problemas').value.trim(),
