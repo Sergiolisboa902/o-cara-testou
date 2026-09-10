@@ -240,6 +240,10 @@
     <div class="modal-body">
       <div class="det-edicao">
         <div class="form-field">
+          <label class="form-label">Nome da missão</label>
+          <input type="text" class="form-select" id="d-nome" placeholder="ex: Q18B — Vídeo 1">
+        </div>
+        <div class="form-field">
           <label class="form-label">Produto</label>
           <input type="text" class="form-select" id="d-produto">
         </div>
@@ -283,6 +287,10 @@
       <button class="modal-close" onclick="fecharModal('modal-criar')">✕</button>
     </div>
     <div class="modal-body">
+      <div class="form-field">
+        <label class="form-label">Nome da missão</label>
+        <input type="text" class="form-select" id="c-nome" placeholder="ex: Q18B — Vídeo 1, Semana A... (opcional, usa o produto se vazio)">
+      </div>
       <div class="form-field">
         <label class="form-label">Produto</label>
         <select class="form-select" id="c-produto"></select>
@@ -539,9 +547,9 @@ function renderLista() {
       <div class="missao-card ${completa ? 'completa' : 'andamento'}" onclick="abrirDetalhe('${m.id}')">
         <button class="missao-del" onclick="event.stopPropagation();excluirMissao('${m.id}')" title="Excluir missão">🗑</button>
         <div class="missao-head">
-          <div class="missao-nome">${m.produto}</div>
+          <div class="missao-nome">${m.nome || m.produto}</div>
         </div>
-        <div class="missao-sub">${linhaMeta(m)}</div>
+        <div class="missao-sub">${linhaMeta(m, m.nome)}</div>
         <div class="missao-status ${completa ? 'completa' : 'andamento'}">${completa ? '● Completa' : '◐ Andamento'}</div>
         <div class="missao-progresso"><b>${feitos}/${total}</b> ganchos concluídos</div>
         <div class="barra"><div class="barra-fill ${completa ? 'completa' : 'andamento'}" style="width:${pct}%"></div></div>
@@ -560,6 +568,7 @@ function stats(m) {
 function progresso(m) { return stats(m)[2] }
 function linhaMeta(m) {
   const partes = []
+  if (m.nome) partes.push(`📦 ${m.produto}`)
   if (m.cenario) partes.push(`🎬 ${m.cenario}`)
   if (m.figurino) partes.push(`👔 ${m.figurino}`)
   return partes.join(' · ') || ''
@@ -572,7 +581,8 @@ async function abrirDetalhe(id) {
   if (!m) return
   detalheId = id
   missaoAtual = m
-  document.getElementById('d-titulo').innerHTML = m.produto
+  document.getElementById('d-titulo').innerHTML = m.nome || m.produto
+  document.getElementById('d-nome').value = m.nome || ''
   document.getElementById('d-produto').value = m.produto || ''
   document.getElementById('d-cenario').value = m.cenario || ''
   document.getElementById('d-figurino').value = m.figurino || ''
@@ -586,6 +596,7 @@ async function salvarMissao() {
   const session = await getSession()
   if (!session) return
   const patch = {
+    nome: document.getElementById('d-nome').value.trim(),
     produto: document.getElementById('d-produto').value.trim(),
     cenario: document.getElementById('d-cenario').value.trim(),
     figurino: document.getElementById('d-figurino').value.trim(),
@@ -601,7 +612,7 @@ async function salvarMissao() {
   if (error) { mostrarErro(error.message); return }
   const m = todasMissoes.find(x => x.id === detalheId)
   if (m) Object.assign(m, patch)
-  document.getElementById('d-titulo').innerHTML = patch.produto
+  document.getElementById('d-titulo').innerHTML = patch.nome || patch.produto
   renderLista()
 }
 
@@ -615,6 +626,7 @@ async function duplicarMissao() {
     .from('missions')
     .insert({
       user_id: session.user.id,
+      nome: missaoAtual.nome || '',
       produto: missaoAtual.produto,
       cenario: missaoAtual.cenario || '',
       figurino: missaoAtual.figurino || '',
@@ -689,6 +701,7 @@ async function persistirDetalhe() {
 
 // === CRIAR ===
 function abrirCriar() {
+  document.getElementById('c-nome').value = ''
   document.getElementById('c-ganchos').value = ''
   document.getElementById('c-cenario').value = ''
   document.getElementById('c-figurino').value = ''
@@ -702,6 +715,7 @@ function abrirCriar() {
 
 async function criarMissao() {
   const produtoId = document.getElementById('c-produto').value
+  const nome = document.getElementById('c-nome').value.trim()
   const cenario = document.getElementById('c-cenario').value.trim()
   const figurino = document.getElementById('c-figurino').value.trim()
   const descricaoCena = document.getElementById('c-descricao').value.trim()
@@ -718,7 +732,7 @@ async function criarMissao() {
   const ganchos = [...doCatalogo, ...manuais]
   const { data, error } = await _supabase
     .from('missions')
-    .insert({ user_id: session.user.id, produto: produto.nome, cenario, figurino, descricao_cena: descricaoCena, ganchos })
+    .insert({ user_id: session.user.id, produto: produto.nome, nome, cenario, figurino, descricao_cena: descricaoCena, ganchos })
     .select()
     .single()
   if (error) { mostrarErro(error.message); return }
