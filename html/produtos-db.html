@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produtos (DB) — O Cara Testou</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+  .topnav {
+    background: #1a1a1a; padding: .6rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topnav-brand { font-weight: 800; color: #fff; font-size: .9rem; }
+  .topnav-brand span { color: #e63946; }
+  .topnav-brand a { color: inherit; text-decoration: none; }
+  .topnav-links { display: flex; gap: .5rem; }
+  .topnav-back {
+    background: #333; border: none; padding: .4rem .9rem;
+    font-size: .78rem; font-weight: 600; font-family: inherit;
+    color: #ccc; cursor: pointer; border-radius: 6px; text-decoration: none;
+    transition: all .2s;
+  }
+  .topnav-back:hover { background: #e63946; color: #fff; }
+  .topnav-back.ativo { background: #e63946; color: #fff; }
+  .container { max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem 0; width: 100%; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; flex-wrap: wrap; gap: .7rem; }
+  .page-title { font-size: 1.2rem; font-weight: 800; }
+  .page-title span { color: #e63946; }
+  .page-title .count { font-size: .8rem; color: #999; font-weight: 600; }
+  .cta-btn {
+    display: inline-block; background: #e63946; color: #fff; border: none;
+    font-size: .82rem; font-weight: 700; padding: .6rem 1.1rem; border-radius: 8px;
+    cursor: pointer; transition: all .2s; font-family: inherit; text-decoration: none;
+  }
+  .cta-btn:hover { background: #c82d3a; transform: translateY(-1px); }
+
+  .lista-scroll { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 1.5rem; border-top: 1px solid #ececec; padding-top: 1rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+
+  .prod-card {
+    background: #fff; border-radius: 14px; padding: 1.1rem 1.3rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06); border: 2px solid transparent; transition: all .18s;
+    display: flex; flex-direction: column; gap: .5rem;
+  }
+  .prod-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,.1); transform: translateY(-2px); }
+  .prod-id { font-size: .7rem; font-weight: 700; color: #e63946; text-transform: uppercase; letter-spacing: .04em; }
+  .prod-nome { font-size: .95rem; font-weight: 800; line-height: 1.35; }
+  .prod-chips { display: flex; gap: .4rem; flex-wrap: wrap; }
+  .prod-chip {
+    font-size: .7rem; font-weight: 700; color: #555; background: #f0f0f0;
+    padding: .22rem .6rem; border-radius: 20px;
+  }
+  .prod-actions { display: flex; gap: .5rem; margin-top: .2rem; }
+
+  .vazio {
+    text-align: center; padding: 3rem; background: #fff; border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06); color: #999; font-size: .9rem;
+  }
+  .vazio .big { font-size: 2rem; margin-bottom: .5rem; }
+  .vazio a { color: #e63946; font-weight: 700; cursor: pointer; }
+
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55);
+    z-index: 200; align-items: center; justify-content: center; padding: 1.2rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 16px; max-width: 720px; width: 100%;
+    max-height: 90vh; display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,.25); animation: modalIn .2s ease;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
+  .modal-head {
+    padding: 1rem 1.4rem; border-bottom: 1px solid #eee;
+    display: flex; align-items: center; justify-content: space-between; gap: .8rem;
+  }
+  .modal-title { font-size: .95rem; font-weight: 800; }
+  .modal-title span { color: #e63946; }
+  .modal-close {
+    background: #eee; border: none; border-radius: 6px; cursor: pointer;
+    font-size: .9rem; padding: .3rem .6rem; font-weight: 700; color: #333;
+  }
+  .modal-body { padding: 1rem 1.4rem; overflow-y: auto; }
+  .modal-footer { padding: .9rem 1.4rem; border-top: 1px solid #eee; display: flex; gap: .6rem; flex-wrap: wrap; }
+
+  .form-field { margin-bottom: .85rem; }
+  .form-label { display: block; font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: #999; margin-bottom: .35rem; }
+  .form-select, .form-textarea {
+    width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: .55rem .7rem;
+    font-size: .85rem; font-family: inherit; outline: none;
+  }
+  .form-select:focus, .form-textarea:focus { border-color: #e63946; }
+  .form-textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
+  .form-hint { font-size: .72rem; color: #aaa; margin-top: .3rem; }
+
+  .sec-titulo {
+    font-size: .8rem; font-weight: 800; color: #1a1a1a; text-transform: uppercase; letter-spacing: .05em;
+    border-top: 1px solid #eee; padding-top: .8rem; margin: 1.1rem 0 .1rem; display: flex; align-items: center; gap: .4rem;
+  }
+
+  .json-box { border: 1px solid #eee; border-radius: 10px; padding: .8rem; background: #fafafa; margin-bottom: .8rem; }
+  .json-actions { display: flex; gap: .5rem; margin-bottom: .5rem; flex-wrap: wrap; }
+
+  .m-btn {
+    background: #e63946; border: none; border-radius: 8px; cursor: pointer;
+    font-size: .82rem; font-weight: 700; padding: .5rem 1rem; color: #fff; transition: all .2s; font-family: inherit;
+  }
+  .m-btn:hover { background: #c82d3a; }
+  .m-btn.ghost { background: #eee; color: #1a1a1a; }
+  .m-btn.ghost:hover { background: #ddd; }
+  .m-btn.del { background: #ffe3e3; color: #e63946; }
+  .m-btn.del:hover { background: #ffd0d0; }
+
+  .erro { text-align: center; padding: 3rem; color: #e63946; font-size: .9rem; }
+  .footer { text-align: center; padding: .8rem; font-size: .72rem; color: #999; }
+</style>
+</head>
+<body>
+<div class="topnav">
+  <div class="topnav-brand"><a href="index.html"><span>O</span> Cara Testou</a></div>
+  <div class="topnav-links">
+    <a href="produtos-db.html" class="topnav-back ativo">🗂️ Produtos DB</a>
+    <a href="ganchos.html" class="topnav-back">🧲 Ganchos</a>
+    <a href="missoes.html" class="topnav-back">🎯 Missões</a>
+    <a href="index.html" class="topnav-back">Voltar</a>
+  </div>
+</div>
+<div class="container">
+  <div class="top-bar">
+    <div class="page-title"><span>Produtos</span> <span class="count" id="contador"></span></div>
+    <button class="cta-btn" onclick="abrirNovo()">＋ Novo produto</button>
+  </div>
+  <div class="lista-scroll">
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+<div class="footer">Estrutura paralela &mdash; tabela produtos no Supabase</div>
+
+<div class="modal-overlay" id="modal-produto">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="m-titulo"><span>Novo</span> Produto</div>
+      <button class="modal-close" onclick="fecharModal('modal-produto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-label">ID (slug, ex: meunovo-produto)</label>
+        <input type="text" class="form-select" id="p-id" placeholder="ex: meu-novo-produto" autocomplete="off">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Nome</label>
+        <input type="text" class="form-select" id="p-nome" placeholder="Nome completo do produto">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Descrição + hashtags</label>
+        <textarea class="form-textarea" id="p-descricao" placeholder="Descrição curta + #hashtags"></textarea>
+      </div>
+
+      <div class="sec-titulo">🎯 Temas <span style="color:#bbb;font-weight:600;text-transform:none">(1 por linha)</span></div>
+      <div class="form-field">
+        <textarea class="form-textarea" id="p-temas" placeholder="O motorista precavido&#10;Quem faz viagem longa..."></textarea>
+      </div>
+
+      <div class="sec-titulo">📋 Resumo</div>
+      <div class="form-field">
+        <textarea class="form-textarea" id="p-resumo" style="min-height:100px"></textarea>
+      </div>
+
+      <div class="sec-titulo">Problemas que resolve <span style="color:#bbb;font-weight:600;text-transform:none">(1 por linha)</span></div>
+      <textarea class="form-textarea" id="p-problemas" style="min-height:60px"></textarea>
+
+      <div class="sec-titulo">Benefícios <span style="color:#bbb;font-weight:600;text-transform:none">(1 por linha)</span></div>
+      <textarea class="form-textarea" id="p-beneficios" style="min-height:60px"></textarea>
+
+      <div class="sec-titulo">Características <span style="color:#bbb;font-weight:600;text-transform:none">(1 por linha)</span></div>
+      <textarea class="form-textarea" id="p-caracteristicas" style="min-height:60px"></textarea>
+
+      <div class="sec-titulo">Diferenciais <span style="color:#bbb;font-weight:600;text-transform:none">(1 por linha)</span></div>
+      <textarea class="form-textarea" id="p-diferenciais" style="min-height:60px"></textarea>
+
+      <div class="sec-titulo">❓ Objeções <span style="color:#bbb;font-weight:600;text-transform:none">(formato: Pergunta | Resposta, 1 por linha)</span></div>
+      <textarea class="form-textarea" id="p-objecoes" style="min-height:60px" placeholder="Será que realmente funciona? | Sim, foi testado..."></textarea>
+
+      <div class="sec-titulo">🧲 Ângulos (JSON)</div>
+      <div class="json-box">
+        <div class="json-actions">
+          <button class="m-btn ghost" onclick="exportarJson('p-angulos')">Exportar JSON</button>
+          <button class="m-btn ghost" onclick="importarJson('p-angulos')">Importar</button>
+        </div>
+        <textarea class="form-textarea" id="p-angulos" style="min-height:90px;font-family:monospace;font-size:.78rem" placeholder='[["Categoria","Frase"],...]'></textarea>
+      </div>
+
+      <div class="sec-titulo">🧲 Ganchos (JSON)</div>
+      <div class="json-box">
+        <div class="json-actions">
+          <button class="m-btn ghost" onclick="exportarJson('p-ganchos')">Exportar JSON</button>
+          <button class="m-btn ghost" onclick="importarJson('p-ganchos')">Importar</button>
+        </div>
+        <textarea class="form-textarea" id="p-ganchos" style="min-height:90px;font-family:monospace;font-size:.78rem" placeholder='[["Categoria","Gancho"],...]'></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="m-btn" onclick="salvar()">💾 Salvar produto</button>
+      <button class="m-btn ghost" onclick="fecharModal('modal-produto')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="erro" id="erro" style="display:none"></div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
+<script>
+let todosProdutos = []
+let editandoId = null
+
+window.onAuthReady = iniciar
+getSession().then(s => { if (s) iniciar(); else injectAuthUI() })
+
+async function iniciar() {
+  const session = await getSession()
+  if (!session) return
+  await carregar()
+}
+
+async function carregar() {
+  const session = await getSession()
+  if (!session) return
+  const { data, error } = await _supabase
+    .from('produtos')
+    .select('*')
+    .eq('user_id', session.user.id)
+    .order('nome', { ascending: true })
+  if (error) { mostrarErro(error.message); return }
+  todosProdutos = (data || []).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))
+  renderGrid()
+}
+
+function renderGrid() {
+  document.getElementById('contador').textContent = `(${todosProdutos.length})`
+  const grid = document.getElementById('grid')
+  if (!todosProdutos.length) {
+    grid.innerHTML = `<div class="vazio"><div class="big">📦</div>Nenhum produto ainda.<br><br><a onclick="abrirNovo()">✨ Criar o primeiro produto</a></div>`
+    return
+  }
+  grid.innerHTML = todosProdutos.map(p => `
+    <div class="prod-card">
+      <div class="prod-id">${esc(p.id)}</div>
+      <div class="prod-nome">${esc(p.nome)}</div>
+      <div class="prod-chips">
+        <span class="prod-chip">🎯 ${(p.temas||[]).length} temas</span>
+        <span class="prod-chip">🧲 ${(p.angulos||[]).length} ângulos</span>
+        <span class="prod-chip">🎣 ${(p.ganchos||[]).length} ganchos</span>
+      </div>
+      <div class="prod-actions">
+        <button class="m-btn" onclick="abrirEditar('${p.id}')">✏️ Editar</button>
+        <button class="m-btn del" onclick="excluir('${p.id}')">🗑</button>
+      </div>
+    </div>`).join('')
+}
+
+function abrirNovo() {
+  editandoId = null
+  document.getElementById('m-titulo').innerHTML = '<span>Novo</span> Produto'
+  limparCampos()
+  document.getElementById('modal-produto').classList.add('open')
+}
+
+function abrirEditar(id) {
+  const p = todosProdutos.find(x => x.id === id)
+  if (!p) return
+  editandoId = id
+  document.getElementById('m-titulo').innerHTML = '<span>Editar</span> Produto'
+  document.getElementById('p-id').value = p.id
+  document.getElementById('p-nome').value = p.nome || ''
+  document.getElementById('p-descricao').value = p.descricao || ''
+  document.getElementById('p-temas').value = (p.temas || []).join('\n')
+  const info = p.info || {}
+  document.getElementById('p-resumo').value = info.resumo || ''
+  document.getElementById('p-problemas').value = (info.problemas || []).join('\n')
+  document.getElementById('p-beneficios').value = (info.beneficios || []).join('\n')
+  document.getElementById('p-caracteristicas').value = (info.caracteristicas || []).join('\n')
+  document.getElementById('p-diferenciais').value = (info.diferenciais || []).join('\n')
+  document.getElementById('p-objecoes').value = (info.objecoes || []).map(o => `${o.pergunta} | ${o.resposta}`).join('\n')
+  document.getElementById('p-angulos').value = ''
+  document.getElementById('p-ganchos').value = ''
+  document.getElementById('p-id').disabled = true
+  document.getElementById('modal-produto').classList.add('open')
+}
+
+function limparCampos() {
+  ['p-id','p-nome','p-descricao','p-temas','p-resumo','p-problemas','p-beneficios','p-caracteristicas','p-diferenciais','p-objecoes','p-angulos','p-ganchos'].forEach(id => {
+    const el = document.getElementById(id)
+    el.value = ''
+    if (id === 'p-id') el.disabled = false
+  })
+}
+
+function linhas(id) {
+  return document.getElementById(id).value.split('\n').map(s => s.trim()).filter(Boolean)
+}
+
+function exportarJson(id) {
+  const p = todosProdutos.find(x => x.id === editandoId)
+  if (!p) return
+  const campo = id === 'p-angulos' ? 'angulos' : 'ganchos'
+  document.getElementById(id).value = JSON.stringify(p[campo] || [], null, 2)
+}
+
+function importarJson(id) {
+  const el = document.getElementById(id)
+  try {
+    const v = JSON.parse(el.value)
+    if (!Array.isArray(v)) throw new Error('Precisa ser um array')
+    el.value = JSON.stringify(v, null, 2)
+    el.style.borderColor = '#3ECF8E'
+    setTimeout(() => el.style.borderColor = '', 1500)
+  } catch (e) {
+    alert('JSON inválido: ' + e.message)
+  }
+}
+
+async function salvar() {
+  const id = document.getElementById('p-id').value.trim().toLowerCase().replace(/\s+/g, '-')
+  const nome = document.getElementById('p-nome').value.trim()
+  if (!id) { alert('Informe o ID (slug)'); return }
+  if (!nome) { alert('Informe o nome'); return }
+
+  let angulos = null, ganchos = null
+  try {
+    angulos = document.getElementById('p-angulos').value.trim() ? JSON.parse(document.getElementById('p-angulos').value) : null
+  } catch (e) { alert('JSON de ângulos inválido'); return }
+  try {
+    ganchos = document.getElementById('p-ganchos').value.trim() ? JSON.parse(document.getElementById('p-ganchos').value) : null
+  } catch (e) { alert('JSON de ganchos inválido'); return }
+
+  const info = {
+    resumo: document.getElementById('p-resumo').value.trim(),
+    problemas: linhas('p-problemas'),
+    beneficios: linhas('p-beneficios'),
+    caracteristicas: linhas('p-caracteristicas'),
+    diferenciais: linhas('p-diferenciais'),
+    objecoes: linhas('p-objecoes').map(l => {
+      const [pergunta, ...resto] = l.split('|')
+      return { pergunta: pergunta.trim(), resposta: resto.join('|').trim() }
+    })
+  }
+
+  const payload = {
+    id,
+    nome,
+    descricao: document.getElementById('p-descricao').value.trim(),
+    temas: linhas('p-temas'),
+    info,
+    angulos: angulos !== null ? angulos : (editandoId ? (todosProdutos.find(x => x.id === editandoId) || {}).angulos || [] : []),
+    ganchos: ganchos !== null ? ganchos : (editandoId ? (todosProdutos.find(x => x.id === editandoId) || {}).ganchos || [] : [])
+  }
+
+  const session = await getSession()
+  if (!session) return
+  let error = null
+  if (editandoId) {
+    ;({ error } = await _supabase
+      .from('produtos')
+      .update({ nome: payload.nome, descricao: payload.descricao, temas: payload.temas, info: payload.info, angulos: payload.angulos, ganchos: payload.ganchos, updated_at: new Date().toISOString() })
+      .eq('id', editandoId)
+      .eq('user_id', session.user.id))
+  } else {
+    ;({ error } = await _supabase
+      .from('produtos')
+      .insert({ user_id: session.user.id, ...payload }))
+  }
+  if (error) { mostrarErro(error.message); return }
+  fecharModal('modal-produto')
+  await carregar()
+}
+
+async function excluir(id) {
+  if (!confirm(`Excluir o produto "${id}"?`)) return
+  const session = await getSession()
+  if (!session) return
+  const { error } = await _supabase
+    .from('produtos')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', session.user.id)
+  if (error) { mostrarErro(error.message); return }
+  await carregar()
+}
+
+function fecharModal(id) { document.getElementById(id).classList.remove('open') }
+function mostrarErro(msg) { document.getElementById('erro').textContent = msg; document.getElementById('erro').style.display = 'block' }
+function esc(s) {
+  return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open') })
+})
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay').forEach(o => o.classList.remove('open')) })
+</script>
+</body>
+</html>
