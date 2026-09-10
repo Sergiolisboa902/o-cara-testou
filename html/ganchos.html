@@ -251,10 +251,9 @@ function renderLista() {
     el.innerHTML = '<div class="vazio">Nenhum gancho encontrado para a busca.</div>'
     return
   }
-  let naoFavs = filtrados.filter(g => !g.favorito)
   const favs = filtrados.filter(g => g.favorito)
   const grupos = {}
-  naoFavs.forEach(g => {
+  filtrados.forEach(g => {
     const k = g.categoria || 'Sem categoria'
     ;(grupos[k] = grupos[k] || []).push(g)
   })
