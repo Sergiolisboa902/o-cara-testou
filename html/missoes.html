@@ -128,6 +128,34 @@
   .modal-footer {
     padding: .9rem 1.4rem; border-top: 1px solid #eee; display: flex; gap: .6rem; flex-wrap: wrap;
   }
+  .modal-lg { max-width: 760px; }
+
+  /* Info do produto */
+  .pi-desc {
+    font-size: .85rem; color: #555; line-height: 1.55;
+    background: #fafafa; border: 1px solid #eee; border-radius: 10px;
+    padding: .8rem .9rem; margin-bottom: 1rem;
+  }
+  .pi-secao { margin-bottom: 1.1rem; }
+  .pi-titulo {
+    font-size: .74rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+    color: #e63946; margin-bottom: .35rem;
+  }
+  .pi-secao ul { margin: 0; padding-left: 1.2rem; }
+  .pi-secao li { font-size: .84rem; line-height: 1.5; color: #333; margin-bottom: .25rem; }
+  .pi-vazio { font-size: .8rem; color: #aaa; margin: 0; }
+  .pi-obj {
+    background: #fff8f8; border: 1px solid #f3e0e0; border-radius: 8px;
+    padding: .55rem .7rem; margin-bottom: .45rem;
+  }
+  .pi-obj b { display: block; font-size: .82rem; color: #1a1a1a; margin-bottom: .15rem; }
+  .pi-obj span { display: block; font-size: .8rem; color: #555; line-height: 1.45; }
+  .prod-info-btn {
+    background: #f0f0f0; border: 1px solid #ddd; border-radius: 8px;
+    padding: .55rem .75rem; cursor: pointer; font-size: .85rem; flex-shrink: 0;
+    font-family: inherit; transition: all .15s;
+  }
+  .prod-info-btn:hover { background: #e63946; border-color: #e63946; color: #fff; }
 
   /* Detalhe missão */
   .det-edicao {
@@ -285,7 +313,10 @@
         </div>
         <div class="form-field">
           <label class="form-label">Produto</label>
-          <input type="text" class="form-select" id="d-produto">
+          <div style="display:flex;gap:.5rem;align-items:center">
+            <input type="text" class="form-select" id="d-produto" style="flex:1">
+            <button type="button" class="prod-info-btn" onclick="abrirInfoProduto('detalhe')" title="Ver informações do produto">ℹ️</button>
+          </div>
         </div>
         <div class="form-grid">
           <div class="form-field">
@@ -333,7 +364,10 @@
       </div>
       <div class="form-field">
         <label class="form-label">Produto</label>
-        <select class="form-select" id="c-produto"></select>
+        <div style="display:flex;gap:.5rem;align-items:center">
+          <select class="form-select" id="c-produto" style="flex:1"></select>
+          <button type="button" class="prod-info-btn" onclick="abrirInfoProduto('criar')" title="Ver informações do produto">ℹ️</button>
+        </div>
       </div>
       <div class="form-field">
         <label class="form-label">Cenário</label>
@@ -366,6 +400,17 @@
       <button class="m-btn" onclick="criarMissao()">Criar missão</button>
       <button class="m-btn ghost" onclick="fecharModal('modal-criar')">Cancelar</button>
     </div>
+  </div>
+</div>
+
+<!-- MODAL INFO PRODUTO -->
+<div class="modal-overlay" id="modal-produto-info">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <div class="modal-title" id="info-produto-nome"></div>
+      <button class="modal-close" onclick="fecharModal('modal-produto-info')">✕</button>
+    </div>
+    <div class="modal-body" id="info-produto-body"></div>
   </div>
 </div>
 
@@ -837,6 +882,88 @@ async function criarMissao() {
   fecharModal('modal-criar')
   await carregarMissoes()
   abrirDetalhe(data.id)
+}
+
+// === INFO PRODUTO ===
+const INFO_CAMPOS = [
+  ['resumo', '📝 Resumo'],
+  ['problemas', '⚠️ Problemas que resolve'],
+  ['beneficios', '✅ Benefícios'],
+  ['caracteristicas', '⚙️ Características'],
+  ['diferenciais', '🏆 Diferenciais'],
+  ['testes', '🧪 Testes'],
+  ['momentosWow', '🤯 Momentos WOW'],
+  ['publicoIdeal', '👥 Público ideal'],
+  ['objecoes', '🙋 Objeções'],
+  ['curiosidades', '🧠 Curiosidades']
+]
+
+async function abrirInfoProduto(origem) {
+  const session = await getSession()
+  if (!session) return
+  const body = document.getElementById('info-produto-body')
+  body.innerHTML = '<p style="color:#888;font-size:.85rem;padding:1.5rem 0;text-align:center">Carregando...</p>'
+
+  let produto = null
+  if (origem === 'criar') {
+    const id = document.getElementById('c-produto').value
+    if (!id) { fecharModal('modal-produto-info'); mostrarErro('Selecione um produto primeiro'); return }
+    const { data, error } = await _supabase
+      .from('produtos')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .eq('id', id)
+      .single()
+    if (error || !data) { fecharModal('modal-produto-info'); mostrarErro('Produto não encontrado no banco'); return }
+    produto = data
+  } else {
+    const nome = document.getElementById('d-produto').value.trim()
+    if (!nome) { fecharModal('modal-produto-info'); mostrarErro('Informe o produto da missão'); return }
+    const { data, error } = await _supabase
+      .from('produtos')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .ilike('nome', `%${nome}%`)
+      .limit(1)
+      .single()
+    if (error || !data) { fecharModal('modal-produto-info'); mostrarErro('Produto não encontrado no banco'); return }
+    produto = data
+  }
+
+  document.getElementById('info-produto-nome').innerHTML = esc(produto.nome || 'Produto')
+  renderInfoProduto(body, produto)
+  abrirModal('modal-produto-info')
+}
+
+function renderInfoProduto(body, p) {
+  let html = ''
+  if (p.descricao) {
+    html += `<div class="pi-desc">${esc(p.descricao)}</div>`
+  }
+  for (const [campo, titulo] of INFO_CAMPOS) {
+    let itens = []
+    const raw = p[campo] || ''
+    if (Array.isArray(raw)) {
+      itens = raw.map(x => typeof x === 'string' ? x : '')
+    } else if (campo === 'objecoes' && typeof raw === 'string') {
+      itens = raw.split('\n').map(l => l.trim()).filter(Boolean)
+    } else {
+      itens = String(raw).split('\n').map(l => l.trim()).filter(Boolean)
+    }
+    if (!itens.length) continue
+    html += `<div class="pi-secao"><div class="pi-titulo">${titulo}</div>`
+    if (campo === 'objecoes') {
+      html += itens.map(l => {
+        const [pergunta, resposta] = l.split(' | ').map(s => (s || '').trim())
+        return `<div class="pi-obj"><b>❓ ${esc(pergunta)}</b>${resposta ? `<span>💬 ${esc(resposta)}</span>` : ''}</div>`
+      }).join('')
+    } else {
+      html += `<ul>${itens.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`
+    }
+    html += '</div>'
+  }
+  if (!html) html = '<p style="color:#999;padding:1rem 0">Sem informações cadastradas para este produto.</p>'
+  body.innerHTML = html
 }
 
 // === EXCLUIR ===
