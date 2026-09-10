@@ -63,12 +63,35 @@
   .barra-fill { height: 100%; border-radius: 4px; transition: width .3s ease; }
   .barra-fill.andamento { background: #e63946; }
   .barra-fill.completa { background: #3ECF8E; }
-  .missao-data { font-size: .7rem; color: #bbb; margin-top: .6rem; }
+  .missao-data { font-size: .7rem; color: #bbb; margin-top: .6rem; display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+  .missao-chip-prod {
+    display: inline-flex; align-items: center; gap: .25rem;
+    background: #f0f0f0; color: #666; font-weight: 700;
+    padding: .12rem .5rem; border-radius: 20px; font-size: .68rem;
+  }
   .missao-del {
     position: absolute; top: .6rem; right: .6rem; background: none; border: none;
     font-size: .8rem; color: #ccc; cursor: pointer; padding: .2rem .35rem; border-radius: 5px;
   }
   .missao-del:hover { color: #e63946; background: #ffe3e3; }
+
+  .filtros { margin-bottom: 1.2rem; display: flex; flex-direction: column; gap: .7rem; }
+  .filtro-status { display: flex; gap: .45rem; flex-wrap: wrap; }
+  .chip-filtro {
+    background: #fff; border: 2px solid #e8e8e8; border-radius: 20px;
+    padding: .45rem .9rem; font-size: .76rem; font-weight: 700; cursor: pointer;
+    font-family: inherit; color: #777; transition: all .15s;
+  }
+  .chip-filtro:hover { border-color: #e63946; color: #e63946; }
+  .chip-filtro.ativo { background: #e63946; border-color: #e63946; color: #fff; }
+  .filtro-produto { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .prod-busca {
+    flex: 1; min-width: 180px; max-width: 320px;
+    border: 1px solid #ddd; border-radius: 8px; padding: .5rem .7rem;
+    font-size: .82rem; font-family: inherit; outline: none;
+  }
+  .prod-busca:focus { border-color: #e63946; }
+  .prod-busca.sort { flex: 0 0 auto; max-width: none; cursor: pointer; }
 
   .vazio {
     text-align: center; padding: 3rem; background: #fff; border-radius: 14px;
@@ -223,6 +246,22 @@
     <div class="page-title"><span>Missões</span> de Produção <span class="count" id="contador"></span></div>
     <button class="cta-btn" onclick="abrirCriar()">✨ Nova Missão</button>
   </div>
+  <div class="filtros">
+    <div class="filtro-status">
+      <button class="chip-filtro ativo" data-status="todas" onclick="setStatus('todas')">Todas</button>
+      <button class="chip-filtro" data-status="andamento" onclick="setStatus('andamento')">◐ Em andamento</button>
+      <button class="chip-filtro" data-status="completa" onclick="setStatus('completa')">● Concluídas</button>
+    </div>
+    <div class="filtro-produto">
+      <input type="text" class="prod-busca" id="f-produto" placeholder="🔎 Filtrar por produto..." oninput="renderLista()" autocomplete="off" list="prod-list">
+      <datalist id="prod-list"></datalist>
+      <select class="prod-busca sort" id="f-ordem" onchange="renderLista()">
+        <option value="recentes">Data: mais recentes</option>
+        <option value="antigas">Data: mais antigas</option>
+        <option value="progresso">Progresso</option>
+      </select>
+    </div>
+  </div>
   <div id="lista"></div>
 </div>
 <div class="footer">O Cara Testou &mdash; Missões de Produção</div>
@@ -368,6 +407,7 @@ let todasMissoes = []
 let missaoAtual = null
 let ganchosCatalogo = []
 let ganchosSelecionados = new Set()
+let filtroStatus = 'todas'
 
 window.onAuthReady = iniciar
 getSession().then(s => { if (s) iniciar(); else injectAuthUI() })
@@ -532,15 +572,40 @@ async function carregarMissoes() {
   renderLista()
 }
 
+function setStatus(status) {
+  filtroStatus = status
+  document.querySelectorAll('.chip-filtro').forEach(b => b.classList.toggle('ativo', b.dataset.status === status))
+  renderLista()
+}
+
 function renderLista() {
-  document.getElementById('contador').textContent = `(${todasMissoes.length})`
+  preencherDatas()
+  let lista = todasMissoes
+  if (filtroStatus === 'andamento') lista = lista.filter(m => { const [, t, p] = stats(m); return !(t > 0 && p === 100) })
+  if (filtroStatus === 'completa') lista = lista.filter(m => { const [, t, p] = stats(m); return t > 0 && p === 100 })
+  const termo = (document.getElementById('f-produto').value || '').toLowerCase().trim()
+  if (termo) {
+    lista = lista.filter(m => (m.produto || '').toLowerCase().includes(termo) || (m.nome || '').toLowerCase().includes(termo))
+  }
+  const ordem = document.getElementById('f-ordem').value
+  if (ordem === 'recentes') {
+    lista = [...lista].sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em))
+  } else if (ordem === 'antigas') {
+    lista = [...lista].sort((a, b) => new Date(a.criado_em) - new Date(b.criado_em))
+  } else {
+    lista = [...lista].sort((a, b) => progresso(a) === progresso(b) ? (new Date(b.criado_em) - new Date(a.criado_em)) : (progresso(a) === 100 ? 1 : -1))
+  }
+  document.getElementById('contador').textContent = `(${lista.length})`
   const el = document.getElementById('lista')
   if (!todasMissoes.length) {
     el.innerHTML = `<div class="vazio"><div class="big">🎯</div>Nenhuma missão ainda.<br><br><a onclick="abrirCriar()">✨ Criar a primeira missão</a></div>`
     return
   }
-  const ordenadas = [...todasMissoes].sort((a, b) => progresso(a) === progresso(b) ? 0 : (progresso(a) === 100 ? 1 : -1))
-  el.innerHTML = ordenadas.map(m => {
+  if (!lista.length) {
+    el.innerHTML = `<div class="vazio">Nenhuma missão com esse filtro.</div>`
+    return
+  }
+  el.innerHTML = lista.map(m => {
     const [feitos, total, pct] = stats(m)
     const completa = total > 0 && feitos === total
     return `
@@ -549,13 +614,24 @@ function renderLista() {
         <div class="missao-head">
           <div class="missao-nome">${m.nome || m.produto}</div>
         </div>
-        <div class="missao-sub">${linhaMeta(m, m.nome)}</div>
+        <div class="missao-sub">${linhaMeta(m)}</div>
         <div class="missao-status ${completa ? 'completa' : 'andamento'}">${completa ? '● Completa' : '◐ Andamento'}</div>
         <div class="missao-progresso"><b>${feitos}/${total}</b> ganchos concluídos</div>
         <div class="barra"><div class="barra-fill ${completa ? 'completa' : 'andamento'}" style="width:${pct}%"></div></div>
-        <div class="missao-data">${new Date(m.criado_em).toLocaleDateString('pt-BR')}</div>
+        <div class="missao-data">${new Date(m.criado_em).toLocaleDateString('pt-BR')} ${linhaProduto(m)}</div>
       </div>`
   }).join('')
+}
+
+function preencherDatas() {
+  const lista = document.getElementById('prod-list')
+  if (!lista) return
+  const produtos = [...new Set(todasMissoes.map(m => m.produto).filter(Boolean))].sort()
+  lista.innerHTML = produtos.map(p => `<option value="${esc(p)}">`).join('')
+}
+
+function linhaProduto(m) {
+  return m.nome ? `<span class="missao-chip-prod">📦 ${esc(m.produto)}</span>` : ''
 }
 
 function stats(m) {
