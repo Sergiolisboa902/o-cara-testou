@@ -95,14 +95,6 @@
   }
   .modal-title { font-size: .95rem; font-weight: 800; }
   .modal-title span { color: #e63946; }
-  .modal-sub { font-size: .74rem; color: #999; font-weight: 600; margin-top: .2rem; }
-  .modal-desc {
-    display: flex; align-items: flex-start; gap: .4rem;
-    font-size: .8rem; color: #555; line-height: 1.45; background: #f9f9f9;
-    border: 1px solid #eee; border-radius: 8px; padding: .5rem .7rem; margin-top: .5rem; max-width: 460px;
-    font-weight: 400;
-  }
-  .modal-desc::before { content: "🎬"; flex-shrink: 0; }
   .modal-close {
     background: #eee; border: none; border-radius: 6px; cursor: pointer;
     font-size: .9rem; padding: .3rem .6rem; font-weight: 700; color: #333;
@@ -114,6 +106,17 @@
   }
 
   /* Detalhe missão */
+  .det-edicao {
+    background: #fafafa; border: 1px solid #eee; border-radius: 10px;
+    padding: .8rem .9rem; margin-bottom: 1rem;
+  }
+  .det-edicao .m-btn { width: 100%; }
+  .det-edicao .form-field { margin-bottom: .7rem; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+  .form-grid .form-field { margin-bottom: .7rem; }
+  @media (max-width: 500px) { .form-grid { grid-template-columns: 1fr; } }
+  .m-btn.mini { padding: .4rem .8rem; font-size: .75rem; margin-top: .4rem; background: #1a1a1a; }
+  .m-btn.mini:hover { background: #333; }
   .det-contador {
     display: flex; align-items: center; gap: .6rem; font-size: .8rem; font-weight: 700; color: #555;
     margin-bottom: 1rem; flex-wrap: wrap;
@@ -230,12 +233,32 @@
     <div class="modal-head">
       <div>
         <div class="modal-title" id="d-titulo"></div>
-        <div class="modal-sub" id="d-sub"></div>
-        <div class="modal-desc" id="d-descricao"></div>
+        <button class="m-btn mini" onclick="duplicarMissao()">📋 Duplicar</button>
       </div>
       <button class="modal-close" onclick="fecharModal('modal-detalhe')">✕</button>
     </div>
     <div class="modal-body">
+      <div class="det-edicao">
+        <div class="form-field">
+          <label class="form-label">Produto</label>
+          <input type="text" class="form-select" id="d-produto">
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label class="form-label">Cenário</label>
+            <input type="text" class="form-select" id="d-cenario">
+          </div>
+          <div class="form-field">
+            <label class="form-label">Figurino</label>
+            <input type="text" class="form-select" id="d-figurino">
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Descrição da Cena</label>
+          <textarea class="form-textarea" id="d-descricao" style="min-height:60px"></textarea>
+        </div>
+        <button class="m-btn" onclick="salvarMissao()">💾 Salvar alterações</button>
+      </div>
       <div class="det-contador">
         <span id="d-contador"></span>
         <div class="barra"><div class="barra-fill andamento" id="d-barra"></div></div>
@@ -549,12 +572,61 @@ async function abrirDetalhe(id) {
   if (!m) return
   detalheId = id
   missaoAtual = m
-  document.getElementById('d-titulo').innerHTML = `<span>${m.produto}</span>`
-  document.getElementById('d-sub').textContent = linhaMeta(m)
-  const dc = document.getElementById('d-descricao')
-  if (m.descricao_cena) { dc.textContent = m.descricao_cena; dc.style.display = 'flex' } else { dc.style.display = 'none' }
+  document.getElementById('d-titulo').innerHTML = m.produto
+  document.getElementById('d-produto').value = m.produto || ''
+  document.getElementById('d-cenario').value = m.cenario || ''
+  document.getElementById('d-figurino').value = m.figurino || ''
+  document.getElementById('d-descricao').value = m.descricao_cena || ''
   document.getElementById('modal-detalhe').classList.add('open')
   renderDetalhe()
+}
+
+async function salvarMissao() {
+  if (!detalheId) return
+  const session = await getSession()
+  if (!session) return
+  const patch = {
+    produto: document.getElementById('d-produto').value.trim(),
+    cenario: document.getElementById('d-cenario').value.trim(),
+    figurino: document.getElementById('d-figurino').value.trim(),
+    descricao_cena: document.getElementById('d-descricao').value.trim(),
+    atualizado_em: new Date().toISOString()
+  }
+  if (!patch.produto) { alert('Informe o produto'); return }
+  const { error } = await _supabase
+    .from('missions')
+    .update(patch)
+    .eq('id', detalheId)
+    .eq('user_id', session.user.id)
+  if (error) { mostrarErro(error.message); return }
+  const m = todasMissoes.find(x => x.id === detalheId)
+  if (m) Object.assign(m, patch)
+  document.getElementById('d-titulo').innerHTML = patch.produto
+  renderLista()
+}
+
+async function duplicarMissao() {
+  if (!missaoAtual) return
+  if (!confirm(`Duplicar a missão "${missaoAtual.produto}"? Cria uma cópia com todos os ganchos.`)) return
+  const session = await getSession()
+  if (!session) return
+  const copiaGanchos = (missaoAtual.ganchos || []).map(g => ({ ...g, concluido: false, concluido_em: null }))
+  const { data, error } = await _supabase
+    .from('missions')
+    .insert({
+      user_id: session.user.id,
+      produto: missaoAtual.produto,
+      cenario: missaoAtual.cenario || '',
+      figurino: missaoAtual.figurino || '',
+      descricao_cena: missaoAtual.descricao_cena || '',
+      ganchos: copiaGanchos
+    })
+    .select()
+    .single()
+  if (error) { mostrarErro(error.message); return }
+  fecharModal('modal-detalhe')
+  await carregarMissoes()
+  abrirDetalhe(data.id)
 }
 
 function renderDetalhe() {
