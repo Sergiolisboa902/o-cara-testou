@@ -85,6 +85,23 @@
   .assist-btn:hover { background: #c82d3a; }
   .assist-hint { font-size: .72rem; color: #aaa; margin-top: .45rem; line-height: 1.5; }
   .assist-ok { color: #3ECF8E; font-weight: 700; margin-top: .45rem; display: none; font-size: .78rem; }
+  .assist-print {
+    margin-top: .7rem; border: 2px dashed #444; border-radius: 10px;
+    padding: .7rem; text-align: center; cursor: pointer; transition: all .15s;
+  }
+  .assist-print:hover { border-color: #e63946; }
+  .assist-print input[type="file"] { display: none; }
+  .assist-print .p-txt { font-size: .76rem; color: #aaa; }
+  .assist-print.p-has { border-style: solid; border-color: #3ECF8E; }
+  .assist-print.p-has .p-txt { color: #3ECF8E; }
+  .assist-preview { margin-top: .6rem; display: none; }
+  .assist-preview img {
+    max-height: 160px; max-width: 100%; border-radius: 8px; border: 1px solid #333;
+  }
+  .assist-preview .p-clear {
+    display: block; margin-top: .35rem; background: none; border: none;
+    color: #e63946; font-size: .72rem; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
 
   .modal-overlay {
     display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55);
@@ -160,8 +177,18 @@
       <input type="text" id="assist-link" placeholder="Cole o link do produto (ex: https://vt.tiktok.com/...)" autocomplete="off">
       <button class="assist-btn" onclick="copiarPrompt()">📋 Copiar prompt</button>
     </div>
-    <div class="assist-hint">Cola o link, clica em <b>Copiar prompt</b> e envia o texto copiado no chat do assistente (opencode). Ele gera os campos e cadastra direto no banco.</div>
+    <div class="assist-print" id="assist-print" onclick="document.getElementById('assist-file').click()">
+      <input type="file" id="assist-file" accept="image/*" onchange="assistFile(this)">
+      <span class="p-txt" id="assist-print-txt">📷 Opcional: colar print do anúncio (Ctrl+V aqui) ou clicar para escolher arquivo</span>
+    </div>
+    <div class="assist-preview" id="assist-preview">
+      <img id="assist-img" alt="print">
+      <button class="p-clear" onclick="assistClear()">✕ Remover imagem</button>
+      <button class="p-clear" id="assist-copy-img" onclick="copiarImagemClick()" style="color:#3ECF8E">🖼️ Copiar imagem (para colar no chat)</button>
+    </div>
+    <div class="assist-hint">Cola o link (e opcionalmente um print do anúncio), clica em <b>Copiar prompt</b> e envia o texto no chat do assistente (opencode). Se tiver imagem, clica em <b>Copiar imagem</b> e cola também. Ele gera os campos e cadastra direto no banco.</div>
     <div class="assist-ok" id="assist-ok">✓ Prompt copiado! Cole no chat do assistente (opencode).</div>
+    <div class="assist-ok" id="assist-img-ok" style="color:#3ECF8E">✓ Imagem copiada! Cole no chat do assistente.</div>
   </div>
   <div class="lista-scroll">
     <div class="grid" id="grid"></div>
@@ -257,31 +284,107 @@ SEMPRE com os cabeçalhos NOME:, DESCRICAO:, RESUMO:, PROBLEMAS:, BENEFICIOS:, C
 Link do produto:
 `
 
+let assistImgBlob = null
+
 function copiarPrompt() {
   const link = document.getElementById('assist-link').value.trim()
   if (!link) { alert('Cole o link do produto primeiro'); return }
-  const texto = PROMPT_BASE + link
-  const ok = document.getElementById('assist-ok')
-  const copiar = () => {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      return navigator.clipboard.writeText(texto).then(() => true, () => false)
-    }
-    const ta = document.createElement('textarea')
-    ta.value = texto
-    ta.style.position = 'fixed'
-    ta.style.opacity = '0'
-    document.body.appendChild(ta)
-    ta.select()
-    let r = false
-    try { r = document.execCommand('copy') } catch (e) {}
-    document.body.removeChild(ta)
-    return Promise.resolve(r)
-  }
-  copiar().then(r => {
+  let texto = PROMPT_BASE + link
+  if (assistImgBlob) texto += '\n\n(Anexei um print do anúncio. Analise a imagem junto do link.)'
+  copiarTexto(texto).then(r => {
+    const ok = document.getElementById('assist-ok')
     ok.style.display = r ? 'block' : 'none'
     if (!r) alert('Não foi possível copiar automaticamente. Selecione o prompt manualmente.')
   })
 }
+
+function copiarImagemClick() {
+  const el = document.getElementById('assist-img-ok')
+  copiarImagem(assistImgBlob).then(r => {
+    el.style.display = r ? 'block' : 'none'
+    if (!r) alert('Não foi possível copiar a imagem. Tire um print e cole aqui no chat.')
+  })
+}
+
+function copiarTexto(texto) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(texto).then(() => true, () => false)
+  }
+  const ta = document.createElement('textarea')
+  ta.value = texto
+  ta.style.position = 'fixed'
+  ta.style.opacity = '0'
+  document.body.appendChild(ta)
+  ta.select()
+  let r = false
+  try { r = document.execCommand('copy') } catch (e) {}
+  document.body.removeChild(ta)
+  return Promise.resolve(r)
+}
+
+function copiarImagem(blob) {
+  if (!navigator.clipboard || !window.ClipboardItem) return Promise.resolve(false)
+  return navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+    .then(() => true, () => false)
+}
+
+function assistFile(input) {
+  const f = input.files && input.files[0]
+  if (!f) return
+  f.arrayBuffer().then(buf => {
+    assistImgBlob = new Blob([buf], { type: f.type })
+    mostrarPreview(assistImgBlob)
+  })
+}
+
+function mostrarPreview(blob) {
+  const url = URL.createObjectURL(blob)
+  const img = document.getElementById('assist-img')
+  img.onload = () => URL.revokeObjectURL(url)
+  img.src = url
+  document.getElementById('assist-preview').style.display = 'block'
+  document.getElementById('assist-print').classList.add('p-has')
+  document.getElementById('assist-print-txt').textContent = '✓ Print adicionado — clique em "Copiar prompt" para copiar texto + imagem'
+}
+
+function assistClear() {
+  assistImgBlob = null
+  document.getElementById('assist-img').src = ''
+  document.getElementById('assist-preview').style.display = 'none'
+  document.getElementById('assist-print').classList.remove('p-has')
+  document.getElementById('assist-print-txt').textContent = '📷 Opcional: colar print do anúncio (Ctrl+V aqui) ou clicar para escolher arquivo'
+  document.getElementById('assist-file').value = ''
+}
+
+document.getElementById('assist-print').addEventListener('paste', e => {
+  const itens = e.clipboardData && e.clipboardData.items
+  if (!itens) return
+  for (const it of itens) {
+    if (it.type && it.type.startsWith('image/')) {
+      const blob = it.getAsFile()
+      if (blob) {
+        assistImgBlob = blob
+        mostrarPreview(blob)
+        e.preventDefault()
+      }
+    }
+  }
+})
+
+document.getElementById('assist-link').addEventListener('paste', e => {
+  const itens = e.clipboardData && e.clipboardData.items
+  if (!itens) return
+  for (const it of itens) {
+    if (it.type && it.type.startsWith('image/')) {
+      const blob = it.getAsFile()
+      if (blob) {
+        assistImgBlob = blob
+        mostrarPreview(blob)
+        e.preventDefault()
+      }
+    }
+  }
+})
 
 window.onAuthReady = iniciar
 getSession().then(s => { if (s) iniciar(); else injectAuthUI() })
