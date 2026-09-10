@@ -409,6 +409,8 @@ let missaoAtual = null
 let ganchosCatalogo = []
 let ganchosSelecionados = new Set()
 let filtroStatus = 'todas'
+let produtosDbCache = []
+let produtosFonteDb = false
 
 window.onAuthReady = iniciar
 getSession().then(s => { if (s) iniciar(); else injectAuthUI() })
@@ -416,7 +418,7 @@ getSession().then(s => { if (s) iniciar(); else injectAuthUI() })
 async function iniciar() {
   const session = await getSession()
   if (!session) return
-  preencherProdutos()
+  await preencherProdutos()
   await carregarCatalogo()
   await carregarMissoes()
 }
@@ -549,14 +551,32 @@ async function salvarNovoGancho() {
   renderCatalogo()
 }
 
-function preencherProdutos() {
+async function preencherProdutos() {
   const sel = document.getElementById('c-produto')
-  const ultima = Object.entries(produtosDB).map(([id, p]) => ({ id, nome: p.nome }))
-  if (!ultima.length) {
+  let lista = []
+  const session = await getSession()
+  if (session) {
+    const { data, error } = await _supabase
+      .from('produtos')
+      .select('id, nome')
+      .eq('user_id', session.user.id)
+      .order('nome', { ascending: true })
+    if (!error && data && data.length) {
+      produtosDbCache = data
+      produtosFonteDb = true
+      lista = data.map(p => ({ id: p.id, nome: p.nome }))
+    }
+  }
+  if (!lista.length) {
+    produtosDbCache = []
+    produtosFonteDb = false
+    lista = Object.entries(produtosDB || {}).map(([id, p]) => ({ id, nome: p.nome }))
+  }
+  if (!lista.length) {
     sel.innerHTML = '<option value="">Nenhum produto cadastrado</option>'
     return
   }
-  sel.innerHTML = ultima.map((p, i) => `<option value="${p.id}" ${i===0?'selected':''}>${p.nome}</option>`).join('')
+  sel.innerHTML = lista.map((p, i) => `<option value="${p.id}" ${i===0?'selected':''}>${p.nome}</option>`).join('')
 }
 
 // === CARREGAR MISSÕES ===
@@ -797,8 +817,9 @@ async function criarMissao() {
   const figurino = document.getElementById('c-figurino').value.trim()
   const descricaoCena = document.getElementById('c-descricao').value.trim()
   const linhas = document.getElementById('c-ganchos').value.split('\n').map(l => l.trim()).filter(Boolean)
-  const produto = produtosDB[produtoId]
-  if (!produto) { alert('Selecione um produto'); return }
+  const produtoDb = produtosFonteDb ? produtosDbCache.find(p => p.id === produtoId) : (produtosDB || {})[produtoId]
+  if (!produtoDb) { alert('Selecione um produto'); return }
+  const produtoNome = produtoDb.nome
   const session = await getSession()
   if (!session) return
   const doCatalogo = [...ganchosSelecionados]
@@ -809,7 +830,7 @@ async function criarMissao() {
   const ganchos = [...doCatalogo, ...manuais]
   const { data, error } = await _supabase
     .from('missions')
-    .insert({ user_id: session.user.id, produto: produto.nome, nome, cenario, figurino, descricao_cena: descricaoCena, ganchos })
+    .insert({ user_id: session.user.id, produto: produtoNome, nome, cenario, figurino, descricao_cena: descricaoCena, ganchos })
     .select()
     .single()
   if (error) { mostrarErro(error.message); return }
