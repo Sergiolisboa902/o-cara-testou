@@ -240,7 +240,7 @@ function renderGrid() {
       <div class="prod-id">${esc(p.id)}</div>
       <div class="prod-nome">${esc(p.nome)}</div>
       <div class="prod-chips">
-        <span class="prod-chip">📋 ${Object.keys(p.info||{}).length} tópicos</span>
+        <span class="prod-chip">📋 10 tópicos</span>
       </div>
       <div class="prod-actions">
         <button class="m-btn" onclick="abrirEditar('${p.id}')">✏️ Editar</button>
@@ -264,17 +264,16 @@ function abrirEditar(id) {
   document.getElementById('p-id').value = p.id
   document.getElementById('p-nome').value = p.nome || ''
   document.getElementById('p-descricao').value = p.descricao || ''
-  const info = p.info || {}
-  document.getElementById('p-resumo').value = info.resumo || ''
-  document.getElementById('p-problemas').value = (info.problemas || []).join('\n')
-  document.getElementById('p-beneficios').value = (info.beneficios || []).join('\n')
-  document.getElementById('p-caracteristicas').value = (info.caracteristicas || []).join('\n')
-  document.getElementById('p-diferenciais').value = (info.diferenciais || []).join('\n')
-  document.getElementById('p-testes').value = (info.testes || []).join('\n')
-  document.getElementById('p-momentosWow').value = (info.momentosWow || []).join('\n')
-  document.getElementById('p-publicoIdeal').value = (info.publicoIdeal || []).join('\n')
-  document.getElementById('p-objecoes').value = (info.objecoes || []).map(o => `${o.pergunta} | ${o.resposta}`).join('\n')
-  document.getElementById('p-curiosidades').value = (info.curiosidades || []).join('\n')
+  document.getElementById('p-resumo').value = p.resumo || ''
+  document.getElementById('p-problemas').value = p.problemas || ''
+  document.getElementById('p-beneficios').value = p.beneficios || ''
+  document.getElementById('p-caracteristicas').value = p.caracteristicas || ''
+  document.getElementById('p-diferenciais').value = p.diferenciais || ''
+  document.getElementById('p-testes').value = p.testes || ''
+  document.getElementById('p-momentosWow').value = p.momentosWow || ''
+  document.getElementById('p-publicoIdeal').value = p.publicoIdeal || ''
+  document.getElementById('p-objecoes').value = p.objecoes || ''
+  document.getElementById('p-curiosidades').value = p.curiosidades || ''
   document.getElementById('p-id').disabled = true
   document.getElementById('modal-produto').classList.add('open')
 }
@@ -287,46 +286,36 @@ function limparCampos() {
   })
 }
 
-function linhas(id) {
-  return document.getElementById(id).value.split('\n').map(s => s.trim()).filter(Boolean)
-}
-
 async function salvar() {
   const id = document.getElementById('p-id').value.trim().toLowerCase().replace(/\s+/g, '-')
   const nome = document.getElementById('p-nome').value.trim()
   if (!id) { alert('Informe o ID (slug)'); return }
   if (!nome) { alert('Informe o nome'); return }
 
-  const info = {
-    resumo: document.getElementById('p-resumo').value.trim(),
-    problemas: linhas('p-problemas'),
-    beneficios: linhas('p-beneficios'),
-    caracteristicas: linhas('p-caracteristicas'),
-    diferenciais: linhas('p-diferenciais'),
-    testes: linhas('p-testes'),
-    momentosWow: linhas('p-momentosWow'),
-    publicoIdeal: linhas('p-publicoIdeal'),
-    objecoes: linhas('p-objecoes').map(l => {
-      const [pergunta, ...resto] = l.split('|')
-      return { pergunta: pergunta.trim(), resposta: resto.join('|').trim() }
-    }),
-    curiosidades: linhas('p-curiosidades')
-  }
-
   const payload = {
     id,
     nome,
     descricao: document.getElementById('p-descricao').value.trim(),
-    info
+    resumo: document.getElementById('p-resumo').value.trim(),
+    problemas: document.getElementById('p-problemas').value.trim(),
+    beneficios: document.getElementById('p-beneficios').value.trim(),
+    caracteristicas: document.getElementById('p-caracteristicas').value.trim(),
+    diferenciais: document.getElementById('p-diferenciais').value.trim(),
+    testes: document.getElementById('p-testes').value.trim(),
+    momentosWow: document.getElementById('p-momentosWow').value.trim(),
+    publicoIdeal: document.getElementById('p-publicoIdeal').value.trim(),
+    objecoes: document.getElementById('p-objecoes').value.trim(),
+    curiosidades: document.getElementById('p-curiosidades').value.trim()
   }
 
   const session = await getSession()
   if (!session) return
   let error = null
   if (editandoId) {
+    const { resumo, problemas, beneficios, caracteristicas, diferenciais, testes, momentosWow, publicoIdeal, objecoes, curiosidades, ...resto } = payload
     ;({ error } = await _supabase
       .from('produtos')
-      .update({ nome: payload.nome, descricao: payload.descricao, info: payload.info, updated_at: new Date().toISOString() })
+      .update({ ...resto, resumo, problemas, beneficios, caracteristicas, diferenciais, testes, momentosWow, publicoIdeal, objecoes, curiosidades, updated_at: new Date().toISOString() })
       .eq('id', editandoId)
       .eq('user_id', session.user.id))
   } else {

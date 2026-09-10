@@ -10,7 +10,16 @@ CREATE TABLE IF NOT EXISTS produtos (
   user_id UUID REFERENCES auth.users NOT NULL,
   nome TEXT NOT NULL,
   descricao TEXT DEFAULT '',
-  info JSONB DEFAULT '{}',
+  resumo TEXT DEFAULT '',
+  problemas TEXT DEFAULT '',
+  beneficios TEXT DEFAULT '',
+  caracteristicas TEXT DEFAULT '',
+  diferenciais TEXT DEFAULT '',
+  testes TEXT DEFAULT '',
+  momentosWow TEXT DEFAULT '',
+  publicoIdeal TEXT DEFAULT '',
+  objecoes TEXT DEFAULT '',
+  curiosidades TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );

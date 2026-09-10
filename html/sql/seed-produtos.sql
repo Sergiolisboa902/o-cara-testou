@@ -1,13 +1,180 @@
 -- Seed: Produtos migrados do dados-produtos.js
 -- Run in Supabase SQL Editor
+-- Cada topico vai em uma coluna propria (1 item por linha)
 
-INSERT INTO produtos (id, user_id, nome, descricao, info)
+INSERT INTO produtos (id, user_id, nome, descricao, resumo, problemas, beneficios, caracteristicas, diferenciais, testes, momentosWow, publicoIdeal, objecoes, curiosidades)
 VALUES
-('arrancador-q18b', (SELECT id FROM auth.users ORDER BY created_at LIMIT 1), 'Arrancador de Bateria c/ Compressor de Ar Portátil Q18B', 'Auxiliar de partida para baterias de 12V, com compressor de ar portátil digital de 150 PSI. Powerbank e lanterna SOS. #viraltiktokshop #ferramentas #homem #mecanica #carro', '{"resumo":"O Arrancador de Bateria com Compressor de Ar Portátil Q18B é um equipamento 4 em 1 desenvolvido para oferecer mais segurança e praticidade em situações de emergência e no dia a dia. Além de dar partida em veículos 12V, ele também funciona como compressor de ar portátil, power bank para carregar dispositivos eletrônicos e lanterna LED com modo SOS. Compacto e fácil de transportar, cabe no porta-luvas e acompanha todos os acessórios necessários para uso imediato, incluindo grampos inteligentes, mangueira de alta pressão, adaptadores, cabo USB-C e bolsa de armazenamento. É uma solução completa para viagens, estrada e uso diário.","problemas":["Resolve bateria descarregada em carros e motos 12V.","Evita ficar parado por causa de pneu murcho.","Permite calibrar pneus em qualquer lugar.","Carrega celular e outros eletrônicos em emergências.","Oferece iluminação em locais escuros ou situações de emergência.","Elimina a necessidade de carregar vários equipamentos separados."],"beneficios":["Mais segurança durante viagens e imprevistos.","Economia de tempo ao resolver problemas sem precisar de ajuda imediata.","Quatro funções reunidas em um único equipamento.","Fácil transporte por ser compacto.","Ajuste preciso da pressão dos pneus.","Desligamento automático ao atingir a pressão programada.","Carregamento rápido para dispositivos eletrônicos.","Proteções eletrônicas aumentam a segurança durante o uso."],"caracteristicas":["Arrancador para veículos 12V.","Bateria recarregável de 8000mAh.","Compressor com pressão máxima de 150 PSI.","Precisão de 0,1 BAR.","Display digital para ajuste da pressão.","Desligamento automático do compressor.","Power Bank com duas portas USB (5V/3A e 5V/2A).","Lanterna LED com luz contínua e modo SOS.","Entrada USB Type-C.","Recarga completa em aproximadamente 4 a 5 horas.","Proteção contra inversão de polaridade, curto-circuito, sobrecarga, superaquecimento e sobrecorrente.","Dimensões compactas (200 x 108 x 60 mm)."],"diferenciais":["Equipamento 4 em 1.","Compressor inteligente que para automaticamente.","Display digital facilita a calibração.","Grampos inteligentes com múltiplas proteções.","Cabe no porta-luvas.","Acompanha diversos acessórios prontos para uso."],"testes":["Dar partida em um veículo com bateria fraca.","Calibrar um pneu mostrando o desligamento automático.","Encher uma bola utilizando os adaptadores.","Carregar um celular pela porta USB.","Demonstrar os modos da lanterna LED.","Mostrar todo o conteúdo da bolsa de armazenamento."],"momentosWow":["O carro liga usando apenas o arrancador.","O compressor para sozinho exatamente na pressão programada.","Mostrar que o aparelho cabe no porta-luvas.","Demonstrar as quatro funções funcionando no mesmo vídeo.","Carregar um celular enquanto o equipamento ainda possui bateria.","Mostrar todos os acessórios saindo da bolsa."],"publicoIdeal":["Motoristas de carros.","Motociclistas.","Motoristas de aplicativo.","Caminhoneiros.","Pessoas que viajam com frequência.","Quem gosta de estar preparado para emergências.","Famílias que utilizam veículo diariamente."],"objecoes":[{"pergunta":"Será que realmente consegue ligar o carro?","resposta":"Foi desenvolvido para auxiliar na partida de veículos 12V conforme as condições informadas no anúncio."},{"pergunta":"É difícil de usar?","resposta":"O uso é simplificado, com grampos identificados e display digital."},{"pergunta":"O compressor calibra corretamente?","resposta":"O compressor possui ajuste de pressão e desligamento automático ao atingir o valor programado."},{"pergunta":"Vale a pena comprar um equipamento 4 em 1?","resposta":"Além de dar partida, também funciona como compressor, power bank e lanterna LED."},{"pergunta":"Ocupa muito espaço no carro?","resposta":"O equipamento possui dimensões compactas e foi projetado para caber no porta-luvas."}],"curiosidades":["O compressor possui precisão de ajuste de 0,1 BAR.","A lanterna possui modo SOS para emergências.","Os grampos contam com proteção contra inversão de polaridade, evitando ligações incorretas.","O equipamento suporta temperaturas de operação entre -20°C e 60°C.","A recarga é feita por USB Type-C.","Acompanha adaptadores para pneus de carro, moto, bicicleta, bolas e infláveis."]}'::jsonb),
-('furadeira-parafusadeira', (SELECT id FROM auth.users ORDER BY created_at LIMIT 1), 'Furadeira/Parafusadeira', 'Parafusadeira e Furadeira de Impacto com 2 Baterias de 48V. Kit completo com maleta, brocas, bits e acessórios. #parafusadeira #furadeira #kitdeferramentas #diy #bricolagem #tiktokshop', '{"resumo":"Parafusadeira Furadeira 48V com 2 baterias, maleta e kit de acessórios. Indicada para perfurar e parafusar em materiais como madeira, metal e plástico, oferecendo praticidade tanto para uso doméstico quanto para bricolagem e trabalhos profissionais.","problemas":["Facilita a montagem de móveis e instalações.","Elimina o esforço de apertar ou soltar parafusos manualmente.","Permite perfurar diferentes materiais com uma única ferramenta.","Aumenta a mobilidade por funcionar com bateria.","Evita interrupções frequentes graças à bateria extra."],"beneficios":["Liberdade de uso sem depender de tomada durante o trabalho.","Mais conforto com design compacto e ergonômico.","Controle preciso com velocidade variável e reversível.","Ajuste de torque para diferentes tipos de serviço.","Maior produtividade com duas baterias inclusas.","Kit completo pronto para usar."],"caracteristicas":["Alimentação por bateria 48V.","Acompanha 2 baterias.","Mandril de aperto rápido 3/8\" (10 mm).","Velocidade variável de 0–400 e 0–1400 RPM.","Rotação reversível.","Torque ajustável (17+1 posições).","Torque máximo informado de 32 Nm.","Indicador de carga da bateria.","Carregador bivolt.","Acompanha maleta para transporte.","Inclui extensor flexível, bits, soquetes, brocas e demais acessórios descritos no anúncio."],"diferenciais":["Duas baterias inclusas para maior autonomia.","Kit com diversos acessórios em um único produto.","Mandril de aperto rápido, dispensando chave.","Maleta facilita organização e transporte.","Pode ser utilizada para perfuração e parafusamento."],"testes":["Parafusar e desparafusar um parafuso em madeira.","Demonstrar a troca rápida de brocas no mandril.","Mostrar o funcionamento da velocidade variável.","Testar a função reversível.","Exibir todos os acessórios organizados na maleta.","Mostrar a troca entre as duas baterias."],"momentosWow":["Abrir a maleta revelando todos os acessórios.","Mostrar a ferramenta funcionando sem fio.","Trocar a bateria em poucos segundos.","Demonstrar a perfuração em diferentes materiais (madeira, metal ou plástico, conforme informado no anúncio).","Exibir o extensor flexível alcançando locais de difícil acesso."],"publicoIdeal":["Quem faz pequenos reparos em casa.","Pessoas que montam móveis.","Profissionais de construção e carpintaria.","Hobbistas e praticantes de bricolagem.","Quem procura uma ferramenta portátil e versátil."],"objecoes":[{"pergunta":"Será que a bateria dura o suficiente?","resposta":"O produto acompanha duas baterias, permitindo continuar o trabalho enquanto uma pode ser recarregada."},{"pergunta":"Ela vem pronta para usar?","resposta":"Sim, acompanha maleta, carregador e diversos acessórios descritos no anúncio."},{"pergunta":"Serve para diferentes tipos de trabalho?","resposta":"Foi desenvolvida para perfuração e parafusamento em madeira, metal e plástico."},{"pergunta":"É difícil trocar brocas?","resposta":"Não, o mandril é de aperto rápido, facilitando a troca de acessórios."},{"pergunta":"Vale a pena pelo kit?","resposta":"Além da ferramenta, o comprador recebe um kit completo de acessórios e maleta para transporte."}],"curiosidades":["O mandril de aperto rápido agiliza a troca de brocas e bits sem necessidade de chave.","A função reversível permite apertar e também remover parafusos.","O ajuste de torque (17+1) ajuda a adaptar a força conforme o tipo de trabalho.","O indicador de carga permite acompanhar o nível da bateria durante o uso.","O anúncio informa que a cor do produto é enviada de forma aleatória."]}'::jsonb),
-('pistola-pintura-hvlp800w', (SELECT id FROM auth.users ORDER BY created_at LIMIT 1), 'Pistola de Pintura Elétrica HVLP 800W', 'Spray de tinta elétrico HVLP 800W com 3 modos de pulverização, recipiente de 800 ml e controle de fluxo ajustável. Ideal para móveis, paredes, cercas e projetos DIY. #pintura #spray #diy #reforma #bricolagem #ferramentas #tiktokshop', '{"resumo":"A Pistola de Pintura Elétrica HVLP 800W foi desenvolvida para tornar trabalhos de pintura mais rápidos, uniformes e práticos. Com motor de 800W, velocidade de até 38.000 RPM e recipiente de 800 ml, permite pulverizar tinta com controle ajustável do fluxo e diferentes padrões de aplicação. O sistema HVLP trabalha com alto volume e baixa pressão, ajudando a reduzir respingos e desperdício de tinta. Com três modos de pulverização, bico de 2,0 mm e empunhadura ergonômica, pode ser utilizada em móveis, paredes, cercas, portões, automóveis e outros projetos de pintura.","problemas":["Reduz o tempo necessário para pintar superfícies.","Facilita a aplicação uniforme de tinta em áreas maiores.","Evita depender exclusivamente de pincel ou rolo.","Ajuda a controlar a quantidade de tinta aplicada.","Facilita a pintura de superfícies com formatos e tamanhos diferentes.","Reduz respingos e desperdício quando utilizada corretamente."],"beneficios":["Pintura mais rápida em comparação com métodos manuais.","Pulverização mais uniforme.","Controle da quantidade de tinta através do ajuste de fluxo.","Três padrões de pulverização para diferentes superfícies.","Capacidade de 800 ml para trabalhar por mais tempo antes de reabastecer.","Empunhadura ergonômica para maior conforto.","Sistema HVLP para uma aplicação mais eficiente.","Potência de 800W para trabalhos de pintura."],"caracteristicas":["Potência: 800W.","Velocidade do motor: 38.000 RPM.","Capacidade do recipiente: 800 ml.","Bico de 2,0 mm.","Viscosidade máxima informada: 80 DIN-Segundos.","Três modos de pulverização: Circular 45°, Vertical 90° e Horizontal 180°.","Controle de fluxo ajustável.","Sistema HVLP (alto volume e baixa pressão).","Sistema de ventilação para dissipação de calor.","Dimensões da embalagem: 27 × 12 × 27,8 cm.","Peso da embalagem: 1,38 kg.","Acompanha funil e agulha para limpeza do bico."],"diferenciais":["Motor de 800W combinado com 38.000 RPM.","Recipiente de 800 ml.","Três padrões de pulverização em uma única ferramenta.","Fluxo de tinta ajustável.","Sistema HVLP.","Bico de 2,0 mm para atomização uniforme.","Empunhadura projetada para maior conforto durante o uso.","Pode ser utilizada em diferentes tipos de projetos de pintura."],"testes":["Pintar uma superfície de madeira e mostrar a uniformidade da aplicação.","Comparar a aplicação utilizando diferentes padrões de pulverização.","Alterar o fluxo de tinta e mostrar a diferença na quantidade pulverizada.","Demonstrar a pintura de uma superfície larga usando o modo horizontal.","Testar o modo vertical em uma superfície estreita ou alta.","Testar o modo circular em uma área menor.","Mostrar a aplicação em móveis, como uma cadeira ou mesa.","Demonstrar a desmontagem e limpeza do bico após o uso."],"momentosWow":["Mostrar uma superfície sendo coberta rapidamente pela pulverização.","Alternar entre os três padrões de pulverização e mostrar visualmente a diferença.","Mostrar o resultado antes e depois da pintura de um móvel.","Demonstrar a regulagem do fluxo e a mudança imediata na pulverização.","Mostrar a transformação de uma peça antiga após a pintura.","Revelar que uma única ferramenta pode ser utilizada em móveis, paredes, cercas e outras superfícies."],"publicoIdeal":["Pessoas que fazem projetos DIY.","Pessoas que reformam móveis.","Profissionais e iniciantes em pintura.","Pessoas que fazem reformas em casa.","Marceneiros e profissionais de bricolagem.","Quem precisa pintar portas, móveis, cercas ou portões.","Pessoas interessadas em pintura automotiva e retoques, respeitando a compatibilidade da tinta utilizada."],"objecoes":[{"pergunta":"Será que é fácil de usar?","resposta":"A pistola possui controle de fluxo ajustável e três padrões de pulverização, permitindo adaptar a aplicação ao projeto."},{"pergunta":"Será que a pintura fica uniforme?","resposta":"O bico de 2,0 mm e o sistema HVLP foram projetados para proporcionar pulverização uniforme."},{"pergunta":"Vai gastar muita tinta?","resposta":"O sistema HVLP é apresentado como uma solução para reduzir desperdícios, enquanto o controle de fluxo permite regular a quantidade aplicada."},{"pergunta":"Consigo controlar a quantidade de tinta?","resposta":"Sim. O controle de fluxo permite ajustar a quantidade de tinta liberada."},{"pergunta":"Serve para qualquer tipo de tinta?","resposta":"O anúncio informa viscosidade máxima de 80 DIN-Segundos; a compatibilidade deve ser verificada de acordo com a tinta utilizada."},{"pergunta":"É difícil de limpar?","resposta":"O pacote acompanha uma agulha de limpeza do bico e o próprio anúncio recomenda limpar a pistola após cada uso."},{"pergunta":"800 ml é suficiente para trabalhar?","resposta":"O recipiente possui capacidade de 800 ml, permitindo uma quantidade considerável de tinta antes de precisar reabastecer."}],"curiosidades":["HVLP significa High Volume Low Pressure, ou Alto Volume e Baixa Pressão.","A pistola possui três padrões de pulverização para diferentes tipos de superfície.","O fluxo de tinta pode ser regulado conforme a necessidade do trabalho.","O recipiente de 800 ml permite trabalhar com uma quantidade maior de tinta por abastecimento.","A velocidade informada do motor chega a 38.000 RPM.","O sistema de ventilação possui aberturas para ajudar na dissipação de calor do motor.","O pacote inclui uma agulha específica para auxiliar na limpeza do bico."]}'::jsonb)
+('arrancador-q18b', (SELECT id FROM auth.users ORDER BY created_at LIMIT 1), 'Arrancador de Bateria c/ Compressor de Ar Portátil Q18B', 'Auxiliar de partida para baterias de 12V, com compressor de ar portátil digital de 150 PSI. Powerbank e lanterna SOS. #viraltiktokshop #ferramentas #homem #mecanica #carro', 'O Arrancador de Bateria com Compressor de Ar Portátil Q18B é um equipamento 4 em 1 desenvolvido para oferecer mais segurança e praticidade em situações de emergência e no dia a dia. Além de dar partida em veículos 12V, ele também funciona como compressor de ar portátil, power bank para carregar dispositivos eletrônicos e lanterna LED com modo SOS. Compacto e fácil de transportar, cabe no porta-luvas e acompanha todos os acessórios necessários para uso imediato, incluindo grampos inteligentes, mangueira de alta pressão, adaptadores, cabo USB-C e bolsa de armazenamento. É uma solução completa para viagens, estrada e uso diário.', 'Resolve bateria descarregada em carros e motos 12V.
+Evita ficar parado por causa de pneu murcho.
+Permite calibrar pneus em qualquer lugar.
+Carrega celular e outros eletrônicos em emergências.
+Oferece iluminação em locais escuros ou situações de emergência.
+Elimina a necessidade de carregar vários equipamentos separados.', 'Mais segurança durante viagens e imprevistos.
+Economia de tempo ao resolver problemas sem precisar de ajuda imediata.
+Quatro funções reunidas em um único equipamento.
+Fácil transporte por ser compacto.
+Ajuste preciso da pressão dos pneus.
+Desligamento automático ao atingir a pressão programada.
+Carregamento rápido para dispositivos eletrônicos.
+Proteções eletrônicas aumentam a segurança durante o uso.', 'Arrancador para veículos 12V.
+Bateria recarregável de 8000mAh.
+Compressor com pressão máxima de 150 PSI.
+Precisão de 0,1 BAR.
+Display digital para ajuste da pressão.
+Desligamento automático do compressor.
+Power Bank com duas portas USB (5V/3A e 5V/2A).
+Lanterna LED com luz contínua e modo SOS.
+Entrada USB Type-C.
+Recarga completa em aproximadamente 4 a 5 horas.
+Proteção contra inversão de polaridade, curto-circuito, sobrecarga, superaquecimento e sobrecorrente.
+Dimensões compactas (200 x 108 x 60 mm).', 'Equipamento 4 em 1.
+Compressor inteligente que para automaticamente.
+Display digital facilita a calibração.
+Grampos inteligentes com múltiplas proteções.
+Cabe no porta-luvas.
+Acompanha diversos acessórios prontos para uso.', 'Dar partida em um veículo com bateria fraca.
+Calibrar um pneu mostrando o desligamento automático.
+Encher uma bola utilizando os adaptadores.
+Carregar um celular pela porta USB.
+Demonstrar os modos da lanterna LED.
+Mostrar todo o conteúdo da bolsa de armazenamento.', 'O carro liga usando apenas o arrancador.
+O compressor para sozinho exatamente na pressão programada.
+Mostrar que o aparelho cabe no porta-luvas.
+Demonstrar as quatro funções funcionando no mesmo vídeo.
+Carregar um celular enquanto o equipamento ainda possui bateria.
+Mostrar todos os acessórios saindo da bolsa.', 'Motoristas de carros.
+Motociclistas.
+Motoristas de aplicativo.
+Caminhoneiros.
+Pessoas que viajam com frequência.
+Quem gosta de estar preparado para emergências.
+Famílias que utilizam veículo diariamente.', 'Será que realmente consegue ligar o carro? | Foi desenvolvido para auxiliar na partida de veículos 12V conforme as condições informadas no anúncio.
+É difícil de usar? | O uso é simplificado, com grampos identificados e display digital.
+O compressor calibra corretamente? | O compressor possui ajuste de pressão e desligamento automático ao atingir o valor programado.
+Vale a pena comprar um equipamento 4 em 1? | Além de dar partida, também funciona como compressor, power bank e lanterna LED.
+Ocupa muito espaço no carro? | O equipamento possui dimensões compactas e foi projetado para caber no porta-luvas.', 'O compressor possui precisão de ajuste de 0,1 BAR.
+A lanterna possui modo SOS para emergências.
+Os grampos contam com proteção contra inversão de polaridade, evitando ligações incorretas.
+O equipamento suporta temperaturas de operação entre -20°C e 60°C.
+A recarga é feita por USB Type-C.
+Acompanha adaptadores para pneus de carro, moto, bicicleta, bolas e infláveis.'),
+('furadeira-parafusadeira', (SELECT id FROM auth.users ORDER BY created_at LIMIT 1), 'Furadeira/Parafusadeira', 'Parafusadeira e Furadeira de Impacto com 2 Baterias de 48V. Kit completo com maleta, brocas, bits e acessórios. #parafusadeira #furadeira #kitdeferramentas #diy #bricolagem #tiktokshop', 'Parafusadeira Furadeira 48V com 2 baterias, maleta e kit de acessórios. Indicada para perfurar e parafusar em materiais como madeira, metal e plástico, oferecendo praticidade tanto para uso doméstico quanto para bricolagem e trabalhos profissionais.', 'Facilita a montagem de móveis e instalações.
+Elimina o esforço de apertar ou soltar parafusos manualmente.
+Permite perfurar diferentes materiais com uma única ferramenta.
+Aumenta a mobilidade por funcionar com bateria.
+Evita interrupções frequentes graças à bateria extra.', 'Liberdade de uso sem depender de tomada durante o trabalho.
+Mais conforto com design compacto e ergonômico.
+Controle preciso com velocidade variável e reversível.
+Ajuste de torque para diferentes tipos de serviço.
+Maior produtividade com duas baterias inclusas.
+Kit completo pronto para usar.', 'Alimentação por bateria 48V.
+Acompanha 2 baterias.
+Mandril de aperto rápido 3/8" (10 mm).
+Velocidade variável de 0–400 e 0–1400 RPM.
+Rotação reversível.
+Torque ajustável (17+1 posições).
+Torque máximo informado de 32 Nm.
+Indicador de carga da bateria.
+Carregador bivolt.
+Acompanha maleta para transporte.
+Inclui extensor flexível, bits, soquetes, brocas e demais acessórios descritos no anúncio.', 'Duas baterias inclusas para maior autonomia.
+Kit com diversos acessórios em um único produto.
+Mandril de aperto rápido, dispensando chave.
+Maleta facilita organização e transporte.
+Pode ser utilizada para perfuração e parafusamento.', 'Parafusar e desparafusar um parafuso em madeira.
+Demonstrar a troca rápida de brocas no mandril.
+Mostrar o funcionamento da velocidade variável.
+Testar a função reversível.
+Exibir todos os acessórios organizados na maleta.
+Mostrar a troca entre as duas baterias.', 'Abrir a maleta revelando todos os acessórios.
+Mostrar a ferramenta funcionando sem fio.
+Trocar a bateria em poucos segundos.
+Demonstrar a perfuração em diferentes materiais (madeira, metal ou plástico, conforme informado no anúncio).
+Exibir o extensor flexível alcançando locais de difícil acesso.', 'Quem faz pequenos reparos em casa.
+Pessoas que montam móveis.
+Profissionais de construção e carpintaria.
+Hobbistas e praticantes de bricolagem.
+Quem procura uma ferramenta portátil e versátil.', 'Será que a bateria dura o suficiente? | O produto acompanha duas baterias, permitindo continuar o trabalho enquanto uma pode ser recarregada.
+Ela vem pronta para usar? | Sim, acompanha maleta, carregador e diversos acessórios descritos no anúncio.
+Serve para diferentes tipos de trabalho? | Foi desenvolvida para perfuração e parafusamento em madeira, metal e plástico.
+É difícil trocar brocas? | Não, o mandril é de aperto rápido, facilitando a troca de acessórios.
+Vale a pena pelo kit? | Além da ferramenta, o comprador recebe um kit completo de acessórios e maleta para transporte.', 'O mandril de aperto rápido agiliza a troca de brocas e bits sem necessidade de chave.
+A função reversível permite apertar e também remover parafusos.
+O ajuste de torque (17+1) ajuda a adaptar a força conforme o tipo de trabalho.
+O indicador de carga permite acompanhar o nível da bateria durante o uso.
+O anúncio informa que a cor do produto é enviada de forma aleatória.'),
+('pistola-pintura-hvlp800w', (SELECT id FROM auth.users ORDER BY created_at LIMIT 1), 'Pistola de Pintura Elétrica HVLP 800W', 'Spray de tinta elétrico HVLP 800W com 3 modos de pulverização, recipiente de 800 ml e controle de fluxo ajustável. Ideal para móveis, paredes, cercas e projetos DIY. #pintura #spray #diy #reforma #bricolagem #ferramentas #tiktokshop', 'A Pistola de Pintura Elétrica HVLP 800W foi desenvolvida para tornar trabalhos de pintura mais rápidos, uniformes e práticos. Com motor de 800W, velocidade de até 38.000 RPM e recipiente de 800 ml, permite pulverizar tinta com controle ajustável do fluxo e diferentes padrões de aplicação. O sistema HVLP trabalha com alto volume e baixa pressão, ajudando a reduzir respingos e desperdício de tinta. Com três modos de pulverização, bico de 2,0 mm e empunhadura ergonômica, pode ser utilizada em móveis, paredes, cercas, portões, automóveis e outros projetos de pintura.', 'Reduz o tempo necessário para pintar superfícies.
+Facilita a aplicação uniforme de tinta em áreas maiores.
+Evita depender exclusivamente de pincel ou rolo.
+Ajuda a controlar a quantidade de tinta aplicada.
+Facilita a pintura de superfícies com formatos e tamanhos diferentes.
+Reduz respingos e desperdício quando utilizada corretamente.', 'Pintura mais rápida em comparação com métodos manuais.
+Pulverização mais uniforme.
+Controle da quantidade de tinta através do ajuste de fluxo.
+Três padrões de pulverização para diferentes superfícies.
+Capacidade de 800 ml para trabalhar por mais tempo antes de reabastecer.
+Empunhadura ergonômica para maior conforto.
+Sistema HVLP para uma aplicação mais eficiente.
+Potência de 800W para trabalhos de pintura.', 'Potência: 800W.
+Velocidade do motor: 38.000 RPM.
+Capacidade do recipiente: 800 ml.
+Bico de 2,0 mm.
+Viscosidade máxima informada: 80 DIN-Segundos.
+Três modos de pulverização: Circular 45°, Vertical 90° e Horizontal 180°.
+Controle de fluxo ajustável.
+Sistema HVLP (alto volume e baixa pressão).
+Sistema de ventilação para dissipação de calor.
+Dimensões da embalagem: 27 × 12 × 27,8 cm.
+Peso da embalagem: 1,38 kg.
+Acompanha funil e agulha para limpeza do bico.', 'Motor de 800W combinado com 38.000 RPM.
+Recipiente de 800 ml.
+Três padrões de pulverização em uma única ferramenta.
+Fluxo de tinta ajustável.
+Sistema HVLP.
+Bico de 2,0 mm para atomização uniforme.
+Empunhadura projetada para maior conforto durante o uso.
+Pode ser utilizada em diferentes tipos de projetos de pintura.', 'Pintar uma superfície de madeira e mostrar a uniformidade da aplicação.
+Comparar a aplicação utilizando diferentes padrões de pulverização.
+Alterar o fluxo de tinta e mostrar a diferença na quantidade pulverizada.
+Demonstrar a pintura de uma superfície larga usando o modo horizontal.
+Testar o modo vertical em uma superfície estreita ou alta.
+Testar o modo circular em uma área menor.
+Mostrar a aplicação em móveis, como uma cadeira ou mesa.
+Demonstrar a desmontagem e limpeza do bico após o uso.', 'Mostrar uma superfície sendo coberta rapidamente pela pulverização.
+Alternar entre os três padrões de pulverização e mostrar visualmente a diferença.
+Mostrar o resultado antes e depois da pintura de um móvel.
+Demonstrar a regulagem do fluxo e a mudança imediata na pulverização.
+Mostrar a transformação de uma peça antiga após a pintura.
+Revelar que uma única ferramenta pode ser utilizada em móveis, paredes, cercas e outras superfícies.', 'Pessoas que fazem projetos DIY.
+Pessoas que reformam móveis.
+Profissionais e iniciantes em pintura.
+Pessoas que fazem reformas em casa.
+Marceneiros e profissionais de bricolagem.
+Quem precisa pintar portas, móveis, cercas ou portões.
+Pessoas interessadas em pintura automotiva e retoques, respeitando a compatibilidade da tinta utilizada.', 'Será que é fácil de usar? | A pistola possui controle de fluxo ajustável e três padrões de pulverização, permitindo adaptar a aplicação ao projeto.
+Será que a pintura fica uniforme? | O bico de 2,0 mm e o sistema HVLP foram projetados para proporcionar pulverização uniforme.
+Vai gastar muita tinta? | O sistema HVLP é apresentado como uma solução para reduzir desperdícios, enquanto o controle de fluxo permite regular a quantidade aplicada.
+Consigo controlar a quantidade de tinta? | Sim. O controle de fluxo permite ajustar a quantidade de tinta liberada.
+Serve para qualquer tipo de tinta? | O anúncio informa viscosidade máxima de 80 DIN-Segundos; a compatibilidade deve ser verificada de acordo com a tinta utilizada.
+É difícil de limpar? | O pacote acompanha uma agulha de limpeza do bico e o próprio anúncio recomenda limpar a pistola após cada uso.
+800 ml é suficiente para trabalhar? | O recipiente possui capacidade de 800 ml, permitindo uma quantidade considerável de tinta antes de precisar reabastecer.', 'HVLP significa High Volume Low Pressure, ou Alto Volume e Baixa Pressão.
+A pistola possui três padrões de pulverização para diferentes tipos de superfície.
+O fluxo de tinta pode ser regulado conforme a necessidade do trabalho.
+O recipiente de 800 ml permite trabalhar com uma quantidade maior de tinta por abastecimento.
+A velocidade informada do motor chega a 38.000 RPM.
+O sistema de ventilação possui aberturas para ajudar na dissipação de calor do motor.
+O pacote inclui uma agulha específica para auxiliar na limpeza do bico.')
 ON CONFLICT (id) DO UPDATE SET
   nome = EXCLUDED.nome,
   descricao = EXCLUDED.descricao,
-  info = EXCLUDED.info,
+  resumo = EXCLUDED.resumo,
+  problemas = EXCLUDED.problemas,
+  beneficios = EXCLUDED.beneficios,
+  caracteristicas = EXCLUDED.caracteristicas,
+  diferenciais = EXCLUDED.diferenciais,
+  testes = EXCLUDED.testes,
+  momentosWow = EXCLUDED.momentosWow,
+  publicoIdeal = EXCLUDED.publicoIdeal,
+  objecoes = EXCLUDED.objecoes,
+  curiosidades = EXCLUDED.curiosidades,
   updated_at = now();
