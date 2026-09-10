@@ -7,7 +7,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Inter', system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; min-height: 100vh; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
   .topnav {
     background: #1a1a1a; padding: .6rem 2rem;
     display: flex; align-items: center; justify-content: space-between;
@@ -23,7 +23,8 @@
     transition: all .2s;
   }
   .topnav-back:hover { background: #e63946; color: #fff; }
-  .container { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+  .container { max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem 0; width: 100%; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .lista-scroll { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 1.5rem; border-top: 1px solid #ececec; padding-top: 1rem; }
 
   .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: .7rem; }
   .page-title { font-size: 1.2rem; font-weight: 800; }
@@ -262,7 +263,7 @@
       </select>
     </div>
   </div>
-  <div id="lista"></div>
+  <div class="lista-scroll"><div id="lista"></div></div>
 </div>
 <div class="footer">O Cara Testou &mdash; Missões de Produção</div>
 
