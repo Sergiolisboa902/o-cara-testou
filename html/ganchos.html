@@ -73,6 +73,10 @@
   }
   .cat-grupo[open] summary { color: #e63946; }
   .cat-grupo[open] summary .n { background: #ffe3e3; color: #e63946; }
+  .cat-grupo.fav-grupo { border: 2px solid #e6a23c; }
+  .cat-grupo.fav-grupo summary .n { background: #e6a23c; color: #fff; }
+  .cat-grupo.fav-grupo[open] summary { color: #e6a23c; }
+  .cat-grupo.fav-grupo[open] summary .n { background: #e6a23c; color: #fff; }
   .cat-grupo .ganchos-list { padding: .2rem .7rem .7rem; }
   .gancho-row {
     display: flex; align-items: center; gap: .8rem;
@@ -247,31 +251,51 @@ function renderLista() {
     el.innerHTML = '<div class="vazio">Nenhum gancho encontrado para a busca.</div>'
     return
   }
+  let naoFavs = filtrados.filter(g => !g.favorito)
+  const favs = filtrados.filter(g => g.favorito)
   const grupos = {}
-  filtrados.forEach(g => {
+  naoFavs.forEach(g => {
     const k = g.categoria || 'Sem categoria'
     ;(grupos[k] = grupos[k] || []).push(g)
   })
   const cats = Object.keys(grupos)
-  el.innerHTML = cats.map((cat, i) => `
-    <details class="cat-grupo" ${i === 0 ? 'open' : ''}>
+  let html = ''
+  if (favs.length) {
+    html += `
+      <details class="cat-grupo fav-grupo" open>
+        <summary>
+          <span>⭐ Favoritos</span>
+          <span class="n">${favs.length}</span>
+        </summary>
+        <div class="ganchos-list">
+          ${favs.map(g => ganchoRow(g)).join('')}
+        </div>
+      </details>`
+  }
+  html += cats.map(cat => `
+    <details class="cat-grupo">
       <summary>
         <span>🎯 ${esc(cat)}</span>
         <span class="n">${grupos[cat].length}</span>
       </summary>
       <div class="ganchos-list">
-        ${grupos[cat].map(g => `
-          <div class="gancho-row">
-            <span class="gancho-icon">🧲</span>
-            <span class="gancho-texto">${esc(g.texto)}</span>
-            <div class="gancho-actions">
-              <button class="gancho-btn fav ${g.favorito ? 'on' : ''}" title="${g.favorito ? 'Desmarcar favorito' : 'Marcar favorito'}" onclick="toggleFav('${g.id}', ${!!g.favorito})">${g.favorito ? '★' : '☆'}</button>
-              <button class="gancho-btn editar" title="Editar" onclick="abrirEditar('${g.id}')">✏️</button>
-              <button class="gancho-btn excluir" title="Excluir" onclick="excluir('${g.id}')">🗑</button>
-            </div>
-          </div>`).join('')}
+        ${grupos[cat].map(g => ganchoRow(g)).join('')}
       </div>
     </details>`).join('')
+  el.innerHTML = html
+}
+
+function ganchoRow(g) {
+  return `
+    <div class="gancho-row">
+      <span class="gancho-icon">🧲</span>
+      <span class="gancho-texto">${esc(g.texto)}</span>
+      <div class="gancho-actions">
+        <button class="gancho-btn fav ${g.favorito ? 'on' : ''}" title="${g.favorito ? 'Desmarcar favorito' : 'Marcar favorito'}" onclick="toggleFav('${g.id}', ${!!g.favorito})">${g.favorito ? '★' : '☆'}</button>
+        <button class="gancho-btn editar" title="Editar" onclick="abrirEditar('${g.id}')">✏️</button>
+        <button class="gancho-btn excluir" title="Excluir" onclick="excluir('${g.id}')">🗑</button>
+      </div>
+    </div>`
 }
 
 function renderStats() {
