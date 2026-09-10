@@ -28,6 +28,7 @@
   .container { max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem 0; width: 100%; flex: 1; min-height: 0; display: flex; flex-direction: column; }
 
   .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; flex-wrap: wrap; gap: .7rem; }
+  .top-btns { display: flex; gap: .5rem; flex-wrap: wrap; }
   .page-title { font-size: 1.2rem; font-weight: 800; }
   .page-title span { color: #e63946; }
   .page-title .count { font-size: .8rem; color: #999; font-weight: 600; }
@@ -37,6 +38,13 @@
     cursor: pointer; transition: all .2s; font-family: inherit; text-decoration: none;
   }
   .cta-btn:hover { background: #c82d3a; transform: translateY(-1px); }
+  .cta-btn.ghost { background: #fff; color: #1a1a1a; border: 2px solid #ddd; }
+  .cta-btn.ghost:hover { border-color: #e63946; color: #e63946; background: #fff; }
+  .cta-btn .badge {
+    display: inline-block; background: #e63946; color: #fff; border-radius: 20px;
+    font-size: .68rem; font-weight: 800; padding: .05rem .45rem; margin-left: .3rem;
+  }
+  .cta-btn.ghost .badge { background: #e63946; color: #fff; }
 
   .lista-scroll { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 1.5rem; border-top: 1px solid #ececec; padding-top: 1rem; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
@@ -209,40 +217,62 @@
 <div class="container">
   <div class="top-bar">
     <div class="page-title"><span>Produtos</span> <span class="count" id="contador"></span></div>
-    <button class="cta-btn" onclick="abrirNovo()">＋ Novo produto</button>
-  </div>
-  <div class="assist-card">
-    <div class="t">🤖 Assistente de Cadastro</div>
-    <div class="assist-row">
-      <input type="text" id="assist-link" placeholder="Cole o link do produto (ex: https://vt.tiktok.com/...)" autocomplete="off">
-      <button class="assist-btn" onclick="copiarPrompt()">📋 Copiar prompt</button>
+    <div class="top-btns">
+      <button class="cta-btn ghost" onclick="abrirModal('modal-assist')">🤖 <span style="font-size:.7rem">assistente</span></button>
+      <button class="cta-btn ghost" onclick="abrirModal('modal-fila')">📥 <span style="font-size:.7rem">fila</span><span class="badge" id="fila-badge">0</span></button>
+      <button class="cta-btn" onclick="abrirNovo()">＋ Novo</button>
     </div>
-    <div class="assist-print" id="assist-print" onclick="document.getElementById('assist-file').click()">
-      <input type="file" id="assist-file" accept="image/*" onchange="assistFile(this)">
-      <span class="p-txt" id="assist-print-txt">📷 Opcional: colar print do anúncio (Ctrl+V aqui) ou clicar para escolher arquivo</span>
-    </div>
-    <div class="assist-preview" id="assist-preview">
-      <img id="assist-img" alt="print">
-      <button class="p-clear" onclick="assistClear()">✕ Remover imagem</button>
-      <button class="p-clear" id="assist-copy-img" onclick="copiarImagemClick()" style="color:#3ECF8E">🖼️ Copiar imagem (para colar no chat)</button>
-    </div>
-    <div class="assist-hint">Cola o link (e opcionalmente um print do anúncio), clica em <b>Copiar prompt</b> e envia o texto no chat do assistente (opencode). Se tiver imagem, clica em <b>Copiar imagem</b> e cola também. Ele gera os campos e cadastra direto no banco.</div>
-    <div class="assist-ok" id="assist-ok">✓ Prompt copiado! Cole no chat do assistente (opencode).</div>
-    <div class="assist-ok" id="assist-img-ok" style="color:#3ECF8E">✓ Imagem copiada! Cole no chat do assistente.</div>
-  </div>
-  <div class="fila-card">
-    <div class="t">📥 Fila de cadastro <span id="fila-count"><span style="font-weight:600;text-transform:none">(aguardando envio)</span></span></div>
-    <div class="fila-actions">
-      <button class="assist-btn" onclick="abrirAddFila()">＋ Adicionar daqui</button>
-      <button class="assist-btn" onclick="copiarFilaTudo()">📋 Copiar tudo</button>
-    </div>
-    <div class="fila-lista" id="fila-lista"></div>
   </div>
   <div class="lista-scroll">
     <div class="grid" id="grid"></div>
   </div>
 </div>
 <div class="footer">Estrutura paralela &mdash; tabela produtos no Supabase</div>
+
+<!-- MODAL ASSISTENTE -->
+<div class="modal-overlay" id="modal-assist">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-head">
+      <div class="modal-title">🤖 <span>Assistente</span> de Cadastro</div>
+      <button class="modal-close" onclick="fecharModal('modal-assist')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="assist-row">
+        <input type="text" id="assist-link" placeholder="Cole o link do produto (ex: https://vt.tiktok.com/...)" autocomplete="off">
+        <button class="assist-btn" onclick="copiarPrompt()">📋 Copiar prompt</button>
+      </div>
+      <div class="assist-print" id="assist-print" onclick="document.getElementById('assist-file').click()">
+        <input type="file" id="assist-file" accept="image/*" onchange="assistFile(this)">
+        <span class="p-txt" id="assist-print-txt">📷 Opcional: colar print do anúncio (Ctrl+V aqui) ou clicar para escolher arquivo</span>
+      </div>
+      <div class="assist-preview" id="assist-preview">
+        <img id="assist-img" alt="print">
+        <button class="p-clear" onclick="assistClear()">✕ Remover imagem</button>
+        <button class="p-clear" id="assist-copy-img" onclick="copiarImagemClick()" style="color:#3ECF8E">🖼️ Copiar imagem (para colar no chat)</button>
+      </div>
+      <div class="assist-hint">Cola o link (e opcionalmente um print do anúncio), clica em <b>Copiar prompt</b> e envia o texto no chat do assistente (opencode). Se tiver imagem, clica em <b>Copiar imagem</b> e cola também. Ele gera os campos e cadastra direto no banco.</div>
+      <div class="assist-ok" id="assist-ok">✓ Prompt copiado! Cole no chat do assistente (opencode).</div>
+      <div class="assist-ok" id="assist-img-ok" style="color:#3ECF8E">✓ Imagem copiada! Cole no chat do assistente.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FILA -->
+<div class="modal-overlay" id="modal-fila">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-head">
+      <div class="modal-title">📥 <span>Fila</span> de cadastro <span class="count" id="fila-count"></span></div>
+      <button class="modal-close" onclick="fecharModal('modal-fila')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fila-actions">
+        <button class="assist-btn" onclick="abrirAddFila()">＋ Adicionar link</button>
+        <button class="assist-btn" onclick="copiarFilaTudo()">📋 Copiar tudo</button>
+      </div>
+      <div class="fila-lista" id="fila-lista"></div>
+    </div>
+  </div>
+</div>
 
 <div class="modal-overlay" id="modal-add-fila">
   <div class="modal" style="max-width:520px">
@@ -479,8 +509,10 @@ async function carregarFila() {
 
 function renderFila() {
   const el = document.getElementById('fila-lista')
+  const badge = document.getElementById('fila-badge')
+  if (badge) badge.textContent = filaProdutos.length
   const count = document.getElementById('fila-count')
-  count.textContent = `(${filaProdutos.length} aguardando)`
+  if (count) count.textContent = `(${filaProdutos.length})`
   if (!filaProdutos.length) {
     el.innerHTML = '<div class="fila-vazio">Fila vazia. Vai acumulando os links aqui pelo celular e manda tudo de uma vez no computador.</div>'
     return
