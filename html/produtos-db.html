@@ -819,8 +819,8 @@ function abrirEditar(id) {
   document.getElementById('p-caracteristicas').value = p.caracteristicas || ''
   document.getElementById('p-diferenciais').value = p.diferenciais || ''
   document.getElementById('p-testes').value = p.testes || ''
-  document.getElementById('p-momentosWow').value = p.momentosWow || ''
-  document.getElementById('p-publicoIdeal').value = p.publicoIdeal || ''
+  document.getElementById('p-momentosWow').value = p.momentoswow || p.momentosWow || ''
+  document.getElementById('p-publicoIdeal').value = p.publicoideal || p.publicoIdeal || ''
   document.getElementById('p-objecoes').value = p.objecoes || ''
   document.getElementById('p-curiosidades').value = p.curiosidades || ''
   document.getElementById('p-id').disabled = true
@@ -852,8 +852,8 @@ async function salvar() {
     caracteristicas: document.getElementById('p-caracteristicas').value.trim(),
     diferenciais: document.getElementById('p-diferenciais').value.trim(),
     testes: document.getElementById('p-testes').value.trim(),
-    momentosWow: document.getElementById('p-momentosWow').value.trim(),
-    publicoIdeal: document.getElementById('p-publicoIdeal').value.trim(),
+    momentoswow: document.getElementById('p-momentosWow').value.trim(),
+    publicoideal: document.getElementById('p-publicoIdeal').value.trim(),
     objecoes: document.getElementById('p-objecoes').value.trim(),
     curiosidades: document.getElementById('p-curiosidades').value.trim()
   }
@@ -862,10 +862,10 @@ async function salvar() {
   if (!session) return
   let error = null
   if (editandoId) {
-    const { resumo, problemas, beneficios, caracteristicas, diferenciais, testes, momentosWow, publicoIdeal, objecoes, curiosidades, ...resto } = payload
+    const { resumo, problemas, beneficios, caracteristicas, diferenciais, testes, momentoswow, publicoideal, objecoes, curiosidades, ...resto } = payload
     ;({ error } = await _supabase
       .from('produtos')
-      .update({ ...resto, resumo, problemas, beneficios, caracteristicas, diferenciais, testes, momentosWow, publicoIdeal, objecoes, curiosidades, updated_at: new Date().toISOString() })
+      .update({ ...resto, resumo, problemas, beneficios, caracteristicas, diferenciais, testes, momentoswow, publicoideal, objecoes, curiosidades, updated_at: new Date().toISOString() })
       .eq('id', editandoId)
       .eq('user_id', session.user.id))
   } else {
