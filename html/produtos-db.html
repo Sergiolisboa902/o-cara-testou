@@ -103,6 +103,46 @@
     color: #e63946; font-size: .72rem; font-weight: 700; cursor: pointer; font-family: inherit;
   }
 
+  .fila-card {
+    background: #fff; border: 2px solid #e63946; border-radius: 14px; padding: 1rem 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+  .fila-card .t {
+    font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+    color: #e63946; margin-bottom: .55rem; display: flex; align-items: center; gap: .4rem;
+  }
+  .fila-actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .7rem; }
+  .fila-lista { display: flex; flex-direction: column; gap: .5rem; }
+  .fila-item {
+    display: flex; gap: .7rem; align-items: center; padding: .6rem .7rem;
+    background: #fafafa; border: 1px solid #eee; border-radius: 10px; flex-wrap: wrap;
+  }
+  .fila-thumb {
+    width: 46px; height: 46px; object-fit: cover; border-radius: 8px;
+    border: 1px solid #eee; flex-shrink: 0; background: #f0f0f0;
+  }
+  .fila-link { flex: 1; min-width: 160px; font-size: .78rem; font-weight: 700; color: #333; word-break: break-all; }
+  .fila-link a { color: #e63946; text-decoration: none; }
+  .fila-link a:hover { text-decoration: underline; }
+  .fila-link .data { display: block; font-size: .68rem; font-weight: 600; color: #aaa; margin-top: .15rem; }
+  .fila-btns { display: flex; gap: .4rem; flex-wrap: wrap; }
+  .fila-mini {
+    background: #1a1a1a; color: #fff; border: none; border-radius: 6px;
+    padding: .35rem .6rem; font-size: .72rem; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .fila-mini:hover { background: #333; }
+  .fila-mini.img { background: #3ECF8E; color: #0d6843; }
+  .fila-mini.img:hover { background: #2fbf7e; }
+  .fila-mini.del { background: #ffe3e3; color: #e63946; }
+  .fila-mini.del:hover { background: #ffd0d0; }
+  .fila-vazio { font-size: .78rem; color: #aaa; text-align: center; padding: .6rem; }
+  .fila-file label {
+    display: inline-block; background: #f0f0f0; border: 1px solid #ddd; border-radius: 8px;
+    padding: .5rem .8rem; font-size: .8rem; font-weight: 700; cursor: pointer; color: #333; font-family: inherit;
+  }
+  .fila-file label:hover { background: #e6e6e6; }
+  .fila-file input[type="file"] { display: none; }
+
   .modal-overlay {
     display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55);
     z-index: 200; align-items: center; justify-content: center; padding: 1.2rem;
@@ -190,11 +230,46 @@
     <div class="assist-ok" id="assist-ok">✓ Prompt copiado! Cole no chat do assistente (opencode).</div>
     <div class="assist-ok" id="assist-img-ok" style="color:#3ECF8E">✓ Imagem copiada! Cole no chat do assistente.</div>
   </div>
+  <div class="fila-card">
+    <div class="t">📥 Fila de cadastro <span id="fila-count"><span style="font-weight:600;text-transform:none">(aguardando envio)</span></span></div>
+    <div class="fila-actions">
+      <button class="assist-btn" onclick="abrirAddFila()">＋ Adicionar daqui</button>
+      <button class="assist-btn" onclick="copiarFilaTudo()">📋 Copiar tudo</button>
+    </div>
+    <div class="fila-lista" id="fila-lista"></div>
+  </div>
   <div class="lista-scroll">
     <div class="grid" id="grid"></div>
   </div>
 </div>
 <div class="footer">Estrutura paralela &mdash; tabela produtos no Supabase</div>
+
+<div class="modal-overlay" id="modal-add-fila">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-head">
+      <div class="modal-title">📥 <span>Adicionar</span> à fila</div>
+      <button class="modal-close" onclick="fecharModal('modal-add-fila')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-label">Link do produto</label>
+        <input type="text" class="form-select" id="fila-link" placeholder="https://vt.tiktok.com/..." autocomplete="off">
+      </div>
+      <div class="form-field fila-file">
+        <label for="fila-file-input">📷 Adicionar print do anúncio (opcional)</label>
+        <input type="file" id="fila-file-input" accept="image/*" onchange="filaFile(this)">
+      </div>
+      <div class="assist-preview" id="fila-preview" style="display:none">
+        <img id="fila-img" alt="print">
+        <button class="p-clear" onclick="filaClear()">✕ Remover imagem</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="m-btn" onclick="salvarFila()">💾 Salvar na fila</button>
+      <button class="m-btn ghost" onclick="fecharModal('modal-add-fila')">Cancelar</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-overlay" id="modal-produto">
   <div class="modal">
@@ -263,6 +338,8 @@
 <script>
 let todosProdutos = []
 let editandoId = null
+let filaProdutos = []
+let filaImgBlob = null
 
 const PROMPT_BASE = `Analise o produto deste link no TikTok Shop e gere o cadastro completo dele no formato EXATO abaixo, em português do Brasil. Acesse o link, se não conseguir, pesquise o produto na web. Não invente o que não conseguir confirmar.
 
@@ -386,6 +463,156 @@ document.getElementById('assist-link').addEventListener('paste', e => {
   }
 })
 
+// === FILA DE CADASTRO ===
+async function carregarFila() {
+  const session = await getSession()
+  if (!session) return
+  const { data, error } = await _supabase
+    .from('fila_produtos')
+    .select('*')
+    .eq('user_id', session.user.id)
+    .order('created_at', { ascending: false })
+  if (error) { console.warn('fila:', error.message); return }
+  filaProdutos = data || []
+  renderFila()
+}
+
+function renderFila() {
+  const el = document.getElementById('fila-lista')
+  const count = document.getElementById('fila-count')
+  count.textContent = `(${filaProdutos.length} aguardando)`
+  if (!filaProdutos.length) {
+    el.innerHTML = '<div class="fila-vazio">Fila vazia. Vai acumulando os links aqui pelo celular e manda tudo de uma vez no computador.</div>'
+    return
+  }
+  el.innerHTML = filaProdutos.map(f => `
+    <div class="fila-item">
+      ${f.print_base64 ? `<img class="fila-thumb" src="${f.print_base64}" alt="print">` : `<div class="fila-thumb"></div>`}
+      <div class="fila-link">
+        <a href="${esc(f.link)}" target="_blank" rel="noopener">${esc(f.link)}</a>
+        <span class="data">${new Date(f.created_at).toLocaleString('pt-BR')}</span>
+      </div>
+      <div class="fila-btns">
+        <button class="fila-mini" onclick="copiarFilaItem('${f.id}')" title="Copiar prompt único">📋 1</button>
+        ${f.print_base64 ? `<button class="fila-mini img" onclick="copiarFilaImg('${f.id}')" title="Copiar imagem do print">🖼️</button>` : ''}
+        <button class="fila-mini del" onclick="excluirFila('${f.id}')" title="Remover">🗑</button>
+      </div>
+    </div>`).join('')
+}
+
+function abrirAddFila() {
+  filaImgBlob = null
+  document.getElementById('fila-link').value = ''
+  filaClear()
+  document.getElementById('fila-link').focus()
+  abrirModal('modal-add-fila')
+}
+
+function filaFile(input) {
+  const f = input.files && input.files[0]
+  if (!f) return
+  f.arrayBuffer().then(buf => {
+    filaImgBlob = new Blob([buf], { type: f.type })
+    filaMostrarPreview(f.type.slice(0, 5) === 'image' ? filaImgBlob : null)
+  })
+}
+
+function filaMostrarPreview(blob) {
+  const wrap = document.getElementById('fila-preview')
+  const img = document.getElementById('fila-img')
+  if (!blob) { wrap.style.display = 'none'; img.src = ''; return }
+  const url = URL.createObjectURL(blob)
+  img.onload = () => URL.revokeObjectURL(url)
+  img.src = url
+  wrap.style.display = 'block'
+}
+
+function filaClear() {
+  filaImgBlob = null
+  const wrap = document.getElementById('fila-preview')
+  wrap.style.display = 'none'
+  document.getElementById('fila-img').src = ''
+  document.getElementById('fila-file-input').value = ''
+}
+
+async function salvarFila() {
+  const link = document.getElementById('fila-link').value.trim()
+  if (!link) { alert('Cole o link do produto'); return }
+  let base64 = ''
+  if (filaImgBlob) {
+    const leitor = new FileReader()
+    base64 = await new Promise(res => {
+      leitor.onload = () => res(leitor.result)
+      leitor.readAsDataURL(filaImgBlob)
+    })
+  }
+  const session = await getSession()
+  if (!session) return
+  const { error } = await _supabase
+    .from('fila_produtos')
+    .insert({ user_id: session.user.id, link, print_base64: base64 })
+  if (error) { mostrarErro(error.message); return }
+  fecharModal('modal-add-fila')
+  await carregarFila()
+}
+
+async function copiarFilaItem(id) {
+  const f = filaProdutos.find(x => x.id === id)
+  if (!f) return
+  copiarTexto(PROMPT_BASE + f.link + (f.print_base64 ? '\n\n(Anexei o print deste anúncio. Analise a imagem junto do link.)' : ''))
+  mostrarCopiado('prompt único')
+}
+
+async function copiarFilaImg(id) {
+  const f = filaProdutos.find(x => x.id === id)
+  if (!f || !f.print_base64) return
+  const blob = await (await fetch(f.print_base64)).blob()
+  const r = await copiarImagem(blob)
+  const el = document.getElementById('assist-img-ok')
+  el.style.display = r ? 'block' : 'none'
+  if (!r) alert('Não foi possível copiar a imagem.')
+}
+
+async function copiarFilaTudo() {
+  if (!filaProdutos.length) { alert('Fila vazia'); return }
+  const itens = filaProdutos.map((f, i) => {
+    const comPrint = f.print_base64 ? ' 📷(print anexado)' : ''
+    return `${i + 1}. ${f.link}${comPrint}`
+  }).join('\n')
+  let texto = 'Analise e cadastre os produtos dos links abaixo com o MESMO formato dos campos NOME, DESCRICAO, RESUMO, PROBLEMAS, BENEFICIOS, CARACTERISTICAS, DIFERENCIAIS, TESTES, MOMENTOSWOW, PUBLICOIDEAL, OBJECOES e CURIOSIDADES, em portugues do Brasil, 1 item por linha, sem numeros e sem bullets. Nao invente nada; se nao der para saber, escreva "Informacao nao visivel".'
+  texto += '\n\n' + itens
+  if (filaProdutos.some(f => f.print_base64)) {
+    texto += '\n\n(Os prints marcados com 📷 serao enviados como imagens logo abaixo.)'
+  }
+  const r = await copiarTexto(texto)
+  const el = document.getElementById('assist-ok')
+  el.style.display = r ? 'block' : 'none'
+  if (r && filaProdutos.some(f => f.print_base64)) {
+    alert('Prompt copiado! Agora copie cada 🖼️ dos itens com print e cole aqui no chat.')
+  }
+}
+
+async function excluirFila(id) {
+  if (!confirm('Remover este item da fila?')) return
+  const session = await getSession()
+  if (!session) return
+  const { error } = await _supabase
+    .from('fila_produtos')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', session.user.id)
+  if (error) { mostrarErro(error.message); return }
+  await carregarFila()
+}
+
+function mostrarCopiado(rotulo) {
+  const el = document.getElementById('assist-ok')
+  el.textContent = `✓ ${rotulo} copiado! Cole no chat do assistente (opencode).`
+  el.style.display = 'block'
+}
+
+function abrirModal(id) { document.getElementById(id).classList.add('open') }
+
 window.onAuthReady = iniciar
 getSession().then(s => { if (s) iniciar(); else injectAuthUI() })
 
@@ -393,6 +620,7 @@ async function iniciar() {
   const session = await getSession()
   if (!session) return
   await carregar()
+  await carregarFila()
 }
 
 async function carregar() {
