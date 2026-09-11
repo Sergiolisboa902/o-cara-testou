@@ -764,6 +764,17 @@ function mostrarCopiado(rotulo) {
   el.style.display = 'block'
 }
 
+function copiarDescricao(id) {
+  const p = todosProdutos.find(x => x.id === id)
+  if (!p) return
+  const desc = (p.descricao || '').trim()
+  if (!desc) { alert('Este produto não tem descrição.'); return }
+  copiarTexto(desc).then(r => {
+    if (r) alert('✓ Descrição copiada! Cole onde quiser.')
+    else alert('Não foi possível copiar automaticamente.')
+  })
+}
+
 function abrirModal(id) { document.getElementById(id).classList.add('open') }
 
 window.onAuthReady = iniciar
@@ -855,6 +866,7 @@ function rowProduto(p) {
         <div class="prod-row-data">${new Date(p.created_at).toLocaleDateString('pt-BR')}</div>
         <div class="prod-row-acoes">
           <button class="mini ${semCat ? 'sem-cat' : ''}" onclick="event.stopPropagation();abrirEditar('${p.id}')" title="Editar">✏️</button>
+          <button class="mini" onclick="event.stopPropagation();copiarDescricao('${p.id}')" title="Copiar descrição">📝</button>
           <button class="mini" onclick="event.stopPropagation();excluir('${p.id}')" title="Excluir">🗑</button>
         </div>
       </div>
