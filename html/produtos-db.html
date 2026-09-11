@@ -153,9 +153,19 @@
   .assist-print.p-has { border-style: solid; border-color: #3ECF8E; }
   .assist-print.p-has .p-txt { color: #3ECF8E; }
   .assist-preview { margin-top: .6rem; display: none; }
-  .assist-preview img {
-    max-height: 160px; max-width: 100%; border-radius: 8px; border: 1px solid #333;
+  .prints-grid { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .4rem; }
+  .print-item {
+    position: relative; width: 84px; height: 84px; border-radius: 8px;
+    overflow: hidden; border: 1px solid #333; flex-shrink: 0;
   }
+  .print-item img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer; }
+  .print-item.sel { outline: 3px solid #3ECF8E; outline-offset: 2px; }
+  .print-del {
+    position: absolute; top: 2px; right: 2px; width: 20px; height: 20px;
+    border: none; border-radius: 50%; background: rgba(0,0,0,.65); color: #fff;
+    font-size: .7rem; font-weight: 700; cursor: pointer; line-height: 1;
+  }
+  .print-del:hover { background: #e63946; }
   .assist-preview .p-clear {
     display: block; margin-top: .35rem; background: none; border: none;
     color: #e63946; font-size: .72rem; font-weight: 700; cursor: pointer; font-family: inherit;
@@ -179,6 +189,8 @@
     width: 46px; height: 46px; object-fit: cover; border-radius: 8px;
     border: 1px solid #eee; flex-shrink: 0; background: #f0f0f0;
   }
+  .fila-thumbs { display: flex; gap: .3rem; flex-wrap: wrap; }
+  .fila-thumbs .fila-thumb { width: 42px; height: 42px; }
   .fila-link { flex: 1; min-width: 160px; font-size: .78rem; font-weight: 700; color: #333; word-break: break-all; }
   .fila-link a { color: #e63946; text-decoration: none; }
   .fila-link a:hover { text-decoration: underline; }
@@ -293,13 +305,13 @@
         <button class="assist-btn" onclick="copiarPrompt()">📋 Copiar prompt</button>
       </div>
       <div class="assist-print" id="assist-print" onclick="document.getElementById('assist-file').click()">
-        <input type="file" id="assist-file" accept="image/*" onchange="assistFile(this)">
-        <span class="p-txt" id="assist-print-txt">📷 Opcional: colar print do anúncio (Ctrl+V aqui) ou clicar para escolher arquivo</span>
+        <input type="file" id="assist-file" accept="image/*" multiple onchange="assistFile(this)">
+        <span class="p-txt" id="assist-print-txt">📷 Opcional: colar prints do anúncio (Ctrl+V aqui) ou clicar para escolher arquivos</span>
       </div>
       <div class="assist-preview" id="assist-preview">
-        <img id="assist-img" alt="print">
-        <button class="p-clear" onclick="assistClear()">✕ Remover imagem</button>
-        <button class="p-clear" id="assist-copy-img" onclick="copiarImagemClick()" style="color:#3ECF8E">🖼️ Copiar imagem (para colar no chat)</button>
+        <div class="prints-grid" id="assist-prints"></div>
+        <button class="p-clear" onclick="assistClear()">✕ Remover todos os prints</button>
+        <button class="p-clear" id="assist-copy-img" onclick="copiarImagemClick()" style="color:#3ECF8E">🖼️ Copiar print selecionado (para colar no chat)</button>
       </div>
       <div class="assist-hint">Cola o link (e opcionalmente um print do anúncio), clica em <b>Copiar prompt</b> e envia o texto no chat do assistente (opencode). Se tiver imagem, clica em <b>Copiar imagem</b> e cola também. Ele gera os campos e cadastra direto no banco.</div>
       <div class="assist-ok" id="assist-ok">✓ Prompt copiado! Cole no chat do assistente (opencode).</div>
@@ -337,12 +349,12 @@
         <input type="text" class="form-select" id="fila-link" placeholder="https://vt.tiktok.com/..." autocomplete="off">
       </div>
       <div class="form-field fila-file">
-        <label for="fila-file-input">📷 Adicionar print do anúncio (opcional)</label>
-        <input type="file" id="fila-file-input" accept="image/*" onchange="filaFile(this)">
+        <label for="fila-file-input">📷 Adicionar prints do anúncio (opcional)</label>
+        <input type="file" id="fila-file-input" accept="image/*" multiple onchange="filaFile(this)">
       </div>
       <div class="assist-preview" id="fila-preview" style="display:none">
-        <img id="fila-img" alt="print">
-        <button class="p-clear" onclick="filaClear()">✕ Remover imagem</button>
+        <div class="prints-grid" id="fila-prints"></div>
+        <button class="p-clear" onclick="filaClear()">✕ Remover todos os prints</button>
       </div>
     </div>
     <div class="modal-footer">
@@ -425,7 +437,7 @@
 let todosProdutos = []
 let editandoId = null
 let filaProdutos = []
-let filaImgBlob = null
+let filaPrints = []  // array de base64 strings
 let filtroCategoria = ''
 
 const PROMPT_BASE = `Analise o produto deste link no TikTok Shop e gere o cadastro completo dele no formato EXATO abaixo, em português do Brasil. Acesse o link, se não conseguir, pesquise o produto na web. Não invente o que não conseguir confirmar.
@@ -448,13 +460,14 @@ SEMPRE com os cabeçalhos NOME:, DESCRICAO:, RESUMO:, PROBLEMAS:, BENEFICIOS:, C
 Link do produto:
 `
 
-let assistImgBlob = null
+let assistPrints = []   // array de Blobs
+let assistSel = 0       // print selecionado para copiar
 
 function copiarPrompt() {
   const link = document.getElementById('assist-link').value.trim()
   if (!link) { alert('Cole o link do produto primeiro'); return }
   let texto = PROMPT_BASE + link
-  if (assistImgBlob) texto += '\n\n(Anexei um print do anúncio. Analise a imagem junto do link.)'
+  if (assistPrints.length) texto += `\n\n(Enviarei ${assistPrints.length} print${assistPrints.length > 1 ? 's' : ''} deste anúncio logo abaixo. Analise as imagens junto do link.)`
   copiarTexto(texto).then(r => {
     const ok = document.getElementById('assist-ok')
     ok.style.display = r ? 'block' : 'none'
@@ -463,8 +476,10 @@ function copiarPrompt() {
 }
 
 function copiarImagemClick() {
+  if (!assistPrints.length) { alert('Nenhum print adicionado'); return }
   const el = document.getElementById('assist-img-ok')
-  copiarImagem(assistImgBlob).then(r => {
+  copiarImagem(assistPrints[assistSel]).then(r => {
+    el.textContent = r ? `✓ Print ${assistSel + 1}/${assistPrints.length} copiado! Cole no chat do assistente.` : ''
     el.style.display = r ? 'block' : 'none'
     if (!r) alert('Não foi possível copiar a imagem. Tire um print e cole aqui no chat.')
   })
@@ -493,61 +508,84 @@ function copiarImagem(blob) {
 }
 
 function assistFile(input) {
-  const f = input.files && input.files[0]
-  if (!f) return
-  f.arrayBuffer().then(buf => {
-    assistImgBlob = new Blob([buf], { type: f.type })
-    mostrarPreview(assistImgBlob)
-  })
+  const files = input.files
+  if (!files || !files.length) return
+  for (const f of files) {
+    if (f.type && f.type.startsWith('image/')) {
+      assistPrints.push(f)
+      assistSel = assistPrints.length - 1
+    }
+  }
+  input.value = ''
+  renderAssistPrints()
 }
 
-function mostrarPreview(blob) {
-  const url = URL.createObjectURL(blob)
-  const img = document.getElementById('assist-img')
-  img.onload = () => URL.revokeObjectURL(url)
-  img.src = url
-  document.getElementById('assist-preview').style.display = 'block'
-  document.getElementById('assist-print').classList.add('p-has')
-  document.getElementById('assist-print-txt').textContent = '✓ Print adicionado — clique em "Copiar prompt" para copiar texto + imagem'
+function renderAssistPrints() {
+  const el = document.getElementById('assist-prints')
+  el.innerHTML = assistPrints.map((b, i) => `
+    <div class="print-item${i === assistSel ? ' sel' : ''}">
+      <img src="${URL.createObjectURL(b)}" alt="print ${i + 1}" onclick="selecionarPrint(${i})">
+      <button class="print-del" onclick="event.stopPropagation();removerPrint(${i})">✕</button>
+    </div>`).join('')
+  document.getElementById('assist-preview').style.display = assistPrints.length ? 'block' : 'none'
+  document.getElementById('assist-print').classList.toggle('p-has', assistPrints.length > 0)
+  document.getElementById('assist-print-txt').textContent = assistPrints.length
+    ? `✓ ${assistPrints.length} print${assistPrints.length > 1 ? 's' : ''} — clique num print para selecionar e copiar`
+    : '📷 Opcional: colar prints do anúncio (Ctrl+V aqui) ou clicar para escolher arquivos'
+  const copiar = document.getElementById('assist-copy-img')
+  copiar.style.display = assistPrints.length ? 'block' : 'none'
+}
+
+function selecionarPrint(i) {
+  assistSel = i
+  renderAssistPrints()
+}
+
+function removerPrint(i) {
+  assistPrints.splice(i, 1)
+  if (assistSel >= assistPrints.length) assistSel = Math.max(0, assistPrints.length - 1)
+  renderAssistPrints()
 }
 
 function assistClear() {
-  assistImgBlob = null
-  document.getElementById('assist-img').src = ''
-  document.getElementById('assist-preview').style.display = 'none'
-  document.getElementById('assist-print').classList.remove('p-has')
-  document.getElementById('assist-print-txt').textContent = '📷 Opcional: colar print do anúncio (Ctrl+V aqui) ou clicar para escolher arquivo'
+  assistPrints = []
+  assistSel = 0
+  renderAssistPrints()
   document.getElementById('assist-file').value = ''
 }
 
 document.getElementById('assist-print').addEventListener('paste', e => {
   const itens = e.clipboardData && e.clipboardData.items
   if (!itens) return
+  let added = 0
   for (const it of itens) {
     if (it.type && it.type.startsWith('image/')) {
       const blob = it.getAsFile()
       if (blob) {
-        assistImgBlob = blob
-        mostrarPreview(blob)
-        e.preventDefault()
+        assistPrints.push(blob)
+        assistSel = assistPrints.length - 1
+        added++
       }
     }
   }
+  if (added) { e.preventDefault(); renderAssistPrints() }
 })
 
 document.getElementById('assist-link').addEventListener('paste', e => {
   const itens = e.clipboardData && e.clipboardData.items
   if (!itens) return
+  let added = 0
   for (const it of itens) {
     if (it.type && it.type.startsWith('image/')) {
       const blob = it.getAsFile()
       if (blob) {
-        assistImgBlob = blob
-        mostrarPreview(blob)
-        e.preventDefault()
+        assistPrints.push(blob)
+        assistSel = assistPrints.length - 1
+        added++
       }
     }
   }
+  if (added) { e.preventDefault(); renderAssistPrints() }
 })
 
 // === FILA DE CADASTRO ===
@@ -574,23 +612,29 @@ function renderFila() {
     el.innerHTML = '<div class="fila-vazio">Fila vazia. Vai acumulando os links aqui pelo celular e manda tudo de uma vez no computador.</div>'
     return
   }
-  el.innerHTML = filaProdutos.map(f => `
+  el.innerHTML = filaProdutos.map(f => {
+    const prints = f.prints && f.prints.length ? f.prints : (f.print_base64 ? [f.print_base64] : [])
+    const thumbs = prints.length
+      ? `<div class="fila-thumbs">${prints.map((p, i) => `<img class="fila-thumb" src="${p}" alt="print ${i + 1}" title="Print ${i + 1}">`).join('')}</div>`
+      : `<div class="fila-thumb"></div>`
+    return `
     <div class="fila-item">
-      ${f.print_base64 ? `<img class="fila-thumb" src="${f.print_base64}" alt="print">` : `<div class="fila-thumb"></div>`}
+      ${thumbs}
       <div class="fila-link">
         <a href="${esc(f.link)}" target="_blank" rel="noopener">${esc(f.link)}</a>
-        <span class="data">${new Date(f.created_at).toLocaleString('pt-BR')}</span>
+        <span class="data">${new Date(f.created_at).toLocaleString('pt-BR')}${prints.length ? ` · ${prints.length} print${prints.length > 1 ? 's' : ''}` : ''}</span>
       </div>
       <div class="fila-btns">
         <button class="fila-mini" onclick="copiarFilaItem('${f.id}')" title="Copiar prompt único">📋 1</button>
-        ${f.print_base64 ? `<button class="fila-mini img" onclick="copiarFilaImg('${f.id}')" title="Copiar imagem do print">🖼️</button>` : ''}
+        ${prints.length ? `<button class="fila-mini img" onclick="copiarFilaImg('${f.id}')" title="Copiar prints (abra cada um no chat)">🖼️ ${prints.length}</button>` : ''}
         <button class="fila-mini del" onclick="excluirFila('${f.id}')" title="Remover">🗑</button>
       </div>
-    </div>`).join('')
+    </div>`
+  }).join('')
 }
 
 function abrirAddFila() {
-  filaImgBlob = null
+  filaPrints = []
   document.getElementById('fila-link').value = ''
   filaClear()
   document.getElementById('fila-link').focus()
@@ -598,85 +642,105 @@ function abrirAddFila() {
 }
 
 function filaFile(input) {
-  const f = input.files && input.files[0]
-  if (!f) return
-  f.arrayBuffer().then(buf => {
-    filaImgBlob = new Blob([buf], { type: f.type })
-    filaMostrarPreview(f.type.slice(0, 5) === 'image' ? filaImgBlob : null)
-  })
+  const files = input.files
+  if (!files || !files.length) return
+  for (const f of files) {
+    if (f.type && f.type.startsWith('image/')) {
+      const leitor = new FileReader()
+      leitor.onload = () => {
+        filaPrints.push(leitor.result)
+        renderFilaPrints()
+      }
+      leitor.readAsDataURL(f)
+    }
+  }
+  input.value = ''
 }
 
-function filaMostrarPreview(blob) {
+function renderFilaPrints() {
   const wrap = document.getElementById('fila-preview')
-  const img = document.getElementById('fila-img')
-  if (!blob) { wrap.style.display = 'none'; img.src = ''; return }
-  const url = URL.createObjectURL(blob)
-  img.onload = () => URL.revokeObjectURL(url)
-  img.src = url
-  wrap.style.display = 'block'
+  const el = document.getElementById('fila-prints')
+  el.innerHTML = filaPrints.map((p, i) => `
+    <div class="print-item">
+      <img src="${p}" alt="print ${i + 1}">
+      <button class="print-del" onclick="event.stopPropagation();removerFilaPrint(${i})">✕</button>
+    </div>`).join('')
+  wrap.style.display = filaPrints.length ? 'block' : 'none'
+}
+
+function removerFilaPrint(i) {
+  filaPrints.splice(i, 1)
+  renderFilaPrints()
 }
 
 function filaClear() {
-  filaImgBlob = null
+  filaPrints = []
   const wrap = document.getElementById('fila-preview')
   wrap.style.display = 'none'
-  document.getElementById('fila-img').src = ''
+  document.getElementById('fila-prints').innerHTML = ''
   document.getElementById('fila-file-input').value = ''
 }
 
 async function salvarFila() {
   const link = document.getElementById('fila-link').value.trim()
   if (!link) { alert('Cole o link do produto'); return }
-  let base64 = ''
-  if (filaImgBlob) {
-    const leitor = new FileReader()
-    base64 = await new Promise(res => {
-      leitor.onload = () => res(leitor.result)
-      leitor.readAsDataURL(filaImgBlob)
-    })
-  }
   const session = await getSession()
   if (!session) return
   const { error } = await _supabase
     .from('fila_produtos')
-    .insert({ user_id: session.user.id, link, print_base64: base64 })
+    .insert({ user_id: session.user.id, link, prints: filaPrints })
   if (error) { mostrarErro(error.message); return }
   fecharModal('modal-add-fila')
+  filaPrints = []
   await carregarFila()
 }
 
 async function copiarFilaItem(id) {
   const f = filaProdutos.find(x => x.id === id)
   if (!f) return
-  copiarTexto(PROMPT_BASE + f.link + (f.print_base64 ? '\n\n(Anexei o print deste anúncio. Analise a imagem junto do link.)' : ''))
+  const prints = printCount(f)
+  copiarTexto(PROMPT_BASE + f.link + (prints ? `\n\n(Anexei o print deste anúncio. Analise a imagem junto do link.)` : ''))
   mostrarCopiado('prompt único')
+}
+
+function printCount(f) {
+  return (f.prints && f.prints.length) ? f.prints.length : (f.print_base64 ? 1 : 0)
 }
 
 async function copiarFilaImg(id) {
   const f = filaProdutos.find(x => x.id === id)
-  if (!f || !f.print_base64) return
-  const blob = await (await fetch(f.print_base64)).blob()
-  const r = await copiarImagem(blob)
+  if (!f) return
+  const prints = (f.prints && f.prints.length) ? f.prints : (f.print_base64 ? [f.print_base64] : [])
+  if (!prints.length) return
+  let ok = true
+  let copiados = 0
+  for (let i = 0; i < prints.length; i++) {
+    const blob = await (await fetch(prints[i])).blob()
+    const r = await copiarImagem(blob)
+    if (r) { copiados++ } else { ok = false }
+    if (i < prints.length - 1) await new Promise(res => setTimeout(res, 120))
+  }
   const el = document.getElementById('assist-img-ok')
-  el.style.display = r ? 'block' : 'none'
-  if (!r) alert('Não foi possível copiar a imagem.')
+  el.textContent = ok ? `✓ ${copiados} print${copiados > 1 ? 's' : ''} copiado${copiados > 1 ? 's' : ''} — cole cada um no chat.` : ''
+  el.style.display = ok ? 'block' : 'none'
+  if (!ok) alert('Não foi possível copiar todos os prints.')
 }
 
 async function copiarFilaTudo() {
   if (!filaProdutos.length) { alert('Fila vazia'); return }
   const itens = filaProdutos.map((f, i) => {
-    const comPrint = f.print_base64 ? ' 📷(print anexado)' : ''
+    const comPrint = printCount(f) ? ` 📷(print${printCount(f) > 1 ? 's' : ''} anexado${printCount(f) > 1 ? 's' : ''})` : ''
     return `${i + 1}. ${f.link}${comPrint}`
   }).join('\n')
   let texto = 'Analise e cadastre os produtos dos links abaixo com o MESMO formato dos campos NOME, DESCRICAO, RESUMO, PROBLEMAS, BENEFICIOS, CARACTERISTICAS, DIFERENCIAIS, TESTES, MOMENTOSWOW, PUBLICOIDEAL, OBJECOES e CURIOSIDADES, em portugues do Brasil, 1 item por linha, sem numeros e sem bullets. Nao invente nada; se nao der para saber, escreva "Informacao nao visivel".'
   texto += '\n\n' + itens
-  if (filaProdutos.some(f => f.print_base64)) {
+  if (filaProdutos.some(f => printCount(f))) {
     texto += '\n\n(Os prints marcados com 📷 serao enviados como imagens logo abaixo.)'
   }
   const r = await copiarTexto(texto)
   const el = document.getElementById('assist-ok')
   el.style.display = r ? 'block' : 'none'
-  if (r && filaProdutos.some(f => f.print_base64)) {
+  if (r && filaProdutos.some(f => printCount(f))) {
     alert('Prompt copiado! Agora copie cada 🖼️ dos itens com print e cole aqui no chat.')
   }
 }
