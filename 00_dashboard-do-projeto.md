@@ -214,6 +214,22 @@ Dashboard (html/index.html)
 
 ## 6. DECISOES E HISTORICO DE AVANCOS
 
+### 11/09/2026 — Menu Lateral com Toggle + Pagina Principal Enxuta
+
+- `html/index.html` reorganizado: pagina principal agora mostra apenas 3 opcoes — **Missões**, **Ganchos** e **Produtos** (renomeado de "Produtos DB")
+- Criado menu lateral (drawer) com **toggle** (botao hamburguer ☰ no canto superior direito): abre painel deslizante com as demais ferramentas (ROTEIRO, PRODUTOS/Catalogo, CONTEUDOS, Gerenciar Produtos, Montar Roteiro) e os documentos do projeto
+- Drawer fecha pelo botao ✕ ou clicando no backdrop; botao vira ✕ enquanto aberto
+- ROTEIRO, PRODUTOS (Catalogo) e CONTEUDOS sairam do grid principal e foram para o drawer
+- Dashboard e espelho `html/` atualizados
+
+### 11/09/2026 — Menu Lateral (Drawer) + Pagina Principal Enxuta
+
+- Criado menu lateral com **toggle** (hamburguer ☰ no canto superior direito) na pagina principal
+- **Drawer deslizante** com todas as outras opcoes existentes: ROTEIRO, PRODUTOS (Catalogo), CONTEUDOS, Gerenciar Produtos (App), Montar Roteiro (App) + todos os documentos do projeto
+- Pagina principal agora tem **apenas 3 opcoes**: Missões, Ganchos e **Produtos** (ex-"Produtos DB", renomeado)
+- Drawer fecha por: botao ✕ no canto, clique no backdrop ou toggle de novo (icon troca ☰/✕)
+- `html/index.html` atualizado
+
 ### 10/09/2026 — Produtos DB: Categorias, Lista e Fila de Cadastro
 
 - Coluna `categoria` adicionada a tabela `produtos` (migracao `html/sql/produtos-categoria.sql`); schema base atualizado em `html/sql/produtos.sql`
