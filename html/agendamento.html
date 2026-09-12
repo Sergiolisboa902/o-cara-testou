@@ -219,7 +219,7 @@
         const cj = chaveDia(d);
         HORAS.forEach(h => {
           for (let s = 0; s < porHora; s++) {
-            linhas.push({ user_id: user.id, schedule_date: cj, hour: h, slot_index: s, ativo: true, status: 'agendado' });
+            linhas.push({ user_id: user.id, schedule_date: cj, hour: h, slot_index: s, ativo: false, status: 'agendado' });
           }
         });
       }
