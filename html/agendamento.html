@@ -77,6 +77,8 @@
   .day-stats { display: flex; gap: 1rem; font-size: .7rem; color: #777; }
   .day-stats b { color: #fff; }
   .day-stats .vaz { color: #555; }
+  .day-del { padding: .35rem .65rem; font-size: .7rem; border-color: #5a2a2a; }
+  .day-del:hover { background: #3a1d1d; border-color: #e63946; }
 
   .hours-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .75rem; padding: .85rem 1rem; }
   .hour-block { display: flex; flex-direction: column; gap: .4rem; }
@@ -112,7 +114,6 @@
   <a href="index.html" class="btn back" title="Voltar para a página principal">← Voltar</a>
   <h1>📅 Planejador de Postagens</h1>
   <div class="spacer"></div>
-  <button class="btn primary" id="btnSalvar">💾 Salvar tudo</button>
 </div>
 
 <main>
@@ -278,6 +279,7 @@
             <span>agendado <b>${agendado}</b></span>
             <span>postado <b>${postado}</b></span>
           </div>
+          <button class="btn day-del" data-excluir-dia="${cj}" title="Excluir este dia">🗑 Excluir dia</button>
         </div>
         <div class="hours-grid">
           ${passado ? `<div class="cx-vazia" style="padding:.6rem;font-size:.72rem">🔒 Consulta — dias passados são somente leitura.</div>` : horasHTML}
@@ -302,6 +304,28 @@
         el.classList.toggle('postado', s.status === 'postado');
       });
     });
+    document.querySelectorAll('[data-excluir-dia]').forEach(btn => {
+      btn.addEventListener('click', () => excluirDia(btn.dataset.excluirDia));
+    });
+  }
+
+  async function excluirDia(cj) {
+    if (!confirm('Excluir o dia ' + cj + '? Os slots somem da tela e do banco.')) return;
+    for (const k of [...slots.keys()]) {
+      if (k === cj || k.startsWith(cj + '|')) slots.delete(k);
+    }
+    try {
+      const { data: { user } } = await sb.auth.getUser();
+      if (user) {
+        const { error } = await sb.from('post_schedule').delete().eq('user_id', user.id).eq('schedule_date', cj);
+        if (error) throw error;
+      }
+      fmtToast('🗑 Dia ' + cj + ' excluído.');
+    } catch (e) {
+      console.error(e);
+      fmtToast('Excluído na tela; erro no banco: ' + (e.message || 'desconhecido'), true);
+    }
+    desenhar();
   }
 
   let slotsDosDias = new Map();
@@ -327,7 +351,7 @@
   }
 
   async function salvar() {
-    const b = $('btnSalvar');
+    const b = $('btnGerar');
     b.disabled = true;
     try {
       const { data: { user } } = await sb.auth.getUser();
@@ -353,8 +377,7 @@
     }
   }
 
-  $('btnGerar').addEventListener('click', () => { gerar(); });
-  $('btnSalvar').addEventListener('click', () => { salvar(); });
+  $('btnGerar').addEventListener('click', () => { gerar(); salvar(); });
   $('slotsPerHour').addEventListener('change', () => { $('bannerTxt').innerHTML = compostarMeta(); });
 
   if (!$('startDate').value) {
