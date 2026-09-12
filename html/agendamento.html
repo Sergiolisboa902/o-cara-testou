@@ -215,6 +215,7 @@
     const qtd = parseInt($('dayCount').value, 10);
     const porHora = parseInt($('slotsPerHour').value, 10);
     const diaAtual = hoje();
+    const anteriores = new Map(slots); // preserva slots já marcados como postado
     slots.clear();
 
     for (let i = 0; i < qtd; i++) {
@@ -222,7 +223,9 @@
       const cj= chaveDia(d);
       HORAS.forEach(h => {
         for (let s = 0; s < porHora; s++) {
-          slots.set(cj + '|' + h + '|' + s, { chaveDia: cj, hora: h, idx: s, status: 'agendado' });
+          const k = cj + '|' + h + '|' + s;
+          const ant = anteriores.get(k);
+          slots.set(k, { chaveDia: cj, hora: h, idx: s, status: (ant && ant.status === 'postado') ? 'postado' : 'agendado' });
         }
       });
       // dias passados viram somente leitura
