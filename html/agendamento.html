@@ -251,8 +251,8 @@
       const d = parseChave(cj);
       const ehHoje = cj === diaAtual;
       const passado = cj < diaAtual;
-      const ativos = [...slots.values()].filter(s => s.chaveDia === cj && s.ativo).length;
-      const inativos = [...slots.values()].filter(s => s.chaveDia === cj && !s.ativo).length;
+      const total = [...slots.values()].filter(s => s.chaveDia === cj).length;
+      const agendados = [...slots.values()].filter(s => s.chaveDia === cj && s.ativo).length;
 
       const horasHTML = HORAS.map(h => {
         const ss = [...slots.values()].filter(s => s.chaveDia === cj && s.hora === h);
@@ -271,9 +271,8 @@
             ${passado ? '<span class="today-badge" style="background:#444">passado</span>' : ''}
           </div>
           <div class="day-stats">
-            <span>meta <b>${[...slots.values()].filter(s => s.chaveDia === cj).length}</b></span>
-            <span>ativos <b>${ativos}</b></span>
-            <span>inativos <b>${inativos}</b></span>
+            <span>Meta <b>${total}</b></span>
+            <span>Agendado <b data-agendado>${agendados}</b></span>
           </div>
           <button class="btn day-del" data-excluir-dia="${cj}" title="Excluir este dia">🗑 Excluir dia</button>
         </div>
@@ -295,6 +294,10 @@
         const s = slots.get(k);
         if (!s) return;
         s.ativo = inp.checked; // true = ativo, false = inativo
+        const card = inp.closest('.day-card');
+        const agEl = card ? card.querySelector('[data-agendado]') : null;
+        const refreshAg = () => { if (agEl) agEl.textContent = [...slots.values()].filter(x => x.chaveDia === s.chaveDia && x.ativo).length; };
+        refreshAg();
         try {
           const { data: { user } } = await sb.auth.getUser();
           if (!user) throw new Error('Login necessário — acesse pela página principal.');
@@ -307,6 +310,7 @@
           console.error(e);
           s.ativo = !inp.checked; // reverte o visual se falhar
           inp.checked = s.ativo;
+          refreshAg();
           fmtToast('Erro ao salvar: ' + (e.message || 'desconhecido'), true);
         }
       });
