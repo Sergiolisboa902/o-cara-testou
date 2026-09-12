@@ -21,6 +21,8 @@
     cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: .4rem;
   }
   .btn:hover { border-color: #e63946; background: #222; }
+  .back-btn { text-decoration: none; }
+  .back-btn:hover { border-color: #4d9fff; background: #1b2733; }
   .btn.primary { background: #e63946; border-color: #e63946; }
   .btn.primary:hover { background: #ff4d5a; }
   .controls { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
@@ -85,6 +87,7 @@
 </head>
 <body>
 <div class="topbar">
+  <a href="index.html" class="btn back-btn" title="Voltar para a página principal">← Voltar</a>
   <h1>📅 Planejador de Postagens</h1>
   <div class="spacer"></div>
   <div class="controls">
