@@ -160,7 +160,7 @@
 
   const SUPABASE_URL = (window.SUPABASE_URL || '').trim();
   const SUPABASE_ANON_KEY = (window.SUPABASE_ANON_KEY || '').trim();
-  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEYCrossRef);
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     document.getElementById('bannerTxt').textContent = 'Configuração ausente — verifique o config.js';
