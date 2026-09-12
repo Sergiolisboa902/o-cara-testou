@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Planejador de Postagens — O Cara Testou</title>
+<title>Planejador de Postagens â€” O Cara Testou</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -66,7 +66,7 @@
   .slot input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
   .slot .check { width: 18px; height: 18px; border: 2px solid #444; border-radius: 4px; display: grid; place-items: center; transition: all .15s; }
   .slot input:checked + .check { background: #e63946; border-color: #e63946; color: #fff; }
-  .slot input:checked + .check::after { content: '✓'; font-size: .7rem; font-weight: 800; }
+  .slot input:checked + .check::after { content: 'âœ“'; font-size: .7rem; font-weight: 800; }
   .slot.posted { background: #1a2a1a; border-color: #2a5a2a; }
   .slot.posted .check { background: #2a7a2a; border-color: #2a7a2a; }
 
@@ -87,8 +87,8 @@
 </head>
 <body>
 <div class="topbar">
-  <a href="index.html" class="btn back-btn" title="Voltar para a página principal">← Voltar</a>
-  <h1>📅 Planejador de Postagens</h1>
+  <a href="index.html" class="btn back-btn" title="Voltar para a pÃ¡gina principal">â† Voltar</a>
+  <h1>ðŸ“… Planejador de Postagens</h1>
   <div class="spacer"></div>
   <div class="controls">
     <div class="control-group">
@@ -102,7 +102,7 @@
       </select>
     </div>
     <div class="control-group">
-      <label>Válido a partir de</label>
+      <label>VÃ¡lido a partir de</label>
       <input type="date" id="densityDate" title="A partir desta data a nova densidade vale">
     </div>
     <button class="btn primary" id="applyDensity">Aplicar densidade</button>
@@ -116,8 +116,8 @@
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-const SUPABASE_URL = 'https://kkgbvgobvwewbethhhnf.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrZ2J2Z29idndld2JldGhobmYiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc1NzY5OTYwNSwiZXhwIjoyMDczMjc1NjA1fQ.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // substituir pela anon key real
+const SUPABASE_URL = 'https://kkgbvgobvwewbethhnf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrZ2J2Z29idndld2JldGhobmYiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc1NzY5OTYwNSwiZXhwIjoyMDczMjc1NjA1fQ.0bVghZ0duVHnSCVsq02ASWra415-OwyED6Fnp85d6yQ';
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const mainEl = document.getElementById('main');
@@ -141,7 +141,7 @@ function isToday(d) { return d === todayISO(); }
 async function authGate() {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) {
-    mainEl.innerHTML = '<div class="empty-state"><div class="icon">🔒</div><p>Faça login para acessar o planejador.</p></div>';
+    mainEl.innerHTML = '<div class="empty-state"><div class="icon">ðŸ”’</div><p>FaÃ§a login para acessar o planejador.</p></div>';
     return false;
   }
   user = session.user;
@@ -173,7 +173,7 @@ function getSlotsForDate(date) {
   for (const rule of densityRules) {
     if (date >= rule.from_date) return rule.slots_per_hour;
   }
-  return 2; // padrão
+  return 2; // padrÃ£o
 }
 
 function ensureDaySlots(date) {
@@ -260,7 +260,7 @@ function renderDensityBanner() {
   container.className = 'density-banner';
   container.innerHTML = `
     <span>Densidade ativa a partir de datas:</span>
-    ${densityRules.map(r => `<span class="badge">${r.from_date} → ${r.slots_per_hour} slots/h</span>`).join(' ')}
+    ${densityRules.map(r => `<span class="badge">${r.from_date} â†’ ${r.slots_per_hour} slots/h</span>`).join(' ')}
   `;
   mainEl.prepend(container);
 }
@@ -302,7 +302,7 @@ saveBtn.addEventListener('click', async () => {
   saveBtn.disabled = true; saveBtn.textContent = 'Salvando...';
   const upserts = [];
   for (const [key, info] of scheduleMap) {
-    if (!info.id && !info.posted) continue; // não salva slots vazios não marcados
+    if (!info.id && !info.posted) continue; // nÃ£o salva slots vazios nÃ£o marcados
     const [date, hour, slot] = key.split('-').map((v,i)=> i===0?v:parseInt(v,10));
     upserts.push({
       user_id: user.id,
