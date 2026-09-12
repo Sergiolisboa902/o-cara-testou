@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📅 Planejador de Postagens — O Cara Testou</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #111; color: #fff; min-height: 100vh; }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 100; width: 100%;
+    background: #151515; border-bottom: 1px solid #242424;
+    padding: .9rem 1.2rem; display: flex; align-items: center; gap: .9rem; flex-wrap: wrap;
+  }
+  .topbar h1 { font-size: 1.08rem; font-weight: 800; }
+  .topbar .spacer { flex: 1; }
+
+  .btn {
+    background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px;
+    padding: .55rem .95rem; color: #fff; font-weight: 700; font-size: .78rem;
+    cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: .45rem;
+    text-decoration: none; font-family: inherit;
+  }
+  .btn:hover { border-color: #e63946; background: #222; }
+  .btn.back { padding-left: .7rem; }
+  .btn.primary { background: #e63946; border-color: #e63946; }
+  .btn.primary:hover { background: #ff4d5a; }
+  .btn:disabled { opacity: .5; cursor: default; }
+
+  main { padding: 1rem 1.2rem 4rem; max-width: 940px; margin: 0 auto; width: 100%; }
+
+  .controls {
+    display: flex; gap: .85rem; align-items: flex-end; flex-wrap: wrap;
+    background: #151515; border: 1px solid #242424; border-radius: 14px;
+    padding: .95rem 1.1rem; margin-bottom: 1.2rem;
+  }
+  .control-group { display: flex; flex-direction: column; gap: .35rem; }
+  .control-group label { font-size: .66rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .06em; }
+  .control-group select, .control-group input[type="date"] {
+    background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px;
+    padding: .45rem .7rem; color: #fff; font-size: .78rem; font-weight: 600; font-family: inherit;
+  }
+  .control-group input[type="date"] { width: 155px; }
+
+  .density-banner {
+    background: linear-gradient(90deg, #1a1a2e, #15151f); border: 1px solid #2a2a4a;
+    border-radius: 12px; padding: .7rem 1rem; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; font-size: .75rem; font-weight: 600strict;
+  }
+  .density-banner .badge {
+    background: #e63946; color: #fff; font-size: .58rem; font-weight: 800;
+    padding: .15rem .5rem; border-radius: 6px; text-transform: uppercase; letter-spacing: .06em;
+  }
+  .density-banner b { color: #fff; }
+
+  .cx-vazia { text-align: center; padding: 2.6rem 1rem; color: #555; }
+  .cx-vazia .icon { font-size: 2.2rem; opacity: .35; margin-bottom: .6rem; }
+
+  .day-card {
+    background: #151515; border: 1px solid #242424; border-radius: 14px;
+    margin-bottom: 1rem; overflow: hidden;
+  }
+  .day-card.day-past { opacity: .55; }
+  .day-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .8rem 1rem; background: #1a1a1a; border-bottom: 1px solid #242424; gap: .8rem;
+  }
+  .day-title { display: flex; flex-direction: column; gap: .1rem; }
+  .day-title .dow { font-size: .6rem; font-weight: 800; color: #e63946; text-transform: uppercase; letter-spacing: .07em; }
+  .day-title .date { font-size: .95rem; font-weight: 700; }
+  .today-badge {
+    background: #e63946; color: #fff; font-size: .55rem; font-weight: 800;
+    padding: .12rem .45rem; border-radius: 5px; text-transform: uppercase; align-self: flex-start;
+  }
+  .day-stats { display: flex; gap: 1rem; font-size: .7rem; color: #777; }
+  .day-stats b { color: #fff; }
+  .day-stats .vaz { color: #555; }
+
+  .hours-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .75rem; padding: .85rem 1rem; }
+  .hour-block { display: flex; flex-direction: column; gap: .4rem; }
+  .hour-label { font-size: .66rem; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: .05em; }
+  .slot-row { display: flex; flex-wrap: wrap; gap: .35rem; }
+  .slot {
+    position: relative; width: 38px; height: 38px; border-radius: 9px;
+    background: #1a1a1a; border: 1px solid #2a2a2a;
+    display: grid; place-items: center; cursor: pointer; transition: all .15s;
+  }
+  .slot:hover { border-color: #e63946; }
+  .slot input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .slot .box {
+    width: 20px; height: 20px; border: 2px solid #444; border-radius: 5px;
+    display: grid; place-items: center; color: transparent; font-size: .66rem; font-weight: 800; transition: all .15s;
+  }
+  .slot input:checked + .box { background: #e63946; border-color: #e63946; color: #fff; }
+  .slot input:checked + .box::after { content: '✓'; }
+  .slot.postado { background: #162a1a; border-color: #2a4a2a; }
+  .slot.postado .box { background: #2a7a2a; border-color: #2a7a2a; color: #fff; }
+  .slot.postado .box::after { content: '✓'; }
+  .slot.postado input { cursor: default; }
+
+  @media (max-width: 480px) {
+    .hours-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+    .slot { width: 34px; height: 34px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html" class="btn back" title="Voltar para a página principal">← Voltar</a>
+  <h1>📅 Planejador de Postagens</h1>
+  <div class="spacer"></div>
+  <button class="btn primary" id="btnSalvar">💾 Salvar tudo</button>
+</div>
+
+<main>
+  <div class="density-banner" id="banner">
+    <span class="badge">Plano</span>
+    <span id="bannerTxt">Carregando…</span>
+  </div>
+
+  <div class="controls">
+    <div class="control-group">
+      <label>Começar em</label>
+      <input type="date" id="startDate">
+    </div>
+    <div class="control-group">
+      <label>Dias</label>
+      <select id="dayCount">
+        <option value="3">3</option>
+        <option value="7" selected>7</option>
+        <option value="14">14</option>
+        <option value="30">30</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Posts por hora</label>
+      <select id="slotsPerHour">
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+    </div>
+    <button class="btn" id="btnGerar">Gerar dias</button>
+  </div>
+
+  <div id="dias"></div>
+</main>
+
+<div id="toast" style="position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%) translateY(160%);background:#1d3a1d;border:1px solid #2a5a2a;color:#9be69b;padding:.6rem 1.1rem;border-radius:10px;font-size:.78rem;font-weight:700;transition:.25s;z-index:300"></div>
+
+<script src="config.js"></script>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  const SUPABASE_URL = (window.SUPABASE_URL || '').trim();
+  const SUPABASE_ANON_KEY = (window.SUPABASE_ANON_KEY || '').trim();
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEYCrossRef);
+
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    document.getElementById('bannerTxt').textContent = 'Configuração ausente — verifique o config.js';
+    throw new Error('Supabase não configurado');
+  }
+
+  const $ = id => document.getElementById(idhed);
+  const HORAS = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+  const diasSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+  const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+
+  const slots = new Map(); // key -> { chaveDia, hora, idx, status }
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function chaveDia(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function parseChave(c) { const p = c.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+  function hoje() { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); }
+  function metaPorDia() { return parseInt($('slotsPerHour').value, 10) * 14; }
+  function compostarMeta() { return 'Meta: <b>' + (parseInt($('slotsPerHour').value, 10) * 14) + '</b> posts/dia · ' + $('slotsPerHour').value + ' por hora × 14h (10h–23h)'; }
+
+  function fmtToast(msg, erro) {
+    const t = $('toast');
+    t.style.background = erro ? '#3a1d1d' : '#1d3a1d';
+    t.style.borderColor = erro ? '#5a2a2a' : '#2a5a2a';
+    t.style.color = erro ? '#ff9b9b' : '#9be69b';
+    t.textContent = msg;
+    t.style.transform = 'translateX(-50%) translateY(0)';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.style.transform = 'translateX(-50%) translateY(160%)', 2600);
+  }
+
+  const slotEl = (s, diaPassado) => {
+    const postado = s.status === 'postado';
+    const bloqueado = diaPassado || postado;
+    return `<label class="slot ${postado ? 'postado' : ''}">
+      <input type="checkbox" data-chave="${s.chaveDia}|${s.hora}|${s.idx}"
+        ${postado ? 'checked' : ''} ${bloqueado ? 'disabled' : ''}>
+      <span class="box"></span>
+    </label>`;
+  };
+
+  function gerar() {
+    const start = $('startDate').value;
+    if (!start) { fmtToast('Escolha a data inicial.', true); return; }
+    const inicio = parseChave(start);
+    const qtd = parseInt($('dayCount').value, 10);
+    const porHora = parseInt($('slotsPerHour').value, 10);
+    const diaAtual = hoje();
+    slots.clear();
+
+    for (let i = 0; i < qtd; i++) {
+      const d = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate() + i);
+      const cj= chaveDia(d);
+      HORAS.forEach(h => {
+        for (let s = 0; s < porHora; s++) {
+          slots.set(cj + '|' + h + '|' + s, { chaveDia: cj, hora: h, idx: s, status: 'agendado' });
+        }
+      });
+      // dias passados viram somente leitura
+      if (d < diaAtual) {
+        HORAS.forEach(h => {
+          for (let s = 0; s < porHora; s++) {
+            const k = cj + '|' + h + '|' + s;
+            const sl = slots.get(k);
+            if (sl && sl.status === 'agendado') sl.status = 'passado';
+          }
+        });
+      }
+    }
+    desenhar();
+  }
+
+  function desenhar() {
+    const container = $('dias');
+    const dias = [...new Set([...slots.keys()].map(k => k.split('|')[0]))].sort();
+    const diaAtual = chaveDia(hoje());
+
+    if (!dias.length) {
+      container.innerHTML = `<div class="cx-vazia"><div class="icon">📅</div>Configure a data e clique em "Gerar dias".</div>`;
+      return;
+    }
+
+    container.innerHTML = dias.map(cj => {
+      const d = parseChave(cj);
+      const ehHoje = cj === diaAtual;
+      const passado = cj < diaAtual;
+      const horaSlots = slotsDosDias.get(cj) || {};
+
+      const total = HORAS.length * [0, ...slots.values()].filter(s => s.chaveDia === cj).length;
+      const postado = [...slots.values()].filter(s => s.chaveDia === cj && s.status === 'postado').length;
+      const contado = [...slots.values()].filter(s => s.chaveDia === cj && s.status !== 'passado').length;
+
+      const horasHTML = HORAS.map(h => {
+        const ss = [...slots.values()].filter(s => s.chaveDia === cj && s.hora === h);
+        return `<div class="hour-block">
+          <div class="hour-label">${pad(h)}h</div>
+          <div class="slot-row">${ss.map(s => slotEl(s, passado)).join('')}</div>
+        </div>`;
+      }).join('');
+
+      return `<div class="day-card ${passado ? 'day-past' : ''}">
+        <div class="day-header">
+          <div class="day-title">
+            <div class="dow">${diasSemana[d.getDay()]}</div>
+            <div class="date">${pad(d.getDate()) + ' de ' + meses[d.getMonth()]}<b>
+          </div>
+          ${ehHoje ? '<span class="today-badge">hoje</span>' : ''}
+          ${passado ? '<span class="today-badge" style="background:#444">passado</span>' : ''}
+          </div>
+        </div>`
+      ).join('');
+      // stats e corpo (corrigido abaixo por montagem sequencial)
+    }).join('');
+
+    // --- segunda passada: corpo dos cartões + stats (JS principal) ---
+    container.innerHTML = dias.map(cj => {
+      const d = parseChave(cj);
+      const ehHoje = cj === diaAtual;
+      const passado = cj < diaAtual;
+      const total = HORAS.length * [0, ...slots.values()].filter(s => s.chaveDia === cj).length;
+      const postado = [...slots.values()].filter(s => s.chaveDia === cj && s.status === 'postado').length;
+      const agendado = [...slots.values()].filter(s => s.chaveDia === cj && s.status === 'agendado').length;
+
+      const horasHTML = HORAS.map(h => {
+        const ss = [...slots.values()].filter(s => s.chaveDia === cj && s.hora === h);
+        return `<div class="hour-block">
+          <div class="hour-label">${pad(h)}h</div>
+          <div class="slot-row">${ss.map(s => slotEl(s, passado)).join('')}</div>
+        </div>`;
+      }).join('');
+
+      return `<div class="day-card ${passado ? 'day-past' : ''}">
+        <div class="day-header">
+          <div class="day-title">
+            <div class="dow">${diasSemana[d.getDay()]}</div>
+            <div class="date">${d.getDate()} de ${meses[d.getMonth()]}${d.getFullYear() ? '' : ''}</div>
+          </div>
+          <div class="day-stats">
+            <span>meta <b>${[0, ...slots.values()].filter(s => s.chaveDia === cj).length}</b></span>
+            <span>agendado <b>${agendado}</b></span>
+            <span>postado <b>${postado}</b></span>
+          </div>
+        </div>
+        <div class="hours-grid">
+          ${passado ? `<div class="cx-vazia" style="padding:.6rem;font-size:.72rem">🔒 Consulta — dias passados são somente leitura.</div>` : horasHTML}
+        </div>
+      </div>`;
+    }).join('');
+
+    vincularSlots();
+    $('bannerTxt').innerHTML = compostarMeta();
+  }
+
+  function vincularSlots() {
+    document.querySelectorAll('.slot input').forEach(inp => {
+      inp.addEventListener('change', () => {
+        const [cjd, h, idx] = inp.dataset.chave.split('|');
+        const k = cjd + '|' + h + '|' + idx;
+        const s = slots.get(k);
+        if (!s || s.status === 'passado' || s.status === 'postado') return;
+        // clique = confirmar postado
+        s.status = inp.checked ? 'postado' : 'agendado';
+        const el = inp.closest('.slot');
+        el.classList.toggle('postado', s.status === 'postado');
+      });
+    });
+  }
+
+  let slotsDosDias = new Map();
+
+  async function carregar() {
+    try {
+      const { data: { user } } = await sb.auth.getUser();
+      if (!user) return;
+      const { data, error } = await sb
+        .from('post_schedule')
+        .select('schedule_date, hour, slot_index, status')
+        .eq('user_id', user.id);
+      if (error) throw error;
+      (data || []).forEach(r => {
+        const k = r.schedule_date + '|' + r.hour + '|' + r.slot_index;
+        const s = slots.get(k);
+        if (s) s.status = r.status;
+      });
+      desenhar();
+    } catch (e) {
+      console.error('carregar:', e);
+    }
+  }
+
+  async function salvar() {
+    const b = $('btnSalvar');
+    b.disabled = true;
+    try {
+      const { data: { user } } = await sb.auth.getUser();
+      if (!user) throw new Error('Login necessário — acesse pela página principal.');
+      const linhas = [...slots.values()]
+        .filter(s => s.status === 'agendado' || s.status === 'postado')
+        .map(s => ({
+          user_id: user.id,
+          schedule_date: s.chaveDia,
+          hour: s.hora,
+          slot_index: s.idx,
+          status: s.status
+        }));
+      if (!linhas.length) throw new Error('Nada para salvar.');
+      const { error } = await sb.from('post_schedule').upsert(linhas);
+      if (error) throw error;
+      fmtToast('💾 Salvo: ' + linhas.length + ' slots.');
+    } catch (e) {
+      console.error(e);
+      fmtToast('Erro: ' + (e.message || 'desconhecido'), true);
+    } finally {
+      b.disabled = false;
+    }
+  }
+
+  $('btnGerar').addEventListener('click', () => { gerar(); });
+  $('btnSalvar').addEventListener('click', () => { salvar(); });
+  $('slotsPerHour').addEventListener('change', () => { $('bannerTxt').innerHTML = compostarMeta(); });
+
+  if (!$('startDate').value) {
+    const t = new Date();
+    $('startDate').value = chaveDia(t);
+  }
+  gerar();
+  carregar();
+</script>
+</body>
+</html>
