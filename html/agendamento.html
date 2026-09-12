@@ -194,52 +194,46 @@
   }
 
   const slotEl = (s, diaPassado) => {
-    const postado = s.status === 'postado';
-    const bloqueado = diaPassado || postado;
-    return `<label class="slot ${postado ? 'postado' : ''}">
+    return `<label class="slot">
       <input type="checkbox" data-chave="${s.chaveDia}|${s.hora}|${s.idx}"
-        ${postado ? 'checked' : ''} ${bloqueado ? 'disabled' : ''}>
+        ${s.ativo ? 'checked' : ''} ${diaPassado ? 'disabled' : ''}>
       <span class="box"></span>
     </label>`;
   };
 
-  function gerar() {
-    console.log('[agendamento] gerar() chamado', {
-      start: $('startDate').value,
-      dias: $('dayCount').value,
-      porHora: $('slotsPerHour').value
-    });
+  async function gerar() {
     const start = $('startDate').value;
     if (!start) { fmtToast('Escolha a data inicial.', true); return; }
+    console.log('[agendamento] gerar() chamado', { start, dias: $('dayCount').value, porHora: $('slotsPerHour').value });
     const inicio = parseChave(start);
     const qtd = parseInt($('dayCount').value, 10);
     const porHora = parseInt($('slotsPerHour').value, 10);
-    const diaAtual = hoje();
-    const anteriores = new Map(slots); // preserva slots já marcados como postado
-    slots.clear();
-
-    for (let i = 0; i < qtd; i++) {
-      const d = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate() + i);
-      const cj= chaveDia(d);
-      HORAS.forEach(h => {
-        for (let s = 0; s < porHora; s++) {
-          const k = cj + '|' + h + '|' + s;
-          const ant = anteriores.get(k);
-          slots.set(k, { chaveDia: cj, hora: h, idx: s, status: (ant && ant.status === 'postado') ? 'postado' : 'agendado' });
-        }
-      });
-      // dias passados viram somente leitura
-      if (d < diaAtual) {
+    const btn = $('btnGerar');
+    btn.disabled = true;
+    try {
+      const { data: { user } } = await sb.auth.getUser();
+      if (!user) throw new Error('Login necessário — acesse pela página principal.');
+      const linhas = [];
+      for (let i = 0; i < qtd; i++) {
+        const d = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate() + i);
+        const cj = chaveDia(d);
         HORAS.forEach(h => {
           for (let s = 0; s < porHora; s++) {
-            const k = cj + '|' + h + '|' + s;
-            const sl = slots.get(k);
-            if (sl && sl.status === 'agendado') sl.status = 'passado';
+            linhas.push({ user_id: user.id, schedule_date: cj, hour: h, slot_index: s, ativo: true, status: 'agendado' });
           }
         });
       }
+      if (!linhas.length) throw new Error('Nada para gerar.');
+      const { error } = await sb.from('post_schedule').upsert(linhas, { onConflict: 'user_id,schedule_date,hour,slot_index', ignoreDuplicates: true });
+      if (error) throw error;
+      fmtToast('💾 Dias enviados ao banco. Recarregando…');
+      await carregar(); // lista sempre vem do banco
+    } catch (e) {
+      console.error(e);
+      fmtToast('Erro: ' + (e.message || 'desconhecido'), true);
+    } finally {
+      btn.disabled = false;
     }
-    desenhar();
   }
 
   function desenhar() {
@@ -257,9 +251,8 @@
       const d = parseChave(cj);
       const ehHoje = cj === diaAtual;
       const passado = cj < diaAtual;
-      const total = HORAS.length * [0, ...slots.values()].filter(s => s.chaveDia === cj).length;
-      const postado = [...slots.values()].filter(s => s.chaveDia === cj && s.status === 'postado').length;
-      const agendado = [...slots.values()].filter(s => s.chaveDia === cj && s.status === 'agendado').length;
+      const ativos = [...slots.values()].filter(s => s.chaveDia === cj && s.ativo).length;
+      const inativos = [...slots.values()].filter(s => s.chaveDia === cj && !s.ativo).length;
 
       const horasHTML = HORAS.map(h => {
         const ss = [...slots.values()].filter(s => s.chaveDia === cj && s.hora === h);
@@ -279,8 +272,8 @@
           </div>
           <div class="day-stats">
             <span>meta <b>${[...slots.values()].filter(s => s.chaveDia === cj).length}</b></span>
-            <span>agendado <b>${agendado}</b></span>
-            <span>postado <b>${postado}</b></span>
+            <span>ativos <b>${ativos}</b></span>
+            <span>inativos <b>${inativos}</b></span>
           </div>
           <button class="btn day-del" data-excluir-dia="${cj}" title="Excluir este dia">🗑 Excluir dia</button>
         </div>
@@ -296,15 +289,26 @@
 
   function vincularSlots() {
     document.querySelectorAll('.slot input').forEach(inp => {
-      inp.addEventListener('change', () => {
+      inp.addEventListener('change', async () => {
         const [cjd, h, idx] = inp.dataset.chave.split('|');
         const k = cjd + '|' + h + '|' + idx;
         const s = slots.get(k);
-        if (!s || s.status === 'passado' || s.status === 'postado') return;
-        // clique = confirmar postado
-        s.status = inp.checked ? 'postado' : 'agendado';
-        const el = inp.closest('.slot');
-        el.classList.toggle('postado', s.status === 'postado');
+        if (!s) return;
+        s.ativo = inp.checked; // true = ativo, false = inativo
+        try {
+          const { data: { user } } = await sb.auth.getUser();
+          if (!user) throw new Error('Login necessário — acesse pela página principal.');
+          const { error } = await sb.from('post_schedule').upsert({
+            user_id: user.id, schedule_date: s.chaveDia, hour: s.hora,
+            slot_index: s.idx, ativo: s.ativo, status: 'agendado'
+          }, { onConflict: 'user_id,schedule_date,hour,slot_index' });
+          if (error) throw error;
+        } catch (e) {
+          console.error(e);
+          s.ativo = !inp.checked; // reverte o visual se falhar
+          inp.checked = s.ativo;
+          fmtToast('Erro ao salvar: ' + (e.message || 'desconhecido'), true);
+        }
       });
     });
     document.querySelectorAll('[data-excluir-dia]').forEach(btn => {
@@ -314,21 +318,17 @@
 
   async function excluirDia(cj) {
     if (!confirm('Excluir o dia ' + cj + '? Os slots somem da tela e do banco.')) return;
-    for (const k of [...slots.keys()]) {
-      if (k === cj || k.startsWith(cj + '|')) slots.delete(k);
-    }
     try {
       const { data: { user } } = await sb.auth.getUser();
-      if (user) {
-        const { error } = await sb.from('post_schedule').delete().eq('user_id', user.id).eq('schedule_date', cj);
-        if (error) throw error;
-      }
+      if (!user) throw new Error('Login necessário — acesse pela página principal.');
+      const { error } = await sb.from('post_schedule').delete().eq('user_id', user.id).eq('schedule_date', cj);
+      if (error) throw error;
       fmtToast('🗑 Dia ' + cj + ' excluído.');
+      await carregar(); // lista sempre vem do banco
     } catch (e) {
       console.error(e);
-      fmtToast('Excluído na tela; erro no banco: ' + (e.message || 'desconhecido'), true);
+      fmtToast('Erro ao excluir: ' + (e.message || 'desconhecido'), true);
     }
-    desenhar();
   }
 
   let slotsDosDias = new Map();
@@ -336,59 +336,40 @@
   async function carregar() {
     try {
       const { data: { user } } = await sb.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        slots.clear();
+        desenhar();
+        fmtToast('Faça login pela página principal para ver seus dias.', true);
+        return;
+      }
       const { data, error } = await sb
         .from('post_schedule')
-        .select('schedule_date, hour, slot_index, status')
-        .eq('user_id', user.id);
+        .select('schedule_date, hour, slot_index, ativo')
+        .eq('user_id', user.id)
+        .order('schedule_date').order('hour').order('slot_index');
       if (error) throw error;
+      slots.clear();
       (data || []).forEach(r => {
         const k = r.schedule_date + '|' + r.hour + '|' + r.slot_index;
-        const s = slots.get(k);
-        if (s) s.status = r.status;
+        slots.set(k, { chaveDia: r.schedule_date, hora: r.hour, idx: r.slot_index, ativo: r.ativo !== false });
       });
       desenhar();
     } catch (e) {
       console.error('carregar:', e);
+      fmtToast('Erro ao carregar do banco: ' + (e.message || 'desconhecido'), true);
     }
   }
 
-  async function salvar() {
-    const b = $('btnGerar');
-    b.disabled = true;
-    try {
-      const { data: { user } } = await sb.auth.getUser();
-      if (!user) throw new Error('Login necessário — acesse pela página principal.');
-      const linhas = [...slots.values()]
-        .filter(s => s.status === 'agendado' || s.status === 'postado')
-        .map(s => ({
-          user_id: user.id,
-          schedule_date: s.chaveDia,
-          hour: s.hora,
-          slot_index: s.idx,
-          status: s.status
-        }));
-      if (!linhas.length) throw new Error('Nada para salvar.');
-      const { error } = await sb.from('post_schedule').upsert(linhas);
-      if (error) throw error;
-      fmtToast('💾 Salvo: ' + linhas.length + ' slots.');
-    } catch (e) {
-      console.error(e);
-      fmtToast('Erro: ' + (e.message || 'desconhecido'), true);
-    } finally {
-      b.disabled = false;
-    }
-  }
+  // (salvar em lote removido — Gerar persiste; toggle do slot salva na hora)
 
-  $('btnGerar').addEventListener('click', () => { gerar(); salvar(); });
+  $('btnGerar').addEventListener('click', () => { gerar(); });
   $('slotsPerHour').addEventListener('change', () => { $('bannerTxt').innerHTML = compostarMeta(); });
 
   if (!$('startDate').value) {
     const t = new Date();
     $('startDate').value = chaveDia(t);
   }
-  gerar();
-  carregar();
+  carregar(); // datas vêm do banco — nada é gerado sozinho ao abrir
 </script>
 </body>
 </html>
