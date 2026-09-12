@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planejador de Postagens — O Cara Testou</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #111; color: #fff; min-height: 100vh; }
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: #151515; border-bottom: 1px solid #242424;
+    padding: .9rem 1.2rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  }
+  .topbar h1 { font-size: 1.1rem; font-weight: 800; }
+  .topbar .spacer { flex: 1; }
+  .btn {
+    background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px;
+    padding: .5rem .9rem; color: #fff; font-weight: 700; font-size: .78rem;
+    cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: .4rem;
+  }
+  .btn:hover { border-color: #e63946; background: #222; }
+  .btn.primary { background: #e63946; border-color: #e63946; }
+  .btn.primary:hover { background: #ff4d5a; }
+  .controls { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+  .control-group { display: flex; align-items: center; gap: .4rem; }
+  .control-group label { font-size: .7rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .06em; }
+  .control-group select, .control-group input[type="date"] {
+    background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px;
+    padding: .4rem .7rem; color: #fff; font-size: .78rem; font-weight: 600;
+  }
+  .control-group input[type="date"] { width: 150px; }
+
+  main { padding: 1.2rem; max-width: 900px; margin: 0 auto; }
+  .day-card {
+    background: #151515; border: 1px solid #242424; border-radius: 14px;
+    margin-bottom: 1rem; overflow: hidden;
+  }
+  .day-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .85rem 1rem; background: #1a1a1a; border-bottom: 1px solid #242424;
+  }
+  .day-title { display: flex; align-items: center; gap: .6rem; }
+  .day-title .dow { font-size: .7rem; font-weight: 800; color: #e63946; text-transform: uppercase; letter-spacing: .06em; }
+  .day-title .date { font-size: .95rem; font-weight: 700; }
+  .day-title .today-badge {
+    background: #e63946; color: #fff; font-size: .55rem; font-weight: 800;
+    padding: .1rem .4rem; border-radius: 4px; text-transform: uppercase;
+  }
+  .day-stats { font-size: .7rem; color: #777; display: flex; gap: 1rem; }
+  .day-stats b { color: #fff; }
+  .day-body { padding: .8rem 1rem; }
+  .hours-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .5rem; }
+  .hour-block { display: flex; flex-direction: column; gap: .3rem; }
+  .hour-label { font-size: .65rem; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: .05em; }
+  .slots { display: flex; flex-wrap: wrap; gap: .3rem; }
+  .slot {
+    position: relative; width: 36px; height: 36px; border-radius: 8px;
+    background: #1a1a1a; border: 1px solid #2a2a2a;
+    display: grid; place-items: center; cursor: pointer; transition: all .15s;
+  }
+  .slot:hover { border-color: #e63946; }
+  .slot input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .slot .check { width: 18px; height: 18px; border: 2px solid #444; border-radius: 4px; display: grid; place-items: center; transition: all .15s; }
+  .slot input:checked + .check { background: #e63946; border-color: #e63946; color: #fff; }
+  .slot input:checked + .check::after { content: '✓'; font-size: .7rem; font-weight: 800; }
+  .slot.posted { background: #1a2a1a; border-color: #2a5a2a; }
+  .slot.posted .check { background: #2a7a2a; border-color: #2a7a2a; }
+
+  .density-banner {
+    background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 10px;
+    padding: .7rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; font-size: .75rem;
+  }
+  .density-banner .badge { background: #e63946; color: #fff; padding: .15rem .5rem; border-radius: 6px; font-weight: 700; font-size: .65rem; }
+
+  .empty-state { text-align: center; padding: 3rem; color: #555; }
+  .empty-state .icon { font-size: 2.5rem; margin-bottom: .8rem; opacity: .4; }
+
+  @media (max-width: 500px) {
+    .hours-grid { grid-template-columns: repeat(4, 1fr); }
+    .slot { width: 32px; height: 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>📅 Planejador de Postagens</h1>
+  <div class="spacer"></div>
+  <div class="controls">
+    <div class="control-group">
+      <label>Slots/hora</label>
+      <select id="slotsSelect" title="Slots por hora a partir da data de corte">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Válido a partir de</label>
+      <input type="date" id="densityDate" title="A partir desta data a nova densidade vale">
+    </div>
+    <button class="btn primary" id="applyDensity">Aplicar densidade</button>
+    <button class="btn" id="addDaysBtn">+ Adicionar dias</button>
+    <button class="btn" id="saveBtn">Salvar tudo</button>
+  </div>
+</div>
+
+<main id="main"></main>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const SUPABASE_URL = 'https://kkgbvgobvwewbethhhnf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrZ2J2Z29idndld2JldGhobmYiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc1NzY5OTYwNSwiZXhwIjoyMDczMjc1NjA1fQ.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // substituir pela anon key real
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const mainEl = document.getElementById('main');
+const slotsSel = document.getElementById('slotsSelect');
+const densityDateEl = document.getElementById('densityDate');
+const applyDensityBtn = document.getElementById('applyDensity');
+const addDaysBtn = document.getElementById('addDaysBtn');
+const saveBtn = document.getElementById('saveBtn');
+
+let user = null;
+let scheduleMap = new Map(); // key: 'YYYY-MM-DD-HH-idx' -> { posted, id }
+let densityRules = []; // { from_date: 'YYYY-MM-DD', slots_per_hour: N } ordenado por from_date desc
+let visibleDays = 30; // quantos dias mostrar inicialmente
+
+function todayISO() { return new Date().toISOString().slice(0,10); }
+function addDays(d, n) { const dt = new Date(d); dt.setDate(dt.getDate()+n); return dt.toISOString().slice(0,10); }
+function fmtDate(d) { return d; }
+function dowLabel(d) { return ['DOM','SEG','TER','QUA','QUI','SEX','SAB'][new Date(d).getDay()]; }
+function isToday(d) { return d === todayISO(); }
+
+async function authGate() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    mainEl.innerHTML = '<div class="empty-state"><div class="icon">🔒</div><p>Faça login para acessar o planejador.</p></div>';
+    return false;
+  }
+  user = session.user;
+  return true;
+}
+
+async function loadSchedule() {
+  const from = todayISO();
+  const to = addDays(from, visibleDays + 60); // carrega um pouco a mais
+  const { data, error } = await sb
+    .from('post_schedule')
+    .select('schedule_date, hour, slot_index, posted, id')
+    .eq('user_id', user.id)
+    .gte('schedule_date', from)
+    .lte('schedule_date', to)
+    .order('schedule_date', { ascending: true })
+    .order('hour', { ascending: true })
+    .order('slot_index', { ascending: true });
+  if (error) { console.error(error); return; }
+  scheduleMap.clear();
+  for (const r of data) {
+    const key = `${r.schedule_date}-${r.hour}-${r.slot_index}`;
+    scheduleMap.set(key, { posted: r.posted, id: r.id });
+  }
+}
+
+function getSlotsForDate(date) {
+  // retorna quantos slots/hora valem para esta data baseado nas densityRules
+  for (const rule of densityRules) {
+    if (date >= rule.from_date) return rule.slots_per_hour;
+  }
+  return 2; // padrão
+}
+
+function ensureDaySlots(date) {
+  const slots = getSlotsForDate(date);
+  for (let h = 0; h <= 23; h++) {
+    for (let s = 0; s < slots; s++) {
+      const key = `${date}-${h}-${s}`;
+      if (!scheduleMap.has(key)) {
+        scheduleMap.set(key, { posted: false, id: null });
+      }
+    }
+  }
+}
+
+function render() {
+  const today = todayISO();
+  let html = '';
+  for (let i = 0; i < visibleDays; i++) {
+    const d = addDays(today, i);
+    ensureDaySlots(d);
+    const slots = getSlotsForDate(d);
+    const totalSlots = 24 * slots;
+    let postedCount = 0;
+    for (let h = 0; h <= 23; h++) {
+      for (let s = 0; s < slots; s++) {
+        const key = `${d}-${h}-${s}`;
+        if (scheduleMap.get(key)?.posted) postedCount++;
+      }
+    }
+    html += `
+      <article class="day-card" data-date="${d}">
+        <header class="day-header">
+          <div class="day-title">
+            <span class="dow">${dowLabel(d)}</span>
+            <span class="date">${d}</span>
+            ${isToday(d) ? '<span class="today-badge">Hoje</span>' : ''}
+          </div>
+          <div class="day-stats">
+            <span>${postedCount}/${totalSlots} postados</span>
+            <span>${slots} slot${slots>1?'s':''}/h</span>
+          </div>
+        </header>
+        <div class="day-body">
+          <div class="hours-grid">
+    `;
+    for (let h = 0; h <= 23; h++) {
+      html += `<div class="hour-block"><div class="hour-label">${String(h).padStart(2,'0')}h</div><div class="slots">`;
+      for (let s = 0; s < slots; s++) {
+        const key = `${d}-${h}-${s}`;
+        const info = scheduleMap.get(key) || { posted: false, id: null };
+        html += `
+          <label class="slot ${info.posted ? 'posted' : ''}" data-key="${key}">
+            <input type="checkbox" ${info.posted ? 'checked' : ''} ${info.id ? '' : 'data-new="true"'} />
+            <span class="check"></span>
+          </label>
+        `;
+      }
+      html += `</div></div>`;
+    }
+    html += `</div></div></article>`;
+  }
+  mainEl.innerHTML = html;
+  bindSlots();
+  renderDensityBanner();
+}
+
+function bindSlots() {
+  document.querySelectorAll('.slot input').forEach(cb => {
+    cb.addEventListener('change', e => {
+      const label = e.target.closest('.slot');
+      const key = label.dataset.key;
+      const posted = e.target.checked;
+      label.classList.toggle('posted', posted);
+      const info = scheduleMap.get(key) || { posted: false, id: null };
+      info.posted = posted;
+      scheduleMap.set(key, info);
+    });
+  });
+}
+
+function renderDensityBanner() {
+  if (densityRules.length === 0) return;
+  const container = document.createElement('div');
+  container.className = 'density-banner';
+  container.innerHTML = `
+    <span>Densidade ativa a partir de datas:</span>
+    ${densityRules.map(r => `<span class="badge">${r.from_date} → ${r.slots_per_hour} slots/h</span>`).join(' ')}
+  `;
+  mainEl.prepend(container);
+}
+
+async function loadDensityRules() {
+  // Por enquanto guardamos em localStorage (pode migrar pra tabela depois)
+  try {
+    const stored = localStorage.getItem('post_schedule_density_rules');
+    if (stored) densityRules = JSON.parse(stored).sort((a,b) => b.from_date.localeCompare(a.from_date));
+  } catch {}
+  // default rule a partir de hoje = 2
+  if (!densityRules.some(r => r.from_date === todayISO())) {
+    densityRules.unshift({ from_date: todayISO(), slots_per_hour: 2 });
+    saveDensityRules();
+  }
+}
+
+function saveDensityRules() {
+  localStorage.setItem('post_schedule_density_rules', JSON.stringify(densityRules));
+}
+
+applyDensityBtn.addEventListener('click', () => {
+  const from = densityDateEl.value || todayISO();
+  const slots = parseInt(slotsSel.value, 10);
+  // remove regras antigas iguais ou posteriores a from
+  densityRules = densityRules.filter(r => r.from_date < from);
+  densityRules.unshift({ from_date: from, slots_per_hour: slots });
+  densityRules.sort((a,b) => b.from_date.localeCompare(a.from_date));
+  saveDensityRules();
+  render();
+});
+
+addDaysBtn.addEventListener('click', () => {
+  visibleDays += 30;
+  render();
+});
+
+saveBtn.addEventListener('click', async () => {
+  saveBtn.disabled = true; saveBtn.textContent = 'Salvando...';
+  const upserts = [];
+  for (const [key, info] of scheduleMap) {
+    if (!info.id && !info.posted) continue; // não salva slots vazios não marcados
+    const [date, hour, slot] = key.split('-').map((v,i)=> i===0?v:parseInt(v,10));
+    upserts.push({
+      user_id: user.id,
+      schedule_date: date,
+      hour,
+      slot_index: slot,
+      posted: info.posted
+    });
+  }
+  if (upserts.length === 0) { saveBtn.disabled = false; saveBtn.textContent = 'Salvar tudo'; return; }
+  const { error } = await sb.from('post_schedule').upsert(upserts, { onConflict: 'user_id,schedule_date,hour,slot_index' });
+  if (error) { console.error(error); alert('Erro ao salvar: ' + error.message); }
+  else {
+    // atualiza ids locais
+    const { data } = await sb.from('post_schedule').select('id,schedule_date,hour,slot_index').eq('user_id', user.id).in('schedule_date', upserts.map(u=>u.schedule_date));
+    if (data) for (const r of data) { const k = `${r.schedule_date}-${r.hour}-${r.slot_index}`; if (scheduleMap.has(k)) scheduleMap.get(k).id = r.id; }
+    alert('Salvo!');
+  }
+  saveBtn.disabled = false; saveBtn.textContent = 'Salvar tudo';
+});
+
+(async function init() {
+  if (!(await authGate())) return;
+  await loadDensityRules();
+  await loadSchedule();
+  render();
+})();
+</script>
+</body>
+</html>

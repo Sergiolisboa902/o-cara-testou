@@ -222,6 +222,15 @@ Dashboard (html/index.html)
 - ROTEIRO, PRODUTOS (Catalogo) e CONTEUDOS sairam do grid principal e foram para o drawer
 - Dashboard e espelho `html/` atualizados
 
+### 11/09/2026 — Agendario de Postagens (post_schedule)
+
+- Nova pagina `html/agendamento.html`: **planejador de postagens** em lista vertical de dias a partir de **hoje** — nada de passado
+- Cada dia mostra as **24 horas (00h–23h)**, e cada hora tem **2 slots (checkboxs)** por padrao — marcou = ja postou (fica verde)
+- **Densidade ajustavel por data de corte**: numa data futura escolhida, o numero de slots/hora aumenta (ex.: a partir de 20/09 passa a 3/hora) — regra salva e reaplicada dali em diante
+- Slots salvos no Supabase em `post_schedule` (user_id, schedule_date, hour, slot_index, posted) — RLS por usuario, autosave ao marcar/desmarcar
+- SQL pronto em `html/sql/post-schedule.sql` (criar tabela + policies + trigger updated_at) — **rodar no Supabase antes de usar**
+- Link **AGENDAMENTO** adicionado ao drawer do `html/index.html`
+
 ### 11/09/2026 — Menu Lateral (Drawer) + Pagina Principal Enxuta
 
 - Criado menu lateral com **toggle** (hamburguer ☰ no canto superior direito) na pagina principal
