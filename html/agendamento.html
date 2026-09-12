@@ -77,6 +77,19 @@
   .day-stats { display: flex; gap: 1rem; font-size: .7rem; color: #777; }
   .day-stats b { color: #fff; }
   .day-stats .vaz { color: #555; }
+  .modos { display: flex; gap: .5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .modo-btn { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: .5rem .95rem; color: #888; font-weight: 700; font-size: .75rem; cursor: pointer; font-family: inherit; transition: all .15s; }
+  .modo-btn:hover { border-color: #e63946; color: #fff; }
+  .modo-btn.ativo { background: #e63946; border-color: #e63946; color: #fff; }
+  .analise-card { background: #151515; border: 1px solid #242424; border-radius: 14px; padding: .9rem 1rem; margin-bottom: .8rem; }
+  .analise-top { display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap; margin-bottom: .55rem; }
+  .analise-data { font-weight: 800; font-size: .9rem; }
+  .analise-num { font-size: .72rem; color: #888; }
+  .analise-num b { color: #fff; }
+  .barra { height: 8px; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 6px; overflow: hidden; }
+  .barra > i { display: block; height: 100%; background: #2a7a2a; border-radius: 6px; }
+  .analise-geral { background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 12px; padding: .8rem 1rem; margin-bottom: 1rem; font-size: .75rem; display: flex; gap: 1.2rem; flex-wrap: wrap; }
+  .analise-geral b { color: #fff; }
   .day-del { padding: .35rem .65rem; font-size: .7rem; border-color: #5a2a2a; }
   .day-del:hover { background: #3a1d1d; border-color: #e63946; }
 
@@ -148,6 +161,12 @@
       </select>
     </div>
     <button class="btn" id="btnGerar">Gerar dias</button>
+  </div>
+
+  <div class="modos">
+    <button class="modo-btn" data-modo="passadas">Passadas</button>
+    <button class="modo-btn ativo" data-modo="atuais">A partir de hoje</button>
+    <button class="modo-btn" data-modo="analise">Análise</button>
   </div>
 
   <div id="dias"></div>
@@ -238,11 +257,14 @@
 
   function desenhar() {
     const container = $('dias');
-    const dias = [...new Set([...slots.keys()].map(k => k.split('|')[0]))].sort();
+    const todas = [...new Set([...slots.keys()].map(k => k.split('|')[0]))].sort();
     const diaAtual = chaveDia(hoje());
 
+    if (modo === 'analise') { desenharAnalise(container, todas); return; }
+    const dias = todas.filter(cj => modo === 'passadas' ? cj < diaAtual : cj >= diaAtual);
+
     if (!dias.length) {
-      container.innerHTML = `<div class="cx-vazia"><div class="icon">📅</div>Configure a data e clique em "Gerar dias".</div>`;
+      container.innerHTML = `<div class="cx-vazia"><div class="icon">📅</div>${modo === 'passadas' ? 'Nenhuma data passada no banco.' : 'Nenhum dia a partir de hoje. Configure e clique em "Gerar dias".'}</div>`;
       return;
     }
 
@@ -277,13 +299,38 @@
           <button class="btn day-del" data-excluir-dia="${cj}" title="Excluir este dia">🗑 Excluir dia</button>
         </div>
         <div class="hours-grid">
-          ${passado ? `<div class="cx-vazia" style="padding:.6rem;font-size:.72rem">🔒 Consulta — dias passados são somente leitura.</div>` : horasHTML}
+          ${horasHTML}
         </div>
       </div>`;
     }).join('');
 
     vincularSlots();
     $('bannerTxt').innerHTML = compostarMeta();
+  }
+
+  function desenharAnalise(container, dias) {
+    if (!dias.length) {
+      container.innerHTML = `<div class="cx-vazia"><div class="icon">📊</div>Nenhum dado no banco ainda.</div>`;
+      return;
+    }
+    let tMeta = 0, tAg = 0;
+    const cards = dias.map(cj => {
+      const vals = [...slots.values()].filter(s => s.chaveDia === cj);
+      const meta = vals.length;
+      const ag = vals.filter(s => s.ativo).length;
+      tMeta += meta; tAg += ag;
+      const pct = meta ? Math.round(ag * 100 / meta) : 0;
+      const d = parseChave(cj);
+      return `<div class="analise-card">
+        <div class="analise-top">
+          <span class="analise-data">${diasSemana[d.getDay()]}, ${d.getDate()} de ${meses[d.getMonth()]}</span>
+          <span class="analise-num">Meta <b>${meta}</b> · Agendados <b>${ag}</b> · <b>${pct}%</b></span>
+        </div>
+        <div class="barra"><i style="width:${pct}%"></i></div>
+      </div>`;
+    }).join('');
+    const pctG = tMeta ? Math.round(tAg * 100 / tMeta) : 0;
+    container.innerHTML = `<div class="analise-geral"><span>Dias <b>${dias.length}</b></span><span>Meta total <b>${tMeta}</b></span><span>Agendados <b>${tAg}</b></span><span>Concluído <b>${pctG}%</b></span></div>` + cards;
   }
 
   function vincularSlots() {
@@ -367,6 +414,14 @@
   // (salvar em lote removido — Gerar persiste; toggle do slot salva na hora)
 
   $('btnGerar').addEventListener('click', () => { gerar(); });
+  let modo = 'atuais';
+  document.querySelectorAll('[data-modo]').forEach(b => {
+    b.addEventListener('click', () => {
+      modo = b.dataset.modo;
+      document.querySelectorAll('[data-modo]').forEach(x => x.classList.toggle('ativo', x === b));
+      desenhar();
+    });
+  });
   $('slotsPerHour').addEventListener('change', () => { $('bannerTxt').innerHTML = compostarMeta(); });
 
   if (!$('startDate').value) {
