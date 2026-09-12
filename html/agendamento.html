@@ -169,7 +169,7 @@
   }
 
   const $ = id => document.getElementById(id);
-  const HORAS = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+  const HORAS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
   const diasSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
   const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 
@@ -179,8 +179,8 @@
   function chaveDia(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
   function parseChave(c) { const p = c.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
   function hoje() { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); }
-  function metaPorDia() { return parseInt($('slotsPerHour').value, 10) * 14; }
-  function compostarMeta() { return 'Meta: <b>' + (parseInt($('slotsPerHour').value, 10) * 14) + '</b> posts/dia · ' + $('slotsPerHour').value + ' por hora × 14h (10h–23h)'; }
+  function metaPorDia() { return parseInt($('slotsPerHour').value, 10) * 24; }
+  function compostarMeta() { return 'Meta: <b>' + (parseInt($('slotsPerHour').value, 10) * 24) + '</b> posts/dia · ' + $('slotsPerHour').value + ' por hora × 24h (0h–23h)'; }
 
   function fmtToast(msg, erro) {
     const t = $('toast');
