@@ -203,6 +203,11 @@
   };
 
   function gerar() {
+    console.log('[agendamento] gerar() chamado', {
+      start: $('startDate').value,
+      dias: $('dayCount').value,
+      porHora: $('slotsPerHour').value
+    });
     const start = $('startDate').value;
     if (!start) { fmtToast('Escolha a data inicial.', true); return; }
     const inicio = parseChave(start);
@@ -243,39 +248,7 @@
       return;
     }
 
-    container.innerHTML = dias.map(cj => {
-      const d = parseChave(cj);
-      const ehHoje = cj === diaAtual;
-      const passado = cj < diaAtual;
-      const horaSlots = slotsDosDias.get(cj) || {};
-
-      const total = HORAS.length * [0, ...slots.values()].filter(s => s.chaveDia === cj).length;
-      const postado = [...slots.values()].filter(s => s.chaveDia === cj && s.status === 'postado').length;
-      const contado = [...slots.values()].filter(s => s.chaveDia === cj && s.status !== 'passado').length;
-
-      const horasHTML = HORAS.map(h => {
-        const ss = [...slots.values()].filter(s => s.chaveDia === cj && s.hora === h);
-        return `<div class="hour-block">
-          <div class="hour-label">${pad(h)}h</div>
-          <div class="slot-row">${ss.map(s => slotEl(s, passado)).join('')}</div>
-        </div>`;
-      }).join('');
-
-      return `<div class="day-card ${passado ? 'day-past' : ''}">
-        <div class="day-header">
-          <div class="day-title">
-            <div class="dow">${diasSemana[d.getDay()]}</div>
-            <div class="date">${pad(d.getDate()) + ' de ' + meses[d.getMonth()]}<b>
-          </div>
-          ${ehHoje ? '<span class="today-badge">hoje</span>' : ''}
-          ${passado ? '<span class="today-badge" style="background:#444">passado</span>' : ''}
-          </div>
-        </div>`
-      ).join('');
-      // stats e corpo (corrigido abaixo por montagem sequencial)
-    }).join('');
-
-    // --- segunda passada: corpo dos cartões + stats (JS principal) ---
+    // --- render único dos cartões + stats ---
     container.innerHTML = dias.map(cj => {
       const d = parseChave(cj);
       const ehHoje = cj === diaAtual;
@@ -297,9 +270,11 @@
           <div class="day-title">
             <div class="dow">${diasSemana[d.getDay()]}</div>
             <div class="date">${d.getDate()} de ${meses[d.getMonth()]}${d.getFullYear() ? '' : ''}</div>
+            ${ehHoje ? '<span class="today-badge">hoje</span>' : ''}
+            ${passado ? '<span class="today-badge" style="background:#444">passado</span>' : ''}
           </div>
           <div class="day-stats">
-            <span>meta <b>${[0, ...slots.values()].filter(s => s.chaveDia === cj).length}</b></span>
+            <span>meta <b>${[...slots.values()].filter(s => s.chaveDia === cj).length}</b></span>
             <span>agendado <b>${agendado}</b></span>
             <span>postado <b>${postado}</b></span>
           </div>
