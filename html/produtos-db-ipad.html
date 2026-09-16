@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produtos (DB) — O Cara Testou</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; min-height: 100vh; }
+  .topnav {
+    background: #1a1a1a; padding: .6rem 2rem;
+    display: -webkit-box; display: -webkit-flex; display: flex;
+    -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+    -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topnav-brand { font-weight: 800; color: #fff; font-size: .9rem; }
+  .topnav-brand span { color: #e63946; }
+  .topnav-brand a { color: inherit; text-decoration: none; }
+  .topnav-links { display: -webkit-box; display: -webkit-flex; display: flex; gap: .5rem; }
+  .topnav-back { background: #333; border: none; padding: .4rem .9rem; font-size: .78rem; font-weight: 600; font-family: inherit; color: #ccc; cursor: pointer; border-radius: 6px; text-decoration: none; }
+  .topnav-back.ativo { background: #e63946; color: #fff; }
+  .container { max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem 0; width: 100%; }
+
+  .top-bar { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: center; -webkit-align-items: center; align-items: center; -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; margin-bottom: 1.2rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; gap: .7rem; }
+  .top-btns { display: -webkit-box; display: -webkit-flex; display: flex; gap: .5rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+  .page-title { font-size: 1.2rem; font-weight: 800; }
+  .page-title span { color: #e63946; }
+  .page-title .count { font-size: .8rem; color: #999; font-weight: 600; }
+  .cta-btn { display: inline-block; background: #e63946; color: #fff; border: none; font-size: .82rem; font-weight: 700; padding: .6rem 1.1rem; border-radius: 8px; cursor: pointer; font-family: inherit; text-decoration: none; }
+  .cta-btn:active { background: #c82d3a; }
+  .cta-btn.ghost { background: #fff; color: #1a1a1a; border: 2px solid #ddd; }
+  .cta-btn .badge { display: inline-block; background: #e63946; color: #fff; border-radius: 20px; font-size: .68rem; font-weight: 800; padding: .05rem .45rem; margin-left: .3rem; }
+
+  .lista-scroll { padding-bottom: 1.5rem; border-top: 1px solid #ececec; padding-top: 1rem; }
+
+  .cat-filtro { display: -webkit-box; display: -webkit-flex; display: flex; gap: .45rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin-bottom: 1.2rem; }
+  .chip-cat { background: #fff; border: 2px solid #e8e8e8; border-radius: 20px; padding: .45rem .9rem; font-size: .76rem; font-weight: 700; cursor: pointer; font-family: inherit; color: #777; }
+  .chip-cat.ativo { background: #e63946; border-color: #e63946; color: #fff; }
+
+  .cat-bloco { margin-bottom: 1.4rem; }
+  .cat-titulo { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: center; -webkit-align-items: center; align-items: center; gap: .5rem; font-size: .84rem; font-weight: 800; text-transform: uppercase; color: #1a1a1a; margin-bottom: .55rem; }
+  .cat-titulo .n { background: #e63946; color: #fff; border-radius: 20px; font-size: .7rem; padding: .1rem .55rem; }
+  .cat-titulo.sem { color: #999; }
+
+  .prod-rows { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -webkit-flex-direction: column; flex-direction: column; }
+  .prod-row { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: center; -webkit-align-items: center; align-items: center; gap: .8rem; background: #fff; border: 1px solid #eee; border-bottom: none; padding: .7rem .9rem; }
+  .prod-rows .prod-row:first-child { border-radius: 12px 12px 0 0; }
+  .prod-rows .prod-row:last-child { border-radius: 0 0 12px 12px; border-bottom: 1px solid #eee; }
+  .prod-rows .prod-row:only-child { border-radius: 12px; }
+  .prod-row-cab { -webkit-box-flex: 1; -webkit-flex: 1; flex: 1; min-width: 0; cursor: pointer; display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: center; -webkit-align-items: center; align-items: center; gap: .8rem; }
+  .prod-row-nome { font-size: .88rem; font-weight: 700; line-height: 1.3; color: #1a1a1a; }
+  .prod-row-id { font-size: .68rem; font-weight: 700; color: #bbb; text-transform: uppercase; margin-top: .15rem; }
+  .prod-row-data { font-size: .72rem; font-weight: 600; color: #888; white-space: nowrap; }
+  .prod-row-acoes { display: -webkit-box; display: -webkit-flex; display: flex; gap: .35rem; }
+  .prod-row-acoes .mini { background: #f0f0f0; border: none; border-radius: 6px; cursor: pointer; font-size: .78rem; padding: .32rem .55rem; font-weight: 700; color: #333; font-family: inherit; }
+  .prod-row-acoes .mini.sem-cat { background: #fff3cd; color: #856404; }
+
+  .vazio { text-align: center; padding: 3rem; background: #fff; border-radius: 14px; color: #999; font-size: .9rem; }
+  .vazio .big { font-size: 2rem; margin-bottom: .5rem; }
+  .vazio a { color: #e63946; font-weight: 700; cursor: pointer; }
+
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.55); z-index: 200; -webkit-box-align: center; -webkit-align-items: center; align-items: center; -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center; padding: 1.2rem; }
+  .modal-overlay.open { display: -webkit-box; display: -webkit-flex; display: flex; }
+  .modal { background: #fff; border-radius: 16px; max-width: 720px; width: 100%; max-height: 90vh; display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -webkit-flex-direction: column; flex-direction: column; overflow: hidden; }
+  .modal-head { padding: 1rem 1.4rem; border-bottom: 1px solid #eee; display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: center; -webkit-align-items: center; align-items: center; -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; gap: .8rem; }
+  .modal-title { font-size: .95rem; font-weight: 800; }
+  .modal-title span { color: #e63946; }
+  .modal-close { background: #eee; border: none; border-radius: 6px; cursor: pointer; font-size: .9rem; padding: .3rem .6rem; font-weight: 700; color: #333; }
+  .modal-body { padding: 1rem 1.4rem; overflow-y: auto; }
+  .modal-footer { padding: .9rem 1.4rem; border-top: 1px solid #eee; display: -webkit-box; display: -webkit-flex; display: flex; gap: .6rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+
+  .form-field { margin-bottom: .85rem; }
+  .form-label { display: block; font-size: .75rem; font-weight: 800; text-transform: uppercase; color: #999; margin-bottom: .35rem; }
+  .form-select, .form-textarea, .form-input { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: .55rem .7rem; font-size: .85rem; font-family: inherit; outline: none; background: #fff; color: #1a1a1a; }
+  .form-select:focus, .form-textarea:focus, .form-input:focus { border-color: #e63946; }
+  .form-textarea { min-height: 80px; line-height: 1.5; }
+  .form-hint { font-size: .72rem; color: #aaa; margin-top: .3rem; }
+
+  .sec-titulo { font-size: .8rem; font-weight: 800; color: #1a1a1a; text-transform: uppercase; border-top: 1px solid #eee; padding-top: .8rem; margin: 1.1rem 0 .1rem; }
+
+  .m-btn { background: #e63946; border: none; border-radius: 8px; cursor: pointer; font-size: .82rem; font-weight: 700; padding: .5rem 1rem; color: #fff; font-family: inherit; }
+  .m-btn:active { background: #c82d3a; }
+  .m-btn.ghost { background: #eee; color: #1a1a1a; }
+
+  .assist-row { display: -webkit-box; display: -webkit-flex; display: flex; gap: .5rem; -webkit-box-align: center; -webkit-align-items: center; align-items: center; }
+  .assist-row input { -webkit-box-flex: 1; -webkit-flex: 1; flex: 1; border: 1px solid #ddd; border-radius: 8px; padding: .6rem .8rem; font-size: .85rem; font-family: inherit; outline: none; }
+  .assist-btn { background: #e63946; color: #fff; border: none; border-radius: 8px; padding: .6rem 1rem; font-size: .82rem; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .assist-hint { font-size: .72rem; color: #666; margin-top: .45rem; line-height: 1.5; }
+  .assist-ok { color: #1a9e63; font-weight: 700; margin-top: .45rem; display: none; font-size: .78rem; }
+  .assist-print { margin-top: .7rem; border: 2px dashed #ccc; border-radius: 10px; padding: .7rem; text-align: center; cursor: pointer; }
+  .assist-print.p-has { border-style: solid; border-color: #3ECF8E; }
+  .assist-print .p-txt { font-size: .76rem; color: #888; }
+  .assist-print input[type="file"] { display: none; }
+  .assist-preview { margin-top: .6rem; display: none; }
+  .prints-grid { display: -webkit-box; display: -webkit-flex; display: flex; gap: .5rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin-bottom: .4rem; }
+  .print-item { position: relative; width: 84px; height: 84px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
+  .print-item img { width: 100%; height: 100%; display: block; }
+  .print-del { position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; border: none; border-radius: 50%; background: rgba(0,0,0,.65); color: #fff; font-size: .7rem; font-weight: 700; cursor: pointer; }
+  .p-clear { display: block; margin-top: .35rem; background: none; border: none; color: #e63946; font-size: .72rem; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+  .fila-actions { display: -webkit-box; display: -webkit-flex; display: flex; gap: .5rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin-bottom: .7rem; }
+  .fila-lista { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -webkit-flex-direction: column; flex-direction: column; gap: .5rem; }
+  .fila-item { display: -webkit-box; display: -webkit-flex; display: flex; gap: .7rem; -webkit-box-align: center; -webkit-align-items: center; align-items: center; padding: .6rem .7rem; background: #fafafa; border: 1px solid #eee; border-radius: 10px; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+  .fila-thumb { width: 46px; height: 46px; border-radius: 8px; border: 1px solid #eee; background: #f0f0f0; }
+  .fila-thumbs { display: -webkit-box; display: -webkit-flex; display: flex; gap: .3rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+  .fila-thumbs .fila-thumb { width: 42px; height: 42px; }
+  .fila-link { -webkit-box-flex: 1; -webkit-flex: 1; flex: 1; min-width: 160px; font-size: .78rem; font-weight: 700; color: #333; }
+  .fila-link a { color: #e63946; text-decoration: none; }
+  .fila-link .data { display: block; font-size: .68rem; font-weight: 600; color: #aaa; margin-top: .15rem; }
+  .fila-btns { display: -webkit-box; display: -webkit-flex; display: flex; gap: .4rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+  .fila-mini { background: #1a1a1a; color: #fff; border: none; border-radius: 6px; padding: .35rem .6rem; font-size: .72rem; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .fila-mini.del { background: #ffe3e3; color: #e63946; }
+  .fila-vazio { font-size: .78rem; color: #aaa; text-align: center; padding: .6rem; }
+  .fila-file label { display: inline-block; background: #f0f0f0; border: 1px solid #ddd; border-radius: 8px; padding: .5rem .8rem; font-size: .8rem; font-weight: 700; cursor: pointer; color: #333; font-family: inherit; }
+  .fila-file input[type="file"] { display: none; }
+
+  .login-box { background: #fff; border-radius: 14px; padding: 1.2rem 1.4rem; margin-bottom: 1rem; }
+  .login-box h2 { font-size: 1rem; font-weight: 800; margin: 0 0 .8rem; }
+  .login-err { color: #e63946; font-size: .75rem; font-weight: 700; margin-top: .5rem; display: none; }
+
+  .erro { text-align: center; padding: 3rem; color: #e63946; font-size: .9rem; }
+  .footer { text-align: center; padding: .8rem; font-size: .72rem; color: #999; }
+</style>
+</head>
+<body>
+<div class="topnav">
+  <div class="topnav-brand"><a href="index.html"><span>O</span> Cara Testou</a></div>
+  <div class="topnav-links">
+    <a href="produtos-db-ipad.html" class="topnav-back ativo">Produtos DB</a>
+    <a href="ganchos-ipad.html" class="topnav-back">Ganchos</a>
+    <a href="missoes-ipad.html" class="topnav-back">Missoes</a>
+    <a href="index.html" class="topnav-back">Voltar</a>
+  </div>
+</div>
+<div class="container">
+
+  <div class="login-box" id="loginBox" style="display:none">
+    <h2>Entrar</h2>
+    <div class="form-field">
+      <label class="form-label">E-mail</label>
+      <input type="email" class="form-input" id="loginEmail" autocomplete="username">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Senha</label>
+      <input type="password" class="form-input" id="loginPass" autocomplete="current-password">
+    </div>
+    <button class="m-btn" id="btnLogin">Entrar</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+
+  <div id="appBox" style="display:none">
+    <div class="top-bar">
+      <div class="page-title"><span>Produtos</span> <span class="count" id="contador"></span></div>
+      <div class="top-btns">
+        <button class="cta-btn ghost" id="btnAssist">assistente</button>
+        <button class="cta-btn ghost" id="btnFila">fila<span class="badge" id="fila-badge">0</span></button>
+        <button class="cta-btn" id="btnNovo">+ Novo</button>
+      </div>
+    </div>
+    <div class="lista-scroll">
+      <div class="cat-filtro" id="cat-filtro"></div>
+      <div id="lista-produtos"></div>
+    </div>
+  </div>
+</div>
+<div class="footer">Estrutura paralela — tabela produtos no Supabase</div>
+
+<div class="modal-overlay" id="modal-assist">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-head">
+      <div class="modal-title"><span>Assistente</span> de Cadastro</div>
+      <button class="modal-close" id="btnFecharAssist">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="assist-row">
+        <input type="text" id="assist-link" placeholder="Cole o link do produto" autocomplete="off">
+        <button class="assist-btn" id="btnCopiarPrompt">Copiar prompt</button>
+      </div>
+      <div class="assist-print" id="assist-print">
+        <input type="file" id="assist-file" accept="image/*" multiple>
+        <span class="p-txt" id="assist-print-txt">Opcional: prints do anúncio (clique para escolher arquivos)</span>
+      </div>
+      <div class="assist-preview" id="assist-preview">
+        <div class="prints-grid" id="assist-prints"></div>
+        <button class="p-clear" id="btnAssistClear">Remover todos os prints</button>
+      </div>
+      <div class="assist-hint">Cola o link (e opcionalmente prints), clica em <b>Copiar prompt</b> e envia no chat do assistente. Ele gera os campos e cadastra direto no banco.</div>
+      <div class="assist-ok" id="assist-ok">Prompt copiado! Cole no chat do assistente.</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-fila">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-head">
+      <div class="modal-title"><span>Fila</span> de cadastro <span class="count" id="fila-count"></span></div>
+      <button class="modal-close" id="btnFecharFila">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="fila-actions">
+        <button class="assist-btn" id="btnAddFila">+ Adicionar link</button>
+        <button class="assist-btn" id="btnCopiarFila">Copiar tudo</button>
+      </div>
+      <div class="fila-lista" id="fila-lista"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-fila">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-head">
+      <div class="modal-title"><span>Adicionar</span> à fila</div>
+      <button class="modal-close" id="btnFecharAddFila">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-label">Link do produto</label>
+        <input type="text" class="form-select" id="fila-link" placeholder="https://..." autocomplete="off">
+      </div>
+      <div class="form-field fila-file">
+        <label for="fila-file-input">Adicionar prints do anúncio (opcional)</label>
+        <input type="file" id="fila-file-input" accept="image/*" multiple>
+      </div>
+      <div class="assist-preview" id="fila-preview" style="display:none">
+        <div class="prints-grid" id="fila-prints"></div>
+        <button class="p-clear" id="btnFilaClear">Remover todos os prints</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="m-btn" id="btnSalvarFila">Salvar na fila</button>
+      <button class="m-btn ghost" id="btnCancelarAddFila">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-produto">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="m-titulo"><span>Novo</span> Produto</div>
+      <button class="modal-close" id="btnFecharProduto">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-label">ID (slug, ex: meu-novo-produto)</label>
+        <input type="text" class="form-select" id="p-id" placeholder="ex: meu-novo-produto" autocomplete="off">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Nome</label>
+        <input type="text" class="form-select" id="p-nome" placeholder="Nome completo do produto">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Categoria</label>
+        <input type="text" class="form-select" id="p-categoria" placeholder="ex: Ferramentas, Cozinha..." autocomplete="off">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Descrição + hashtags</label>
+        <textarea class="form-textarea" id="p-descricao" placeholder="Descrição curta + #hashtags"></textarea>
+      </div>
+      <div class="sec-titulo">Resumo</div>
+      <div class="form-field"><textarea class="form-textarea" id="p-resumo" style="min-height:100px"></textarea></div>
+      <div class="sec-titulo">Problemas que resolve (1 por linha)</div>
+      <textarea class="form-textarea" id="p-problemas" style="min-height:60px"></textarea>
+      <div class="sec-titulo">Benefícios (1 por linha)</div>
+      <textarea class="form-textarea" id="p-beneficios" style="min-height:60px"></textarea>
+      <div class="sec-titulo">Características (1 por linha)</div>
+      <textarea class="form-textarea" id="p-caracteristicas" style="min-height:60px"></textarea>
+      <div class="sec-titulo">Diferenciais (1 por linha)</div>
+      <textarea class="form-textarea" id="p-diferenciais" style="min-height:60px"></textarea>
+      <div class="sec-titulo">Testes - roteiro do vídeo (1 por linha)</div>
+      <textarea class="form-textarea" id="p-testes" style="min-height:60px"></textarea>
+      <div class="sec-titulo">Momentos Wow (1 por linha)</div>
+      <textarea class="form-textarea" id="p-momentosWow" style="min-height:60px"></textarea>
+      <div class="sec-titulo">Público Ideal (1 por linha)</div>
+      <textarea class="form-textarea" id="p-publicoIdeal" style="min-height:60px"></textarea>
+      <div class="sec-titulo">Objeções (Pergunta | Resposta, 1 por linha)</div>
+      <textarea class="form-textarea" id="p-objecoes" style="min-height:60px"></textarea>
+      <div class="sec-titulo">Curiosidades (1 por linha)</div>
+      <textarea class="form-textarea" id="p-curiosidades" style="min-height:60px"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="m-btn" id="btnSalvarProduto">Salvar produto</button>
+      <button class="m-btn ghost" id="btnCancelarProduto">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="erro" id="erro" style="display:none"></div>
+
+<script src="config.js"></script>
+<script>
+(function() {
+  var SUPABASE_URL = (window.SUPABASE_URL || '').trim();
+  var SUPABASE_ANON_KEY = (window.SUPABASE_ANON_KEY || '').trim();
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    var e0 = document.getElementById('erro');
+    e0.textContent = 'Configuracao ausente — verifique o config.js';
+    e0.style.display = 'block';
+    return;
+  }
+
+  var TOKEN_KEY = 'oct_ipad_token';
+  var USER_KEY = 'oct_ipad_user';
+  var token = null;
+  var userId = null;
+  var todosProdutos = [];
+  var editandoId = null;
+  var filaProdutos = [];
+  var filaPrints = [];
+  var filtroCategoria = '';
+  var assistPrints = [];
+
+  var PROMPT_BASE = 'Analise o produto deste link no TikTok Shop e gere o cadastro completo dele no formato EXATO abaixo, em portugues do Brasil.\n\nNOME:\nDESCRICAO: (1-2 linhas + 5 a 8 hashtags)\nRESUMO: (3 a 5 frases)\nPROBLEMAS: (4 a 8 itens, 1 por linha)\nBENEFICIOS: (4 a 8 itens, 1 por linha)\nCARACTERISTICAS: (1 por linha)\nDIFERENCIAIS: (3 a 6 itens, 1 por linha)\nTESTES: (4 a 8 itens, 1 por linha)\nMOMENTOSWOW: (3 a 6 itens, 1 por linha)\nPUBLICOIDEAL: (5 a 8 itens, 1 por linha)\nOBJECOES: (4 a 7 itens, pergunta | resposta)\nCURIOSIDADES: (3 a 6 itens, 1 por linha)\n\nLink do produto:\n';
+
+  function $(id) { return document.getElementById(id); }
+  function trim(s) { return (s || '').replace(/^\s+|\s+$/g, ''); }
+  function esc(s) {
+    s = s || '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function mostrarErro(msg) { var e = $('erro'); e.textContent = msg; e.style.display = 'block'; }
+  function limparErro() { var e = $('erro'); e.textContent = ''; e.style.display = 'none'; }
+
+  function xhr(method, path, body, extraHeaders, cb) {
+    var x = new XMLHttpRequest();
+    x.open(method, SUPABASE_URL + path, true);
+    x.setRequestHeader('apikey', SUPABASE_ANON_KEY);
+    x.setRequestHeader('Content-Type', 'application/json');
+    if (token) { x.setRequestHeader('Authorization', 'Bearer ' + token); }
+    if (extraHeaders) {
+      for (var k in extraHeaders) { if (extraHeaders.hasOwnProperty(k)) { x.setRequestHeader(k, extraHeaders[k]); } }
+    }
+    x.onreadystatechange = function() {
+      if (x.readyState !== 4) { return; }
+      var data = null;
+      try { data = x.responseText ? JSON.parse(x.responseText) : null; } catch (e) { data = null; }
+      if (x.status >= 200 && x.status < 300) { cb(null, data); }
+      else {
+        var msg = 'HTTP ' + x.status;
+        if (data && data.message) { msg = data.message; }
+        else if (data && data.error_description) { msg = data.error_description; }
+        else if (data && data.msg) { msg = data.msg; }
+        cb(new Error(msg), data);
+      }
+    };
+    x.onerror = function() { cb(new Error('Falha de rede')); };
+    x.send(body ? JSON.stringify(body) : null);
+  }
+
+  function copiarTexto(texto, cb) {
+    var ta = document.createElement('textarea');
+    ta.value = texto;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    var r = false;
+    try { r = document.execCommand('copy'); } catch (e) { r = false; }
+    try { document.body.removeChild(ta); } catch (e2) {}
+    if (cb) { cb(r); }
+  }
+
+  function checarSessao(cb) {
+    try { token = window.localStorage.getItem(TOKEN_KEY) || null; } catch (e) { token = null; }
+    try { userId = window.localStorage.getItem(USER_KEY) || null; } catch (e) { userId = null; }
+    if (!token) { cb(null); return; }
+    xhr('GET', '/auth/v1/user', null, null, function(err, u) {
+      if (err || !u || !u.id) {
+        token = null; userId = null;
+        try { window.localStorage.removeItem(TOKEN_KEY); window.localStorage.removeItem(USER_KEY); } catch (e2) {}
+        cb(null); return;
+      }
+      userId = u.id;
+      cb(u);
+    });
+  }
+
+  function fazerLogin() {
+    var email = trim($('loginEmail').value);
+    var pass = $('loginPass').value || '';
+    var errBox = $('loginErr');
+    errBox.style.display = 'none';
+    if (!email || !pass) { errBox.textContent = 'Informe e-mail e senha.'; errBox.style.display = 'block'; return; }
+    var btn = $('btnLogin');
+    btn.disabled = true;
+    xhr('POST', '/auth/v1/token?grant_type=password', { email: email, password: pass }, null, function(err, res) {
+      btn.disabled = false;
+      if (err || !res || !res.access_token) {
+        var m = 'Login falhou.';
+        if (res && res.error_description) { m = res.error_description; }
+        else if (err && err.message) { m = err.message; }
+        errBox.textContent = m; errBox.style.display = 'block';
+        return;
+      }
+      token = res.access_token;
+      userId = (res.user && res.user.id) ? res.user.id : null;
+      try {
+        window.localStorage.setItem(TOKEN_KEY, token);
+        if (userId) { window.localStorage.setItem(USER_KEY, userId); }
+      } catch (e) {}
+      mostrarApp();
+      iniciar();
+    });
+  }
+
+  function mostrarLogin() { $('loginBox').style.display = 'block'; $('appBox').style.display = 'none'; }
+  function mostrarApp() { $('loginBox').style.display = 'none'; $('appBox').style.display = 'block'; }
+  function abrirModal(id) { $(id).className = 'modal-overlay open'; }
+  function fecharModal(id) { $(id).className = 'modal-overlay'; }
+
+  function iniciar() {
+    carregar();
+    carregarFila();
+  }
+
+  function carregar() {
+    var q = '/rest/v1/produtos?select=*&user_id=eq.' + encodeURIComponent(userId) + '&order=nome.asc';
+    xhr('GET', q, null, null, function(err, rows) {
+      if (err) { mostrarErro('Erro: ' + err.message); return; }
+      limparErro();
+      todosProdutos = rows || [];
+      renderFiltroCategorias();
+      renderLista();
+    });
+  }
+
+  function categorias() {
+    var seen = {};
+    var out = [];
+    for (var i = 0; i < todosProdutos.length; i++) {
+      var c = trim(todosProdutos[i].categoria || '');
+      if (c && !seen[c]) { seen[c] = 1; out.push(c); }
+    }
+    out.sort();
+    return out;
+  }
+
+  function renderFiltroCategorias() {
+    var el = $('cat-filtro');
+    var cats = categorias();
+    if (!cats.length) { el.innerHTML = ''; return; }
+    var html = '<button class="chip-cat' + (!filtroCategoria ? ' ativo' : '') + '" data-cat="">Todas</button>';
+    for (var i = 0; i < cats.length; i++) {
+      html += '<button class="chip-cat' + (filtroCategoria === cats[i] ? ' ativo' : '') + '" data-cat="' + esc(cats[i]) + '">' + esc(cats[i]) + '</button>';
+    }
+    el.innerHTML = html;
+    var btns = el.querySelectorAll('[data-cat]');
+    for (var b = 0; b < btns.length; b++) {
+      (function(btn) {
+        btn.onclick = function() { setFiltroCategoria(btn.getAttribute('data-cat')); };
+      })(btns[b]);
+    }
+  }
+
+  function setFiltroCategoria(cat) { filtroCategoria = cat; renderFiltroCategorias(); renderLista(); }
+
+  function fmtData(iso) {
+    if (!iso) { return ''; }
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) { return ''; }
+    return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
+  }
+
+  function rowProduto(p) {
+    var semCat = !trim(p.categoria || '');
+    var h = '<div class="prod-row">';
+    h += '<div class="prod-row-cab" data-open="' + esc(p.id) + '">';
+    h += '<div><div class="prod-row-nome">' + esc(p.nome) + '</div>';
+    h += '<div class="prod-row-id">' + esc(p.id) + (semCat ? ' · sem categoria' : '') + '</div></div>';
+    h += '<div class="prod-row-data">' + fmtData(p.created_at) + '</div>';
+    h += '<div class="prod-row-acoes">';
+    h += '<button class="mini' + (semCat ? ' sem-cat' : '') + '" data-edit="' + esc(p.id) + '">Editar</button>';
+    h += '<button class="mini" data-copydesc="' + esc(p.id) + '">Desc</button>';
+    h += '<button class="mini" data-delprod="' + esc(p.id) + '">X</button>';
+    h += '</div></div></div>';
+    return h;
+  }
+
+  function renderLista() {
+    $('contador').textContent = '(' + todosProdutos.length + ')';
+    var el = $('lista-produtos');
+    if (!todosProdutos.length) {
+      el.innerHTML = '<div class="vazio"><div class="big">.</div>Nenhum produto ainda.<br><br><a id="linkNovo">Criar o primeiro produto</a></div>';
+      var ln = $('linkNovo');
+      if (ln) { ln.onclick = function() { abrirNovo(); }; }
+      return;
+    }
+    var lista = [];
+    for (var i = 0; i < todosProdutos.length; i++) {
+      if (!filtroCategoria || trim(todosProdutos[i].categoria || '') === filtroCategoria) { lista.push(todosProdutos[i]); }
+    }
+    if (!lista.length) {
+      el.innerHTML = '<div class="vazio">Nenhum produto nesta categoria.</div>';
+      return;
+    }
+    var grupos = {};
+    for (var gi = 0; gi < lista.length; gi++) {
+      var k = trim(lista[gi].categoria || '') || 'Sem categoria';
+      if (!grupos[k]) { grupos[k] = []; }
+      grupos[k].push(lista[gi]);
+    }
+    var ordem = [];
+    for (var c in grupos) { if (grupos.hasOwnProperty(c)) { ordem.push(c); } }
+    ordem.sort(function(a, b) {
+      if (a === 'Sem categoria') { return 1; }
+      if (b === 'Sem categoria') { return -1; }
+      return a < b ? -1 : (a > b ? 1 : 0);
+    });
+    var html = '';
+    for (var oi = 0; oi < ordem.length; oi++) {
+      var cat = ordem[oi];
+      var itens = grupos[cat];
+      html += '<div class="cat-bloco"><div class="cat-titulo' + (cat === 'Sem categoria' ? ' sem' : '') + '">' + esc(cat) + ' <span class="n">' + itens.length + '</span></div><div class="prod-rows">';
+      for (var pi = 0; pi < itens.length; pi++) { html += rowProduto(itens[pi]); }
+      html += '</div></div>';
+    }
+    el.innerHTML = html;
+    var opens = el.querySelectorAll('[data-open]');
+    for (var o2 = 0; o2 < opens.length; o2++) {
+      (function(n) { n.onclick = function() { abrirEditar(n.getAttribute('data-open')); }; })(opens[o2]);
+    }
+    var edits = el.querySelectorAll('[data-edit]');
+    for (var e2 = 0; e2 < edits.length; e2++) {
+      (function(n) {
+        n.onclick = function(ev) { if (ev && ev.stopPropagation) { ev.stopPropagation(); } abrirEditar(n.getAttribute('data-edit')); };
+      })(edits[e2]);
+    }
+    var cds = el.querySelectorAll('[data-copydesc]');
+    for (var c2 = 0; c2 < cds.length; c2++) {
+      (function(n) {
+        n.onclick = function(ev) { if (ev && ev.stopPropagation) { ev.stopPropagation(); } copiarDescricao(n.getAttribute('data-copydesc')); };
+      })(cds[c2]);
+    }
+    var dels = el.querySelectorAll('[data-delprod]');
+    for (var d2 = 0; d2 < dels.length; d2++) {
+      (function(n) {
+        n.onclick = function(ev) { if (ev && ev.stopPropagation) { ev.stopPropagation(); } excluir(n.getAttribute('data-delprod')); };
+      })(dels[d2]);
+    }
+  }
+
+  var FIELD_IDS = ['p-id','p-nome','p-categoria','p-descricao','p-resumo','p-problemas','p-beneficios','p-caracteristicas','p-diferenciais','p-testes','p-momentosWow','p-publicoIdeal','p-objecoes','p-curiosidades'];
+
+  function abrirNovo() {
+    editandoId = null;
+    $('m-titulo').innerHTML = '<span>Novo</span> Produto';
+    for (var i = 0; i < FIELD_IDS.length; i++) {
+      $(FIELD_IDS[i]).value = '';
+      if (FIELD_IDS[i] === 'p-id') { $(FIELD_IDS[i]).disabled = false; }
+    }
+    abrirModal('modal-produto');
+  }
+
+  function getP(id) {
+    for (var i = 0; i < todosProdutos.length; i++) { if (String(todosProdutos[i].id) === String(id)) { return todosProdutos[i]; } }
+    return null;
+  }
+
+  function abrirEditar(id) {
+    var p = getP(id);
+    if (!p) return;
+    editandoId = id;
+    $('m-titulo').innerHTML = '<span>Editar</span> Produto';
+    $('p-id').value = p.id;
+    $('p-nome').value = p.nome || '';
+    $('p-categoria').value = p.categoria || '';
+    $('p-descricao').value = p.descricao || '';
+    $('p-resumo').value = p.resumo || '';
+    $('p-problemas').value = p.problemas || '';
+    $('p-beneficios').value = p.beneficios || '';
+    $('p-caracteristicas').value = p.caracteristicas || '';
+    $('p-diferenciais').value = p.diferenciais || '';
+    $('p-testes').value = p.testes || '';
+    $('p-momentosWow').value = p.momentoswow || p.momentosWow || '';
+    $('p-publicoIdeal').value = p.publicoideal || p.publicoIdeal || '';
+    $('p-objecoes').value = p.objecoes || '';
+    $('p-curiosidades').value = p.curiosidades || '';
+    $('p-id').disabled = true;
+    abrirModal('modal-produto');
+  }
+
+  function salvar() {
+    var id = trim($('p-id').value).toLowerCase().replace(/\s+/g, '-');
+    var nome = trim($('p-nome').value);
+    if (!id) { alert('Informe o ID (slug)'); return; }
+    if (!nome) { alert('Informe o nome'); return; }
+    var payload = {
+      id: id,
+      nome: nome,
+      categoria: trim($('p-categoria').value),
+      descricao: trim($('p-descricao').value),
+      resumo: trim($('p-resumo').value),
+      problemas: trim($('p-problemas').value),
+      beneficios: trim($('p-beneficios').value),
+      caracteristicas: trim($('p-caracteristicas').value),
+      diferenciais: trim($('p-diferenciais').value),
+      testes: trim($('p-testes').value),
+      momentoswow: trim($('p-momentosWow').value),
+      publicoideal: trim($('p-publicoIdeal').value),
+      objecoes: trim($('p-objecoes').value),
+      curiosidades: trim($('p-curiosidades').value)
+    };
+    if (editandoId) {
+      payload.updated_at = new Date().toISOString();
+      var path = '/rest/v1/produtos?id=eq.' + encodeURIComponent(editandoId) + '&user_id=eq.' + encodeURIComponent(userId);
+      xhr('PATCH', path, payload, { Prefer: 'return=minimal' }, function(err) {
+        if (err) { mostrarErro('Erro: ' + err.message); return; }
+        fecharModal('modal-produto');
+        carregar();
+      });
+    } else {
+      payload.user_id = userId;
+      xhr('POST', '/rest/v1/produtos', payload, { Prefer: 'return=minimal' }, function(err) {
+        if (err) { mostrarErro('Erro: ' + err.message); return; }
+        fecharModal('modal-produto');
+        carregar();
+      });
+    }
+  }
+
+  function excluir(id) {
+    if (!confirm('Excluir o produto "' + id + '"?')) return;
+    var path = '/rest/v1/produtos?id=eq.' + encodeURIComponent(id) + '&user_id=eq.' + encodeURIComponent(userId);
+    xhr('DELETE', path, null, { Prefer: 'return=minimal' }, function(err) {
+      if (err) { mostrarErro('Erro: ' + err.message); return; }
+      carregar();
+    });
+  }
+
+  function copiarDescricao(id) {
+    var p = getP(id);
+    if (!p) return;
+    var desc = trim(p.descricao || '');
+    if (!desc) { alert('Este produto nao tem descricao.'); return; }
+    copiarTexto(desc, function(r) {
+      alert(r ? 'Descricao copiada! Cole onde quiser.' : 'Nao foi possivel copiar automaticamente.');
+    });
+  }
+
+  function copiarPrompt() {
+    var link = trim($('assist-link').value);
+    if (!link) { alert('Cole o link do produto primeiro'); return; }
+    var texto = PROMPT_BASE + link;
+    if (assistPrints.length) { texto += '\n\n(Enviarei ' + assistPrints.length + ' prints deste anuncio. Analise as imagens junto do link.)'; }
+    copiarTexto(texto, function(r) {
+      $('assist-ok').style.display = r ? 'block' : 'none';
+      if (!r) { alert('Nao foi possivel copiar automaticamente.'); }
+    });
+  }
+
+  function lerArquivos(input, cb) {
+    var files = input.files;
+    if (!files || !files.length) return;
+    var pend = 0;
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      if (!f.type || f.type.indexOf('image/') !== 0) { continue; }
+      pend++;
+      (function(ff) {
+        var leitor = new FileReader();
+        leitor.onload = function() {
+          cb(leitor.result);
+          pend--;
+        };
+        leitor.onerror = function() { pend--; };
+        leitor.readAsDataURL(ff);
+      })(f);
+    }
+    input.value = '';
+  }
+
+  function renderAssistPrints() {
+    var el = $('assist-prints');
+    var html = '';
+    for (var i = 0; i < assistPrints.length; i++) {
+      html += '<div class="print-item"><img src="' + assistPrints[i] + '"><button class="print-del" data-apdel="' + i + '">X</button></div>';
+    }
+    el.innerHTML = html;
+    $('assist-preview').style.display = assistPrints.length ? 'block' : 'none';
+    var box = $('assist-print');
+    box.className = assistPrints.length ? 'assist-print p-has' : 'assist-print';
+    $('assist-print-txt').textContent = assistPrints.length
+      ? assistPrints.length + ' print(s) adicionado(s)'
+      : 'Opcional: prints do anúncio (clique para escolher arquivos)';
+    var dels = el.querySelectorAll('[data-apdel]');
+    for (var d = 0; d < dels.length; d++) {
+      (function(btn) {
+        btn.onclick = function() {
+          assistPrints.splice(parseInt(btn.getAttribute('data-apdel'), 10), 1);
+          renderAssistPrints();
+        };
+      })(dels[d]);
+    }
+  }
+
+  function carregarFila() {
+    var q = '/rest/v1/fila_produtos?select=*&user_id=eq.' + encodeURIComponent(userId) + '&order=created_at.desc';
+    xhr('GET', q, null, null, function(err, rows) {
+      if (err) { return; }
+      filaProdutos = rows || [];
+      renderFila();
+    });
+  }
+
+  function printCount(f) {
+    if (f.prints && f.prints.length) { return f.prints.length; }
+    return f.print_base64 ? 1 : 0;
+  }
+  function filaPrintsOf(f) {
+    if (f.prints && f.prints.length) { return f.prints; }
+    return f.print_base64 ? [f.print_base64] : [];
+  }
+
+  function renderFila() {
+    var el = $('fila-lista');
+    $('fila-badge').textContent = filaProdutos.length;
+    $('fila-count').textContent = '(' + filaProdutos.length + ')';
+    if (!filaProdutos.length) {
+      el.innerHTML = '<div class="fila-vazio">Fila vazia. Vai acumulando os links aqui pelo iPad e manda tudo de uma vez no computador.</div>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < filaProdutos.length; i++) {
+      var f = filaProdutos[i];
+      var prints = filaPrintsOf(f);
+      var thumbs = '';
+      if (prints.length) {
+        thumbs = '<div class="fila-thumbs">';
+        for (var t = 0; t < prints.length; t++) { thumbs += '<img class="fila-thumb" src="' + prints[t] + '">'; }
+        thumbs += '</div>';
+      } else {
+        thumbs = '<div class="fila-thumb"></div>';
+      }
+      html += '<div class="fila-item">' + thumbs;
+      html += '<div class="fila-link"><a href="' + esc(f.link) + '">' + esc(f.link) + '</a>';
+      html += '<span class="data">' + fmtDataHora(f.created_at) + (prints.length ? ' · ' + prints.length + ' print(s)' : '') + '</span></div>';
+      html += '<div class="fila-btns">';
+      html += '<button class="fila-mini" data-fcopy="' + f.id + '">Copiar</button>';
+      html += '<button class="fila-mini del" data-fdel="' + f.id + '">X</button>';
+      html += '</div></div>';
+    }
+    el.innerHTML = html;
+    var cps = el.querySelectorAll('[data-fcopy]');
+    for (var c = 0; c < cps.length; c++) {
+      (function(btn) { btn.onclick = function() { copiarFilaItem(btn.getAttribute('data-fcopy')); }; })(cps[c]);
+    }
+    var dls = el.querySelectorAll('[data-fdel]');
+    for (var d = 0; d < dls.length; d++) {
+      (function(btn) { btn.onclick = function() { excluirFila(btn.getAttribute('data-fdel')); }; })(dls[d]);
+    }
+  }
+
+  function fmtDataHora(iso) {
+    if (!iso) { return ''; }
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) { return ''; }
+    return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + d.getHours() + 'h' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+  }
+
+  function abrirAddFila() {
+    filaPrints = [];
+    $('fila-link').value = '';
+    renderFilaPrints();
+    abrirModal('modal-add-fila');
+  }
+
+  function renderFilaPrints() {
+    var el = $('fila-prints');
+    var html = '';
+    for (var i = 0; i < filaPrints.length; i++) {
+      html += '<div class="print-item"><img src="' + filaPrints[i] + '"><button class="print-del" data-fpdel="' + i + '">X</button></div>';
+    }
+    el.innerHTML = html;
+    $('fila-preview').style.display = filaPrints.length ? 'block' : 'none';
+    var dels = el.querySelectorAll('[data-fpdel]');
+    for (var d = 0; d < dels.length; d++) {
+      (function(btn) {
+        btn.onclick = function() {
+          filaPrints.splice(parseInt(btn.getAttribute('data-fpdel'), 10), 1);
+          renderFilaPrints();
+        };
+      })(dels[d]);
+    }
+  }
+
+  function salvarFila() {
+    var link = trim($('fila-link').value);
+    if (!link) { alert('Cole o link do produto'); return; }
+    xhr('POST', '/rest/v1/fila_produtos', { user_id: userId, link: link, prints: filaPrints }, { Prefer: 'return=minimal' }, function(err) {
+      if (err) { mostrarErro('Erro: ' + err.message); return; }
+      fecharModal('modal-add-fila');
+      filaPrints = [];
+      carregarFila();
+    });
+  }
+
+  function copiarFilaItem(id) {
+    var f = null;
+    for (var i = 0; i < filaProdutos.length; i++) { if (String(filaProdutos[i].id) === String(id)) { f = filaProdutos[i]; } }
+    if (!f) return;
+    var texto = PROMPT_BASE + f.link;
+    if (printCount(f)) { texto += '\n\n(Anexei print(s) deste anuncio. Analise junto do link.)'; }
+    copiarTexto(texto, function(r) {
+      alert(r ? 'Prompt copiado! Cole no chat do assistente.' : 'Nao foi possivel copiar.');
+    });
+  }
+
+  function copiarFilaTudo() {
+    if (!filaProdutos.length) { alert('Fila vazia'); return; }
+    var itens = [];
+    for (var i = 0; i < filaProdutos.length; i++) {
+      var f = filaProdutos[i];
+      var extra = printCount(f) ? ' [com print]' : '';
+      itens.push((i + 1) + '. ' + f.link + extra);
+    }
+    var texto = 'Analise e cadastre os produtos dos links abaixo com o MESMO formato dos campos NOME, DESCRICAO, RESUMO, PROBLEMAS, BENEFICIOS, CARACTERISTICAS, DIFERENCIAIS, TESTES, MOMENTOSWOW, PUBLICOIDEAL, OBJECOES e CURIOSIDADES, em portugues do Brasil, 1 item por linha. Nao invente nada.\n\n' + itens.join('\n');
+    copiarTexto(texto, function(r) {
+      $('assist-ok').style.display = 'block';
+      if (!r) { alert('Nao foi possivel copiar.'); }
+    });
+    abrirModal('modal-assist');
+  }
+
+  function excluirFila(id) {
+    if (!confirm('Remover este item da fila?')) return;
+    var path = '/rest/v1/fila_produtos?id=eq.' + encodeURIComponent(id) + '&user_id=eq.' + encodeURIComponent(userId);
+    xhr('DELETE', path, null, { Prefer: 'return=minimal' }, function(err) {
+      if (err) { mostrarErro('Erro: ' + err.message); return; }
+      carregarFila();
+    });
+  }
+
+  $('btnLogin').addEventListener('click', function() { fazerLogin(); });
+  $('btnNovo').addEventListener('click', function() { abrirNovo(); });
+  $('btnAssist').addEventListener('click', function() { abrirModal('modal-assist'); });
+  $('btnFecharAssist').addEventListener('click', function() { fecharModal('modal-assist'); });
+  $('btnFila').addEventListener('click', function() { abrirModal('modal-fila'); });
+  $('btnFecharFila').addEventListener('click', function() { fecharModal('modal-fila'); });
+  $('btnAddFila').addEventListener('click', function() { abrirAddFila(); });
+  $('btnCopiarFila').addEventListener('click', function() { copiarFilaTudo(); });
+  $('btnFecharAddFila').addEventListener('click', function() { fecharModal('modal-add-fila'); });
+  $('btnCancelarAddFila').addEventListener('click', function() { fecharModal('modal-add-fila'); });
+  $('btnSalvarFila').addEventListener('click', function() { salvarFila(); });
+  $('btnFilaClear').addEventListener('click', function() { filaPrints = []; renderFilaPrints(); });
+  $('btnSalvarProduto').addEventListener('click', function() { salvar(); });
+  $('btnCancelarProduto').addEventListener('click', function() { fecharModal('modal-produto'); });
+  $('btnFecharProduto').addEventListener('click', function() { fecharModal('modal-produto'); });
+  $('btnCopiarPrompt').addEventListener('click', function() { copiarPrompt(); });
+  $('btnAssistClear').addEventListener('click', function() { assistPrints = []; renderAssistPrints(); });
+  $('assist-print').addEventListener('click', function() { $('assist-file').click(); });
+  $('assist-file').addEventListener('change', function() {
+    var input = this;
+    lerArquivos(input, function(b64) { assistPrints.push(b64); renderAssistPrints(); });
+  });
+  $('fila-file-input').addEventListener('change', function() {
+    var input = this;
+    lerArquivos(input, function(b64) { filaPrints.push(b64); renderFilaPrints(); });
+  });
+
+  var overlays = document.querySelectorAll('.modal-overlay');
+  for (var oi = 0; oi < overlays.length; oi++) {
+    (function(o) {
+      o.addEventListener('click', function(e) { if (e.target === o) { o.className = 'modal-overlay'; } });
+    })(overlays[oi]);
+  }
+
+  checarSessao(function(u) {
+    if (u && userId) { mostrarApp(); iniciar(); }
+    else { mostrarLogin(); }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco de Ganchos — O Cara Testou</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; min-height: 100vh; }
+  .topnav {
+    background: #1a1a1a; padding: .6rem 2rem;
+    display: -webkit-box; display: -webkit-flex; display: flex;
+    -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+    -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topnav-brand { font-weight: 800; color: #fff; font-size: .9rem; }
+  .topnav-brand span { color: #e63946; }
+  .topnav-brand a { color: inherit; text-decoration: none; }
+  .topnav-links { display: -webkit-box; display: -webkit-flex; display: flex; gap: .5rem; }
+  .topnav-back {
+    background: #333; border: none; padding: .4rem .9rem;
+    font-size: .78rem; font-weight: 600; font-family: inherit;
+    color: #ccc; cursor: pointer; border-radius: 6px; text-decoration: none;
+  }
+  .topnav-back.ativo { background: #e63946; color: #fff; }
+  .container { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+
+  .top-bar { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: center; -webkit-align-items: center; align-items: center; -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; margin-bottom: 1.5rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; gap: .7rem; }
+  .page-title { font-size: 1.2rem; font-weight: 800; }
+  .page-title span { color: #e63946; }
+  .page-title .count { font-size: .8rem; color: #999; font-weight: 600; }
+  .cta-btn {
+    display: inline-block; background: #e63946; color: #fff; border: none;
+    font-size: .82rem; font-weight: 700; padding: .6rem 1.1rem; border-radius: 8px;
+    cursor: pointer; font-family: inherit; text-decoration: none;
+  }
+  .cta-btn:active { background: #c82d3a; }
+
+  .busca { width: 100%; max-width: 420px; border: 1px solid #ddd; border-radius: 10px; padding: .6rem .9rem; font-size: .85rem; font-family: inherit; outline: none; }
+  .busca:focus { border-color: #e63946; }
+
+  .stats { display: -webkit-box; display: -webkit-flex; display: flex; gap: .7rem; margin-bottom: 1.2rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; -webkit-box-align: center; -webkit-align-items: center; align-items: center; }
+  .stat { background: #fff; border-radius: 12px; padding: .7rem 1.1rem; font-size: .78rem; color: #888; font-weight: 600; }
+  .stat b { display: block; font-size: 1.15rem; color: #1a1a1a; }
+  .fav-toggle { background: #fff; border: 2px solid #eee; border-radius: 12px; padding: .65rem 1rem; font-size: .78rem; font-weight: 700; cursor: pointer; font-family: inherit; color: #999; }
+  .fav-toggle.on { border-color: #e6a23c; color: #e6a23c; background: #fff8e6; }
+
+  .cat-grupo { background: #fff; border-radius: 12px; margin-bottom: .7rem; overflow: hidden; }
+  .cat-grupo summary { list-style: none; cursor: pointer; padding: .8rem 1rem; display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: center; -webkit-align-items: center; align-items: center; -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; gap: .6rem; font-weight: 800; font-size: .9rem; color: #1a1a1a; }
+  .cat-grupo summary::-webkit-details-marker { display: none; }
+  .cat-grupo summary .n { font-size: .72rem; color: #999; font-weight: 700; background: #f0f0f0; border-radius: 20px; padding: .2rem .6rem; }
+  .cat-grupo.fav-grupo { border: 2px solid #e6a23c; }
+  .cat-grupo.fav-grupo summary .n { background: #e6a23c; color: #fff; }
+  .cat-grupo .ganchos-list { padding: .2rem .7rem .7rem; }
+  .gancho-row { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: center; -webkit-align-items: center; align-items: center; gap: .8rem; background: #f9f9f9; border-radius: 10px; padding: .7rem 1rem; margin-bottom: .4rem; }
+  .gancho-icon { font-size: 1rem; }
+  .gancho-texto { -webkit-box-flex: 1; -webkit-flex: 1; flex: 1; font-size: .85rem; line-height: 1.45; color: #333; }
+  .gancho-actions { display: -webkit-box; display: -webkit-flex; display: flex; gap: .3rem; }
+  .gancho-btn { background: none; border: none; cursor: pointer; font-size: .85rem; padding: .3rem .45rem; border-radius: 6px; }
+  .gancho-btn.fav.on { color: #e6a23c; }
+
+  .vazio { text-align: center; padding: 3rem; background: #fff; border-radius: 14px; color: #999; font-size: .9rem; }
+  .vazio .big { font-size: 2rem; margin-bottom: .5rem; }
+  .vazio a { color: #e63946; font-weight: 700; cursor: pointer; }
+
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.55); z-index: 200; -webkit-box-align: center; -webkit-align-items: center; align-items: center; -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center; padding: 1.2rem; }
+  .modal-overlay.open { display: -webkit-box; display: -webkit-flex; display: flex; }
+  .modal { background: #fff; border-radius: 16px; max-width: 480px; width: 100%; max-height: 88vh; display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -webkit-flex-direction: column; flex-direction: column; overflow: hidden; }
+  .modal-head { padding: 1rem 1.4rem; border-bottom: 1px solid #eee; display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: center; -webkit-align-items: center; align-items: center; -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; gap: .8rem; }
+  .modal-title { font-size: .95rem; font-weight: 800; }
+  .modal-title span { color: #e63946; }
+  .modal-close { background: #eee; border: none; border-radius: 6px; cursor: pointer; font-size: .9rem; padding: .3rem .6rem; font-weight: 700; color: #333; }
+  .modal-body { padding: 1rem 1.4rem; overflow-y: auto; }
+  .modal-footer { padding: .9rem 1.4rem; border-top: 1px solid #eee; display: -webkit-box; display: -webkit-flex; display: flex; gap: .6rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+
+  .form-field { margin-bottom: .9rem; }
+  .form-label { display: block; font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: #999; margin-bottom: .35rem; }
+  .form-select, .form-textarea, .form-input {
+    width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: .55rem .7rem;
+    font-size: .85rem; font-family: inherit; outline: none; background: #fff; color: #1a1a1a;
+  }
+  .form-select:focus, .form-textarea:focus, .form-input:focus { border-color: #e63946; }
+  .form-textarea { min-height: 90px; line-height: 1.5; }
+  .m-btn { background: #e63946; border: none; border-radius: 8px; cursor: pointer; font-size: .82rem; font-weight: 700; padding: .55rem 1.1rem; color: #fff; font-family: inherit; }
+  .m-btn:active { background: #c82d3a; }
+  .m-btn.ghost { background: #eee; color: #1a1a1a; }
+
+  .login-box { background: #fff; border-radius: 14px; padding: 1.2rem 1.4rem; margin-bottom: 1rem; }
+  .login-box h2 { font-size: 1rem; font-weight: 800; margin: 0 0 .8rem; }
+  .login-err { color: #e63946; font-size: .75rem; font-weight: 700; margin-top: .5rem; display: none; }
+
+  .erro { text-align: center; padding: 3rem; color: #e63946; font-size: .9rem; }
+  .footer { text-align: center; padding: 1.5rem; font-size: .72rem; color: #999; }
+</style>
+</head>
+<body>
+<div class="topnav">
+  <div class="topnav-brand"><a href="index.html"><span>O</span> Cara Testou</a></div>
+  <div class="topnav-links">
+    <a href="ganchos.html" class="topnav-back ativo">Ganchos</a>
+    <a href="missoes.html" class="topnav-back">Missoes</a>
+    <a href="index.html" class="topnav-back">Voltar</a>
+  </div>
+</div>
+<div class="container">
+  <div class="login-box" id="loginBox" style="display:none">
+    <h2>Entrar</h2>
+    <div class="form-field">
+      <label class="form-label">E-mail</label>
+      <input type="email" class="form-input" id="loginEmail" autocomplete="username">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Senha</label>
+      <input type="password" class="form-input" id="loginPass" autocomplete="current-password">
+    </div>
+    <button class="m-btn" id="btnLogin">Entrar</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+
+  <div id="appBox" style="display:none">
+    <div class="top-bar">
+      <div class="page-title"><span>Banco</span> de Ganchos <span class="count" id="contador"></span></div>
+      <button class="cta-btn" id="btnNovo">+ Novo gancho</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="stat-total">0</b>total</div>
+      <div class="stat"><b id="stat-cats">0</b>categorias</div>
+      <div class="stat"><b id="stat-favs">0</b>favoritos</div>
+      <button class="fav-toggle" id="fav-filtro">Só favoritos</button>
+    </div>
+    <input type="text" class="busca" id="busca" placeholder="Buscar gancho ou categoria..." autocomplete="off">
+    <div id="lista" style="margin-top:1rem"></div>
+  </div>
+</div>
+<div class="footer">O Cara Testou — Banco de Ganchos</div>
+
+<div class="modal-overlay" id="modal-gancho">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="m-titulo"><span>Novo</span> Gancho</div>
+      <button class="modal-close" id="btnFecharModal">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-label">Categoria</label>
+        <select class="form-select" id="e-categoria"></select>
+      </div>
+      <div class="form-field" id="e-nova-cat-field" style="display:none">
+        <label class="form-label">Nova categoria</label>
+        <input type="text" class="form-select" id="e-nova-categoria" placeholder="ex: Presente, Status..." autocomplete="off">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Texto do gancho</label>
+        <textarea class="form-textarea" id="e-texto" placeholder="Imagina precisar disso no pior momento..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="m-btn" id="btnSalvar">Salvar</button>
+      <button class="m-btn ghost" id="btnCancelar">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="erro" id="erro" style="display:none"></div>
+
+<script src="config.js"></script>
+<script>
+(function() {
+  var SUPABASE_URL = (window.SUPABASE_URL || '').trim();
+  var SUPABASE_ANON_KEY = (window.SUPABASE_ANON_KEY || '').trim();
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    var e0 = document.getElementById('erro');
+    e0.textContent = 'Configuracao ausente — verifique o config.js';
+    e0.style.display = 'block';
+    return;
+  }
+
+  var TOKEN_KEY = 'oct_ipad_token';
+  var USER_KEY = 'oct_ipad_user';
+  var token = null;
+  var userId = null;
+  var todosGanchos = [];
+  var editandoId = null;
+  var soFavoritos = false;
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    s = s || '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function mostrarErro(msg) { var e = $('erro'); e.textContent = msg; e.style.display = 'block'; }
+  function limparErro() { var e = $('erro'); e.textContent = ''; e.style.display = 'none'; }
+
+  function xhr(method, path, body, extraHeaders, cb) {
+    var x = new XMLHttpRequest();
+    x.open(method, SUPABASE_URL + path, true);
+    x.setRequestHeader('apikey', SUPABASE_ANON_KEY);
+    x.setRequestHeader('Content-Type', 'application/json');
+    if (token) { x.setRequestHeader('Authorization', 'Bearer ' + token); }
+    if (extraHeaders) {
+      for (var k in extraHeaders) { if (extraHeaders.hasOwnProperty(k)) { x.setRequestHeader(k, extraHeaders[k]); } }
+    }
+    x.onreadystatechange = function() {
+      if (x.readyState !== 4) { return; }
+      var data = null;
+      try { data = x.responseText ? JSON.parse(x.responseText) : null; } catch (e) { data = null; }
+      if (x.status >= 200 && x.status < 300) { cb(null, data); }
+      else {
+        var msg = 'HTTP ' + x.status;
+        if (data && data.message) { msg = data.message; }
+        else if (data && data.error_description) { msg = data.error_description; }
+        else if (data && data.msg) { msg = data.msg; }
+        cb(new Error(msg), data);
+      }
+    };
+    x.onerror = function() { cb(new Error('Falha de rede')); };
+    x.send(body ? JSON.stringify(body) : null);
+  }
+
+  function checarSessao(cb) {
+    try { token = window.localStorage.getItem(TOKEN_KEY) || null; } catch (e) { token = null; }
+    try { userId = window.localStorage.getItem(USER_KEY) || null; } catch (e) { userId = null; }
+    if (!token) { cb(null); return; }
+    xhr('GET', '/auth/v1/user', null, null, function(err, u) {
+      if (err || !u || !u.id) {
+        token = null; userId = null;
+        try { window.localStorage.removeItem(TOKEN_KEY); window.localStorage.removeItem(USER_KEY); } catch (e2) {}
+        cb(null); return;
+      }
+      userId = u.id;
+      cb(u);
+    });
+  }
+
+  function fazerLogin() {
+    var email = ($('loginEmail').value || '').trim();
+    var pass = $('loginPass').value || '';
+    var errBox = $('loginErr');
+    errBox.style.display = 'none';
+    if (!email || !pass) { errBox.textContent = 'Informe e-mail e senha.'; errBox.style.display = 'block'; return; }
+    var btn = $('btnLogin');
+    btn.disabled = true;
+    xhr('POST', '/auth/v1/token?grant_type=password', { email: email, password: pass }, null, function(err, res) {
+      btn.disabled = false;
+      if (err || !res || !res.access_token) {
+        var m = 'Login falhou.';
+        if (res && res.error_description) { m = res.error_description; }
+        else if (err && err.message) { m = err.message; }
+        errBox.textContent = m; errBox.style.display = 'block';
+        return;
+      }
+      token = res.access_token;
+      userId = (res.user && res.user.id) ? res.user.id : null;
+      try {
+        window.localStorage.setItem(TOKEN_KEY, token);
+        if (userId) { window.localStorage.setItem(USER_KEY, userId); }
+      } catch (e) {}
+      mostrarApp();
+      carregar();
+    });
+  }
+
+  function mostrarLogin() { $('loginBox').style.display = 'block'; $('appBox').style.display = 'none'; }
+  function mostrarApp() { $('loginBox').style.display = 'none'; $('appBox').style.display = 'block'; }
+
+  function carregar() {
+    if (!token || !userId) { mostrarLogin(); return; }
+    var q = '/rest/v1/ganchos?select=id,categoria,texto,favorito&user_id=eq.' + encodeURIComponent(userId) + '&order=categoria.asc';
+    xhr('GET', q, null, null, function(err, rows) {
+      if (err) { mostrarErro('Erro ao carregar: ' + err.message); return; }
+      limparErro();
+      todosGanchos = rows || [];
+      renderLista();
+    });
+  }
+
+  function renderLista() {
+    renderStats();
+    var favBtn = $('fav-filtro');
+    favBtn.className = soFavoritos ? 'fav-toggle on' : 'fav-toggle';
+    var termo = ($('busca').value || '').toLowerCase();
+    termo = termo.replace(/^\s+|\s+$/g, '');
+    var filtrados = [];
+    for (var i = 0; i < todosGanchos.length; i++) {
+      var g = todosGanchos[i];
+      var ok = !termo || (g.texto || '').toLowerCase().indexOf(termo) >= 0 || (g.categoria || '').toLowerCase().indexOf(termo) >= 0;
+      if (ok && (!soFavoritos || g.favorito)) { filtrados.push(g); }
+    }
+    filtrados.sort(function(a, b) { return ((b.favorito ? 1 : 0) - (a.favorito ? 1 : 0)); });
+    var el = $('lista');
+    $('contador').textContent = '(' + todosGanchos.length + ')';
+    if (!todosGanchos.length) {
+      el.innerHTML = '<div class="vazio"><div class="big">.</div>Nenhum gancho cadastrado ainda.<br><br><a id="linkNovo">Criar o primeiro gancho</a></div>';
+      var ln = $('linkNovo');
+      if (ln) { ln.onclick = function() { abrirNovo(); }; }
+      return;
+    }
+    if (!filtrados.length) {
+      el.innerHTML = '<div class="vazio">Nenhum gancho encontrado para a busca.</div>';
+      return;
+    }
+    var favs = [];
+    for (var fi = 0; fi < filtrados.length; fi++) { if (filtrados[fi].favorito) { favs.push(filtrados[fi]); } }
+    var grupos = {};
+    for (var gi = 0; gi < filtrados.length; gi++) {
+      var k = filtrados[gi].categoria || 'Sem categoria';
+      if (!grupos[k]) { grupos[k] = []; }
+      grupos[k].push(filtrados[gi]);
+    }
+    var html = '';
+    if (favs.length) {
+      html += '<details class="cat-grupo fav-grupo" open><summary><span>Favoritos</span><span class="n">' + favs.length + '</span></summary><div class="ganchos-list">';
+      for (var fj = 0; fj < favs.length; fj++) { html += ganchoRow(favs[fj]); }
+      html += '</div></details>';
+    }
+    for (var cat in grupos) {
+      if (!grupos.hasOwnProperty(cat)) { continue; }
+      html += '<details class="cat-grupo"><summary><span>' + esc(cat) + '</span><span class="n">' + grupos[cat].length + '</span></summary><div class="ganchos-list">';
+      for (var cj = 0; cj < grupos[cat].length; cj++) { html += ganchoRow(grupos[cat][cj]); }
+      html += '</div></details>';
+    }
+    el.innerHTML = html;
+    vincularRows();
+  }
+
+  function ganchoRow(g) {
+    var favCls = g.favorito ? 'gancho-btn fav on' : 'gancho-btn fav';
+    var star = g.favorito ? '*' : 'o';
+    var h = '<div class="gancho-row">';
+    h += '<span class="gancho-texto">' + esc(g.texto) + '</span>';
+    h += '<div class="gancho-actions">';
+    h += '<button class="' + favCls + '" data-fav="' + g.id + '">' + star + '</button>';
+    h += '<button class="gancho-btn editar" data-edit="' + g.id + '">Editar</button>';
+    h += '<button class="gancho-btn excluir" data-del="' + g.id + '">X</button>';
+    h += '</div></div>';
+    return h;
+  }
+
+  function vincularRows() {
+    var favs = document.querySelectorAll('[data-fav]');
+    for (var i = 0; i < favs.length; i++) {
+      (function(btn) {
+        btn.onclick = function() {
+          var id = btn.getAttribute('data-fav');
+          var g = null;
+          for (var k = 0; k < todosGanchos.length; k++) { if (String(todosGanchos[k].id) === String(id)) { g = todosGanchos[k]; } }
+          if (g) { toggleFav(g.id, !!g.favorito); }
+        };
+      })(favs[i]);
+    }
+    var edits = document.querySelectorAll('[data-edit]');
+    for (var e = 0; e < edits.length; e++) {
+      (function(btn) { btn.onclick = function() { abrirEditar(btn.getAttribute('data-edit')); }; })(edits[e]);
+    }
+    var dels = document.querySelectorAll('[data-del]');
+    for (var d = 0; d < dels.length; d++) {
+      (function(btn) { btn.onclick = function() { excluir(btn.getAttribute('data-del')); }; })(dels[d]);
+    }
+  }
+
+  function renderStats() {
+    $('stat-total').textContent = todosGanchos.length;
+    var cats = {};
+    var nf = 0;
+    for (var i = 0; i < todosGanchos.length; i++) {
+      if (todosGanchos[i].categoria) { cats[todosGanchos[i].categoria] = 1; }
+      if (todosGanchos[i].favorito) { nf++; }
+    }
+    var nc = 0;
+    for (var c in cats) { if (cats.hasOwnProperty(c)) { nc++; } }
+    $('stat-cats').textContent = nc;
+    $('stat-favs').textContent = nf;
+  }
+
+  function toggleFavFiltro() { soFavoritos = !soFavoritos; renderLista(); }
+
+  function toggleFav(id, atual) {
+    if (!token || !userId) { mostrarLogin(); return; }
+    var path = '/rest/v1/ganchos?id=eq.' + encodeURIComponent(id) + '&user_id=eq.' + encodeURIComponent(userId);
+    xhr('PATCH', path, { favorito: !atual }, { Prefer: 'return=minimal' }, function(err) {
+      if (err) { mostrarErro('Erro: ' + err.message); return; }
+      for (var i = 0; i < todosGanchos.length; i++) {
+        if (String(todosGanchos[i].id) === String(id)) { todosGanchos[i].favorito = !atual; }
+      }
+      renderLista();
+    });
+  }
+
+  function preencherCategorias() {
+    var cats = {};
+    for (var i = 0; i < todosGanchos.length; i++) {
+      if (todosGanchos[i].categoria) { cats[todosGanchos[i].categoria] = 1; }
+    }
+    var sel = $('e-categoria');
+    var html = '';
+    for (var c in cats) { if (cats.hasOwnProperty(c)) { html += '<option value="' + esc(c) + '">' + esc(c) + '</option>'; } }
+    html += '<option value="__nova__">+ Nova categoria...</option>';
+    sel.innerHTML = html;
+  }
+
+  function abrirNovo() {
+    editandoId = null;
+    $('m-titulo').innerHTML = '<span>Novo</span> Gancho';
+    preencherCategorias();
+    $('e-texto').value = '';
+    $('e-nova-categoria').value = '';
+    categoriaToggle();
+    $('modal-gancho').className = 'modal-overlay open';
+  }
+
+  function abrirEditar(id) {
+    var g = null;
+    for (var i = 0; i < todosGanchos.length; i++) { if (String(todosGanchos[i].id) === String(id)) { g = todosGanchos[i]; } }
+    if (!g) return;
+    editandoId = id;
+    $('m-titulo').innerHTML = '<span>Editar</span> Gancho';
+    preencherCategorias();
+    var sel = $('e-categoria');
+    var achou = false;
+    for (var o = 0; o < sel.options.length; o++) { if (sel.options[o].value === g.categoria) { achou = true; } }
+    if (g.categoria && achou) { sel.value = g.categoria; }
+    else { sel.value = '__nova__'; $('e-nova-categoria').value = g.categoria || ''; }
+    $('e-texto').value = g.texto || '';
+    categoriaToggle();
+    $('modal-gancho').className = 'modal-overlay open';
+  }
+
+  function categoriaToggle() {
+    var isNova = $('e-categoria').value === '__nova__';
+    $('e-nova-cat-field').style.display = isNova ? 'block' : 'none';
+  }
+
+  function fecharModal() { $('modal-gancho').className = 'modal-overlay'; }
+
+  function salvar() {
+    var sel = $('e-categoria');
+    var categoria = sel.value === '__nova__' ? ($('e-nova-categoria').value || '').replace(/^\s+|\s+$/g, '') : sel.value;
+    var texto = ($('e-texto').value || '').replace(/^\s+|\s+$/g, '');
+    if (!texto) { alert('Digite o texto do gancho'); return; }
+    if (!categoria) { alert('Defina a categoria'); return; }
+    if (!token || !userId) { mostrarLogin(); return; }
+    if (editandoId) {
+      var path = '/rest/v1/ganchos?id=eq.' + encodeURIComponent(editandoId) + '&user_id=eq.' + encodeURIComponent(userId);
+      xhr('PATCH', path, { categoria: categoria, texto: texto }, { Prefer: 'return=minimal' }, function(err) {
+        if (err) { mostrarErro('Erro: ' + err.message); return; }
+        fecharModal();
+        carregar();
+      });
+    } else {
+      xhr('POST', '/rest/v1/ganchos', { user_id: userId, categoria: categoria, texto: texto }, { Prefer: 'return=minimal' }, function(err) {
+        if (err) { mostrarErro('Erro: ' + err.message); return; }
+        fecharModal();
+        carregar();
+      });
+    }
+  }
+
+  function excluir(id) {
+    var g = null;
+    for (var i = 0; i < todosGanchos.length; i++) { if (String(todosGanchos[i].id) === String(id)) { g = todosGanchos[i]; } }
+    if (!confirm('Excluir este gancho?\n\n' + (g ? g.texto : ''))) return;
+    if (!token || !userId) { mostrarLogin(); return; }
+    var path = '/rest/v1/ganchos?id=eq.' + encodeURIComponent(id) + '&user_id=eq.' + encodeURIComponent(userId);
+    xhr('DELETE', path, null, { Prefer: 'return=minimal' }, function(err) {
+      if (err) { mostrarErro('Erro: ' + err.message); return; }
+      carregar();
+    });
+  }
+
+  $('btnLogin').addEventListener('click', function() { fazerLogin(); });
+  $('btnNovo').addEventListener('click', function() { abrirNovo(); });
+  $('btnSalvar').addEventListener('click', function() { salvar(); });
+  $('btnCancelar').addEventListener('click', function() { fecharModal(); });
+  $('btnFecharModal').addEventListener('click', function() { fecharModal(); });
+  $('fav-filtro').addEventListener('click', function() { toggleFavFiltro(); });
+  $('busca').addEventListener('input', function() { renderLista(); });
+  $('e-categoria').addEventListener('change', function() { categoriaToggle(); });
+  $('modal-gancho').addEventListener('click', function(e) { if (e.target === $('modal-gancho')) { fecharModal(); } });
+
+  checarSessao(function(u) {
+    if (u && userId) { mostrarApp(); carregar(); }
+    else { mostrarLogin(); }
+  });
+})();
+</script>
+</body>
+</html>

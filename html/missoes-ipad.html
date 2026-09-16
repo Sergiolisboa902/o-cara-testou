@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Missões — O Cara Testou</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; min-height: 100vh; }
+  .topnav {
+    background: #1a1a1a; padding: .6rem 2rem;
+    display: -webkit-box; display: -webkit-flex; display: flex;
+    -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+    -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topnav-brand { font-weight: 800; color: #fff; font-size: .9rem; }
+  .topnav-brand span { color: #e63946; }
+  .topnav-brand a { color: inherit; text-decoration: none; }
+  .topnav-links { display: -webkit-box; display: -webkit-flex; display: flex; gap: .5rem; -webkit-box-align: center; -webkit-align-items: center; align-items: center; }
+  .topnav-back { background: #333; border: none; padding: .4rem .9rem; font-size: .78rem; font-weight: 600; font-family: inherit; color: #ccc; cursor: pointer; border-radius: 6px; text-decoration: none; }
+  .topnav-back.ativo { background: #e63946; color: #fff; }
+  .container { max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem 0; width: 100%; }
+  .lista-scroll { padding-bottom: 1.5rem; border-top: 1px solid #ececec; padding-top: 1rem; }
+
+  .top-bar { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: center; -webkit-align-items: center; align-items: center; -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; margin-bottom: 1.5rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; gap: .7rem; }
+  .page-title { font-size: 1.2rem; font-weight: 800; }
+  .page-title span { color: #e63946; }
+  .page-title .count { font-size: .8rem; color: #999; font-weight: 600; }
+  .cta-btn { display: inline-block; background: #e63946; color: #fff; border: none; font-size: .82rem; font-weight: 700; padding: .6rem 1.1rem; border-radius: 8px; cursor: pointer; font-family: inherit; text-decoration: none; }
+  .cta-btn:active { background: #c82d3a; }
+
+  .grid { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; gap: 1rem; }
+  .grid .missao-card { width: 260px; -webkit-box-flex: 1; -webkit-flex: 1 1 260px; flex: 1 1 260px; }
+
+  .missao-card { background: #fff; border-radius: 14px; padding: 1.1rem 1.3rem; border: 2px solid transparent; cursor: pointer; position: relative; }
+  .missao-card.completa { border-color: #3ECF8E; }
+  .missao-card.andamento { border-color: #e63946; }
+  .missao-head { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: start; -webkit-align-items: flex-start; align-items: flex-start; -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; gap: .6rem; }
+  .missao-nome { font-size: .92rem; font-weight: 800; line-height: 1.35; }
+  .missao-sub { font-size: .72rem; color: #888; margin-top: .35rem; font-weight: 600; }
+  .missao-status { display: inline-block; font-size: .68rem; font-weight: 700; text-transform: uppercase; padding: .25rem .55rem; border-radius: 20px; margin-top: .4rem; }
+  .missao-status.andamento { background: #fde7e9; color: #e63946; }
+  .missao-status.completa { background: #dcf7ea; color: #1a9e63; }
+  .missao-progresso { font-size: .78rem; color: #888; font-weight: 700; margin-top: .7rem; margin-bottom: .4rem; }
+  .missao-progresso b { color: #1a1a1a; }
+  .barra { height: 6px; background: #eee; border-radius: 4px; overflow: hidden; }
+  .barra-fill { height: 100%; border-radius: 4px; }
+  .barra-fill.andamento { background: #e63946; }
+  .barra-fill.completa { background: #3ECF8E; }
+  .missao-data { font-size: .7rem; color: #bbb; margin-top: .6rem; }
+  .missao-chip-prod { display: inline-block; background: #f0f0f0; color: #666; font-weight: 700; padding: .12rem .5rem; border-radius: 20px; font-size: .68rem; }
+  .missao-del { position: absolute; top: .6rem; right: .6rem; background: none; border: none; font-size: .8rem; color: #ccc; cursor: pointer; padding: .2rem .35rem; border-radius: 5px; }
+
+  .filtros { margin-bottom: 1.2rem; }
+  .filtro-status { display: -webkit-box; display: -webkit-flex; display: flex; gap: .45rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin-bottom: .7rem; }
+  .chip-filtro { background: #fff; border: 2px solid #e8e8e8; border-radius: 20px; padding: .45rem .9rem; font-size: .76rem; font-weight: 700; cursor: pointer; font-family: inherit; color: #777; }
+  .chip-filtro.ativo { background: #e63946; border-color: #e63946; color: #fff; }
+  .filtro-produto { display: -webkit-box; display: -webkit-flex; display: flex; gap: .5rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+  .prod-busca { border: 1px solid #ddd; border-radius: 8px; padding: .5rem .7rem; font-size: .82rem; font-family: inherit; outline: none; width: 220px; max-width: 100%; }
+  .prod-busca:focus { border-color: #e63946; }
+  .prod-busca.sort { width: auto; cursor: pointer; }
+
+  .vazio { text-align: center; padding: 3rem; background: #fff; border-radius: 14px; color: #999; font-size: .9rem; }
+  .vazio .big { font-size: 2rem; margin-bottom: .5rem; }
+  .vazio a { color: #e63946; font-weight: 700; cursor: pointer; }
+
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.55); z-index: 200; -webkit-box-align: center; -webkit-align-items: center; align-items: center; -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center; padding: 1.2rem; }
+  .modal-overlay.open { display: -webkit-box; display: -webkit-flex; display: flex; }
+  .modal { background: #fff; border-radius: 16px; max-width: 640px; width: 100%; max-height: 88vh; display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -webkit-flex-direction: column; flex-direction: column; overflow: hidden; }
+  .modal-head { padding: 1rem 1.4rem; border-bottom: 1px solid #eee; display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: center; -webkit-align-items: center; align-items: center; -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; gap: .8rem; }
+  .modal-title { font-size: .95rem; font-weight: 800; }
+  .modal-title span { color: #e63946; }
+  .modal-close { background: #eee; border: none; border-radius: 6px; cursor: pointer; font-size: .9rem; padding: .3rem .6rem; font-weight: 700; color: #333; }
+  .modal-body { padding: 1rem 1.4rem; overflow-y: auto; }
+  .modal-footer { padding: .9rem 1.4rem; border-top: 1px solid #eee; display: -webkit-box; display: -webkit-flex; display: flex; gap: .6rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+
+  .det-edicao { background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: .8rem .9rem; margin-bottom: 1rem; }
+  .det-contador { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: center; -webkit-align-items: center; align-items: center; gap: .6rem; font-size: .8rem; font-weight: 700; color: #555; margin-bottom: 1rem; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+  .det-contador .barra { -webkit-box-flex: 1; -webkit-flex: 1; flex: 1; min-width: 140px; }
+  .det-contador .pct { color: #e63946; }
+
+  .gancho-item { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: center; -webkit-align-items: center; align-items: center; gap: .7rem; padding: .55rem .1rem; border-bottom: 1px solid #f0f0f0; }
+  .gancho-check { width: 20px; height: 20px; cursor: pointer; }
+  .gancho-texto { -webkit-box-flex: 1; -webkit-flex: 1; flex: 1; font-size: .85rem; line-height: 1.45; color: #333; }
+  .gancho-texto.concluido { text-decoration: line-through; color: #aaa; }
+  .gancho-del { background: none; border: none; font-size: .85rem; color: #ccc; cursor: pointer; padding: .2rem .4rem; border-radius: 5px; }
+  .gancho-vazio { text-align: center; padding: 1.5rem; color: #aaa; font-size: .82rem; }
+
+  .add-row { display: -webkit-box; display: -webkit-flex; display: flex; gap: .5rem; width: 100%; }
+  .add-row input { -webkit-box-flex: 1; -webkit-flex: 1; flex: 1; border: 1px solid #ddd; border-radius: 8px; padding: .55rem .7rem; font-size: .85rem; font-family: inherit; outline: none; }
+  .add-row input:focus { border-color: #e63946; }
+  .add-btn { background: #1a1a1a; color: #fff; border: none; border-radius: 8px; padding: .55rem .9rem; font-size: .82rem; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+  .form-field { margin-bottom: .9rem; }
+  .form-label { display: block; font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: #999; margin-bottom: .35rem; }
+  .form-select, .form-textarea, .form-input { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: .55rem .7rem; font-size: .85rem; font-family: inherit; outline: none; background: #fff; color: #1a1a1a; }
+  .form-select:focus, .form-textarea:focus, .form-input:focus { border-color: #e63946; }
+  .form-textarea { min-height: 120px; line-height: 1.5; }
+  .form-hint { font-size: .72rem; color: #aaa; margin-top: .3rem; }
+  .m-btn { background: #e63946; border: none; border-radius: 8px; cursor: pointer; font-size: .82rem; font-weight: 700; padding: .55rem 1.1rem; color: #fff; font-family: inherit; }
+  .m-btn:active { background: #c82d3a; }
+  .m-btn.ghost { background: #eee; color: #1a1a1a; }
+  .m-btn.mini { padding: .4rem .8rem; font-size: .75rem; margin-top: .4rem; background: #1a1a1a; }
+
+  .sel-chips { margin-bottom: .55rem; }
+  .sel-chip { display: inline-block; background: #ffe3e3; color: #e63946; font-size: .74rem; font-weight: 700; padding: .3rem .35rem .3rem .7rem; border-radius: 20px; margin: 0 .4rem .4rem 0; }
+  .sel-chip button { background: none; border: none; color: #e63946; cursor: pointer; font-size: .8rem; font-weight: 800; padding: 0 .1rem; }
+  .catalogo { border: 1px solid #eee; border-radius: 10px; max-height: 320px; overflow-y: auto; }
+  .cat-grupo { border-bottom: 1px solid #f0f0f0; }
+  .cat-grupo summary { cursor: pointer; padding: .55rem .7rem; background: #fafafa; font-size: .76rem; font-weight: 800; color: #333; }
+  .cat-grupo summary .n { color: #999; font-weight: 600; }
+  .cat-grupo.fav-grupo { border: 2px solid #e6a23c; border-radius: 10px; }
+  .cat-grupo.fav-grupo summary { color: #e6a23c; }
+  .cat-item { padding: .5rem .7rem .5rem 1.1rem; border-top: 1px solid #f5f5f5; background: #fff; display: -webkit-box; display: -webkit-flex; display: flex; gap: .55rem; -webkit-box-align: start; -webkit-align-items: flex-start; align-items: flex-start; }
+  .cat-item label { font-size: .8rem; line-height: 1.4; color: #444; cursor: pointer; }
+  .cat-item.checked label { color: #e63946; font-weight: 700; }
+  .cat-item .fav-star { color: #e6a23c; font-size: .8rem; }
+  .cat-vazio { padding: 1.2rem; text-align: center; color: #aaa; font-size: .8rem; }
+
+  .pi-desc { font-size: .85rem; color: #555; line-height: 1.55; background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: .8rem .9rem; margin-bottom: 1rem; }
+  .pi-secao { margin-bottom: 1.1rem; }
+  .pi-titulo { font-size: .74rem; font-weight: 800; text-transform: uppercase; color: #e63946; margin-bottom: .35rem; }
+  .pi-secao ul { margin: 0; padding-left: 1.2rem; }
+  .pi-secao li { font-size: .84rem; line-height: 1.5; color: #333; margin-bottom: .25rem; }
+  .pi-obj { background: #fff8f8; border: 1px solid #f3e0e0; border-radius: 8px; padding: .55rem .7rem; margin-bottom: .45rem; }
+  .pi-obj b { display: block; font-size: .82rem; color: #1a1a1a; margin-bottom: .15rem; }
+  .pi-obj span { display: block; font-size: .8rem; color: #555; line-height: 1.45; }
+  .prod-info-btn { background: #f0f0f0; border: 1px solid #ddd; border-radius: 8px; padding: .55rem .75rem; cursor: pointer; font-size: .85rem; font-family: inherit; }
+
+  .login-box { background: #fff; border-radius: 14px; padding: 1.2rem 1.4rem; margin-bottom: 1rem; }
+  .login-box h2 { font-size: 1rem; font-weight: 800; margin: 0 0 .8rem; }
+  .login-err { color: #e63946; font-size: .75rem; font-weight: 700; margin-top: .5rem; display: none; }
+
+  .erro { text-align: center; padding: 3rem; color: #e63946; font-size: .9rem; }
+  .footer { text-align: center; padding: 1.5rem; font-size: .72rem; color: #999; }
+</style>
+</head>
+<body>
+<div class="topnav">
+  <div class="topnav-brand"><a href="index.html"><span>O</span> Cara Testou</a></div>
+  <div class="topnav-links">
+    <a href="ganchos-ipad.html" class="topnav-back">Ganchos</a>
+    <a href="index.html" class="topnav-back">Voltar</a>
+  </div>
+</div>
+<div class="container">
+
+  <div class="login-box" id="loginBox" style="display:none">
+    <h2>Entrar</h2>
+    <div class="form-field">
+      <label class="form-label">E-mail</label>
+      <input type="email" class="form-input" id="loginEmail" autocomplete="username">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Senha</label>
+      <input type="password" class="form-input" id="loginPass" autocomplete="current-password">
+    </div>
+    <button class="m-btn" id="btnLogin">Entrar</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+
+  <div id="appBox" style="display:none">
+    <div class="top-bar">
+      <div class="page-title"><span>Missões</span> de Produção <span class="count" id="contador"></span></div>
+      <button class="cta-btn" id="btnNovaMissao">Nova Missão</button>
+    </div>
+    <div class="filtros">
+      <div class="filtro-status">
+        <button class="chip-filtro ativo" data-status="todas">Todas</button>
+        <button class="chip-filtro" data-status="andamento">Em andamento</button>
+        <button class="chip-filtro" data-status="completa">Concluídas</button>
+      </div>
+      <div class="filtro-produto">
+        <input type="text" class="prod-busca" id="f-produto" placeholder="Filtrar por produto..." autocomplete="off">
+        <select class="prod-busca sort" id="f-ordem">
+          <option value="recentes">Data: mais recentes</option>
+          <option value="antigas">Data: mais antigas</option>
+          <option value="progresso">Progresso</option>
+        </select>
+      </div>
+    </div>
+    <div class="lista-scroll"><div id="lista"></div></div>
+  </div>
+</div>
+<div class="footer">O Cara Testou — Missões de Produção</div>
+
+<div class="modal-overlay" id="modal-detalhe">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="d-titulo"></div>
+        <button class="m-btn mini" id="btnDuplicar">Duplicar</button>
+      </div>
+      <button class="modal-close" id="btnFecharDetalhe">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="det-edicao">
+        <div class="form-field">
+          <label class="form-label">Nome da missão</label>
+          <input type="text" class="form-select" id="d-nome" placeholder="ex: Q18B — Vídeo 1">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Produto</label>
+          <input type="text" class="form-select" id="d-produto">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Cenário</label>
+          <input type="text" class="form-select" id="d-cenario">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Figurino</label>
+          <input type="text" class="form-select" id="d-figurino">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Descrição da Cena</label>
+          <textarea class="form-textarea" id="d-descricao" style="min-height:60px"></textarea>
+        </div>
+        <button class="m-btn" id="btnSalvarMissao">Salvar alterações</button>
+      </div>
+      <div class="det-contador">
+        <span id="d-contador"></span>
+        <div class="barra"><div class="barra-fill andamento" id="d-barra"></div></div>
+        <span class="pct" id="d-pct"></span>
+      </div>
+      <div id="d-lista"></div>
+    </div>
+    <div class="modal-footer">
+      <div class="add-row">
+        <input type="text" id="d-novo" placeholder="Adicionar novo gancho...">
+        <button class="add-btn" id="btnAddGancho">+ Adicionar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-criar">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title"><span>Nova</span> Missão</div>
+      <button class="modal-close" id="btnFecharCriar">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-label">Nome da missão</label>
+        <input type="text" class="form-select" id="c-nome" placeholder="ex: Q18B — Vídeo 1 (opcional)">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Produto</label>
+        <select class="form-select" id="c-produto"></select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Cenário</label>
+        <input type="text" class="form-select" id="c-cenario" placeholder="ex: Garagem, estúdio...">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Figurino</label>
+        <input type="text" class="form-select" id="c-figurino" placeholder="ex: Camisa preta + jaleco...">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Descrição da Cena</label>
+        <textarea class="form-textarea" id="c-descricao" style="min-height:70px"></textarea>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Ganchos</label>
+        <div style="padding:.5rem 0">
+          <button class="add-btn" id="btnNovoGancho" type="button">+ Novo gancho</button>
+        </div>
+        <div class="sel-chips" id="c-chips"></div>
+        <input type="text" class="form-select" id="c-busca" placeholder="Buscar gancho no catálogo..." autocomplete="off">
+        <div class="catalogo" id="catalogo"></div>
+        <div class="form-hint">Marque no catálogo ou digite manualmente abaixo — junta tudo.</div>
+        <textarea class="form-textarea" id="c-ganchos" style="min-height:90px;margin-top:.4rem" placeholder="Um gancho por linha..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="m-btn" id="btnCriarMissao">Criar missão</button>
+      <button class="m-btn ghost" id="btnCancelarCriar">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-produto-info">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="info-produto-nome"></div>
+      <button class="modal-close" id="btnFecharInfo">X</button>
+    </div>
+    <div class="modal-body" id="info-produto-body"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-novo-gancho">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title"><span>Novo</span> Gancho</div>
+      <button class="modal-close" id="btnFecharNG">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-label">Categoria</label>
+        <select class="form-select" id="ng-categoria"></select>
+      </div>
+      <div class="form-field" id="ng-nova-cat-field" style="display:none">
+        <label class="form-label">Nova categoria</label>
+        <input type="text" class="form-select" id="ng-nova-categoria" autocomplete="off">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Texto do gancho</label>
+        <textarea class="form-textarea" id="ng-texto" style="min-height:80px"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="m-btn" id="btnSalvarNG">Salvar gancho</button>
+      <button class="m-btn ghost" id="btnCancelarNG">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="erro" id="erro" style="display:none"></div>
+
+<script src="config.js"></script>
+<script>
+(function() {
+  var SUPABASE_URL = (window.SUPABASE_URL || '').trim();
+  var SUPABASE_ANON_KEY = (window.SUPABASE_ANON_KEY || '').trim();
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    var e0 = document.getElementById('erro');
+    e0.textContent = 'Configuracao ausente — verifique o config.js';
+    e0.style.display = 'block';
+    return;
+  }
+
+  var TOKEN_KEY = 'oct_ipad_token';
+  var USER_KEY = 'oct_ipad_user';
+  var token = null;
+  var userId = null;
+  var todasMissoes = [];
+  var missaoAtual = null;
+  var detalheId = null;
+  var ganchosCatalogo = [];
+  var ganchosSel = {};
+  var filtroStatus = 'todas';
+  var produtosDbCache = [];
+
+  var INFO_CAMPOS = [
+    ['resumo', 'Resumo'],
+    ['problemas', 'Problemas que resolve'],
+    ['beneficios', 'Beneficios'],
+    ['caracteristicas', 'Caracteristicas'],
+    ['diferenciais', 'Diferenciais'],
+    ['testes', 'Testes'],
+    ['momentosWow', 'Momentos WOW'],
+    ['publicoIdeal', 'Publico ideal'],
+    ['objecoes', 'Objecoes'],
+    ['curiosidades', 'Curiosidades']
+  ];
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    s = s || '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function mostrarErro(msg) { var e = $('erro'); e.textContent = msg; e.style.display = 'block'; }
+  function limparErro() { var e = $('erro'); e.textContent = ''; e.style.display = 'none'; }
+  function trim(s) { return (s || '').replace(/^\s+|\s+$/g, ''); }
+
+  function xhr(method, path, body, extraHeaders, cb) {
+    var x = new XMLHttpRequest();
+    x.open(method, SUPABASE_URL + path, true);
+    x.setRequestHeader('apikey', SUPABASE_ANON_KEY);
+    x.setRequestHeader('Content-Type', 'application/json');
+    if (token) { x.setRequestHeader('Authorization', 'Bearer ' + token); }
+    if (extraHeaders) {
+      for (var k in extraHeaders) { if (extraHeaders.hasOwnProperty(k)) { x.setRequestHeader(k, extraHeaders[k]); } }
+    }
+    x.onreadystatechange = function() {
+      if (x.readyState !== 4) { return; }
+      var data = null;
+      try { data = x.responseText ? JSON.parse(x.responseText) : null; } catch (e) { data = null; }
+      if (x.status >= 200 && x.status < 300) { cb(null, data); }
+      else {
+        var msg = 'HTTP ' + x.status;
+        if (data && data.message) { msg = data.message; }
+        else if (data && data.error_description) { msg = data.error_description; }
+        else if (data && data.msg) { msg = data.msg; }
+        cb(new Error(msg), data);
+      }
+    };
+    x.onerror = function() { cb(new Error('Falha de rede')); };
+    x.send(body ? JSON.stringify(body) : null);
+  }
+
+  function checarSessao(cb) {
+    try { token = window.localStorage.getItem(TOKEN_KEY) || null; } catch (e) { token = null; }
+    try { userId = window.localStorage.getItem(USER_KEY) || null; } catch (e) { userId = null; }
+    if (!token) { cb(null); return; }
+    xhr('GET', '/auth/v1/user', null, null, function(err, u) {
+      if (err || !u || !u.id) {
+        token = null; userId = null;
+        try { window.localStorage.removeItem(TOKEN_KEY); window.localStorage.removeItem(USER_KEY); } catch (e2) {}
+        cb(null); return;
+      }
+      userId = u.id;
+      cb(u);
+    });
+  }
+
+  function fazerLogin() {
+    var email = trim($('loginEmail').value);
+    var pass = $('loginPass').value || '';
+    var errBox = $('loginErr');
+    errBox.style.display = 'none';
+    if (!email || !pass) { errBox.textContent = 'Informe e-mail e senha.'; errBox.style.display = 'block'; return; }
+    var btn = $('btnLogin');
+    btn.disabled = true;
+    xhr('POST', '/auth/v1/token?grant_type=password', { email: email, password: pass }, null, function(err, res) {
+      btn.disabled = false;
+      if (err || !res || !res.access_token) {
+        var m = 'Login falhou.';
+        if (res && res.error_description) { m = res.error_description; }
+        else if (err && err.message) { m = err.message; }
+        errBox.textContent = m; errBox.style.display = 'block';
+        return;
+      }
+      token = res.access_token;
+      userId = (res.user && res.user.id) ? res.user.id : null;
+      try {
+        window.localStorage.setItem(TOKEN_KEY, token);
+        if (userId) { window.localStorage.setItem(USER_KEY, userId); }
+      } catch (e) {}
+      mostrarApp();
+      iniciar();
+    });
+  }
+
+  function mostrarLogin() { $('loginBox').style.display = 'block'; $('appBox').style.display = 'none'; }
+  function mostrarApp() { $('loginBox').style.display = 'none'; $('appBox').style.display = 'block'; }
+  function abrirModal(id) { $(id).className = 'modal-overlay open'; }
+  function fecharModal(id) { $(id).className = 'modal-overlay'; }
+
+  function iniciar() {
+    preencherProdutos(function() {
+      carregarCatalogo(function() {
+        carregarMissoes();
+      });
+    });
+  }
+
+  function carregarCatalogo(cb) {
+    var q = '/rest/v1/ganchos?select=id,categoria,texto,favorito&user_id=eq.' + encodeURIComponent(userId) + '&order=categoria.asc';
+    xhr('GET', q, null, null, function(err, rows) {
+      if (err) { mostrarErro('Erro catalogo: ' + err.message); if (cb) { cb(); } return; }
+      limparErro();
+      ganchosCatalogo = rows || [];
+      ganchosCatalogo.sort(function(a, b) { return ((b.favorito ? 1 : 0) - (a.favorito ? 1 : 0)); });
+      renderCatalogo();
+      if (cb) { cb(); }
+    });
+  }
+
+  function renderCatalogo() {
+    var el = $('catalogo');
+    if (!el) return;
+    var termo = trim(($('c-busca').value || '').toLowerCase());
+    var filtrados = [];
+    for (var i = 0; i < ganchosCatalogo.length; i++) {
+      var g = ganchosCatalogo[i];
+      if (!termo || (g.texto || '').toLowerCase().indexOf(termo) >= 0 || (g.categoria || '').toLowerCase().indexOf(termo) >= 0) { filtrados.push(g); }
+    }
+    if (!filtrados.length) {
+      el.innerHTML = ganchosCatalogo.length
+        ? '<div class="cat-vazio">Nenhum gancho encontrado.</div>'
+        : '<div class="cat-vazio">Catalogo vazio. Adicione ganchos na pagina Ganchos.</div>';
+      return;
+    }
+    var grupos = {};
+    for (var gi = 0; gi < filtrados.length; gi++) {
+      var k = filtrados[gi].categoria || 'Sem categoria';
+      if (!grupos[k]) { grupos[k] = []; }
+      grupos[k].push(filtrados[gi]);
+    }
+    var favs = [];
+    for (var fi = 0; fi < filtrados.length; fi++) { if (filtrados[fi].favorito) { favs.push(filtrados[fi]); } }
+    var html = '';
+    if (favs.length) {
+      var nselF = 0;
+      for (var sf = 0; sf < favs.length; sf++) { if (ganchosSel[favs[sf].id]) { nselF++; } }
+      html += '<details class="cat-grupo fav-grupo" open><summary>Favoritos <span class="n">(' + nselF + '/' + favs.length + ')</span></summary>';
+      for (var fj = 0; fj < favs.length; fj++) { html += catItem(favs[fj]); }
+      html += '</details>';
+    }
+    for (var cat in grupos) {
+      if (!grupos.hasOwnProperty(cat)) { continue; }
+      var itens = grupos[cat];
+      var nsel = 0;
+      for (var si = 0; si < itens.length; si++) { if (ganchosSel[itens[si].id]) { nsel++; } }
+      html += '<details class="cat-grupo"><summary>' + esc(cat) + ' <span class="n">(' + nsel + '/' + itens.length + ')</span></summary>';
+      for (var cj = 0; cj < itens.length; cj++) { html += catItem(itens[cj]); }
+      html += '</details>';
+    }
+    el.innerHTML = html;
+    var boxes = el.querySelectorAll('input[data-cat]');
+    for (var bi = 0; bi < boxes.length; bi++) {
+      (function(box) {
+        box.onchange = function() { toggleGanchoCat(box.getAttribute('data-cat'), box.checked); };
+      })(boxes[bi]);
+    }
+  }
+
+  function catItem(g) {
+    var marcado = !!ganchosSel[g.id];
+    var h = '<div class="cat-item' + (marcado ? ' checked' : '') + '">';
+    h += '<input type="checkbox" data-cat="' + g.id + '"' + (marcado ? ' checked' : '') + '>';
+    h += '<label>' + (g.favorito ? '<span class="fav-star">* </span>' : '') + esc(g.texto) + '</label>';
+    h += '</div>';
+    return h;
+  }
+
+  function toggleGanchoCat(id, checked) {
+    if (checked) { ganchosSel[id] = 1; } else { delete ganchosSel[id]; }
+    renderChips();
+    renderCatalogo();
+  }
+
+  function removerGanchoCat(id) { delete ganchosSel[id]; renderChips(); renderCatalogo(); }
+
+  function renderChips() {
+    var el = $('c-chips');
+    if (!el) return;
+    var html = '';
+    for (var id in ganchosSel) {
+      if (!ganchosSel.hasOwnProperty(id)) { continue; }
+      var g = null;
+      for (var i = 0; i < ganchosCatalogo.length; i++) { if (String(ganchosCatalogo[i].id) === String(id)) { g = ganchosCatalogo[i]; } }
+      if (!g) { continue; }
+      html += '<span class="sel-chip">' + esc(g.texto) + ' <button data-rmchip="' + g.id + '">X</button></span>';
+    }
+    el.innerHTML = html;
+    var rms = el.querySelectorAll('[data-rmchip]');
+    for (var r = 0; r < rms.length; r++) {
+      (function(btn) { btn.onclick = function() { removerGanchoCat(btn.getAttribute('data-rmchip')); }; })(rms[r]);
+    }
+  }
+
+  function abrirNovoGancho() {
+    var cats = {};
+    for (var i = 0; i < ganchosCatalogo.length; i++) { if (ganchosCatalogo[i].categoria) { cats[ganchosCatalogo[i].categoria] = 1; } }
+    var sel = $('ng-categoria');
+    var html = '';
+    for (var c in cats) { if (cats.hasOwnProperty(c)) { html += '<option value="' + esc(c) + '">' + esc(c) + '</option>'; } }
+    html += '<option value="__nova__">+ Nova categoria...</option>';
+    sel.innerHTML = html;
+    $('ng-texto').value = '';
+    $('ng-nova-categoria').value = '';
+    ngCategoriaToggle();
+    abrirModal('modal-novo-gancho');
+  }
+
+  function ngCategoriaToggle() {
+    var isNova = $('ng-categoria').value === '__nova__';
+    $('ng-nova-cat-field').style.display = isNova ? 'block' : 'none';
+  }
+
+  function salvarNovoGancho() {
+    var sel = $('ng-categoria');
+    var categoria = sel.value === '__nova__' ? trim($('ng-nova-categoria').value) : sel.value;
+    var texto = trim($('ng-texto').value);
+    if (!texto) { alert('Digite o texto do gancho'); return; }
+    if (!categoria) { alert('Defina a categoria'); return; }
+    xhr('POST', '/rest/v1/ganchos', { user_id: userId, categoria: categoria, texto: texto }, { Prefer: 'return=minimal' }, function(err) {
+      if (err) { mostrarErro('Erro: ' + err.message); return; }
+      carregarCatalogo(function() {
+        fecharModal('modal-novo-gancho');
+        $('c-busca').value = '';
+        renderCatalogo();
+      });
+    });
+  }
+
+  function preencherProdutos(cb) {
+    var q = '/rest/v1/produtos?select=id,nome&user_id=eq.' + encodeURIComponent(userId) + '&order=nome.asc';
+    xhr('GET', q, null, null, function(err, rows) {
+      var sel = $('c-produto');
+      produtosDbCache = rows || [];
+      if (!err && produtosDbCache.length) {
+        var html = '';
+        for (var i = 0; i < produtosDbCache.length; i++) {
+          html += '<option value="' + produtosDbCache[i].id + '"' + (i === 0 ? ' selected' : '') + '>' + esc(produtosDbCache[i].nome) + '</option>';
+        }
+        sel.innerHTML = html;
+      } else {
+        sel.innerHTML = '<option value="">Nenhum produto cadastrado</option>';
+      }
+      if (cb) { cb(); }
+    });
+  }
+
+  function carregarMissoes() {
+    var q = '/rest/v1/missions?select=*&user_id=eq.' + encodeURIComponent(userId) + '&order=criado_em.desc';
+    xhr('GET', q, null, null, function(err, rows) {
+      if (err) { mostrarErro('Erro: ' + err.message); return; }
+      limparErro();
+      todasMissoes = rows || [];
+      for (var i = 0; i < todasMissoes.length; i++) {
+        if (!todasMissoes[i].ganchos) { todasMissoes[i].ganchos = []; }
+      }
+      renderLista();
+    });
+  }
+
+  function stats(m) {
+    var gs = m.ganchos || [];
+    var feitos = 0;
+    for (var i = 0; i < gs.length; i++) { if (gs[i].concluido) { feitos++; } }
+    var total = gs.length;
+    var pct = total === 0 ? 0 : Math.round((feitos / total) * 100);
+    return [feitos, total, pct];
+  }
+  function progresso(m) { return stats(m)[2]; }
+  function linhaMeta(m) {
+    var partes = [];
+    if (m.nome) { partes.push(m.produto || ''); }
+    if (m.cenario) { partes.push(m.cenario); }
+    if (m.figurino) { partes.push(m.figurino); }
+    return partes.join(' | ');
+  }
+  function fmtData(iso) {
+    if (!iso) { return ''; }
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) { return ''; }
+    return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
+  }
+
+  function setStatus(status) {
+    filtroStatus = status;
+    var btns = document.querySelectorAll('.chip-filtro');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].className = btns[i].getAttribute('data-status') === status ? 'chip-filtro ativo' : 'chip-filtro';
+    }
+    renderLista();
+  }
+
+  function renderLista() {
+    var lista = [];
+    for (var i = 0; i < todasMissoes.length; i++) { lista.push(todasMissoes[i]); }
+    if (filtroStatus === 'andamento' || filtroStatus === 'completa') {
+      var flt = [];
+      for (var f = 0; f < lista.length; f++) {
+        var st = stats(lista[f]);
+        var done = st[1] > 0 && st[2] === 100;
+        if ((filtroStatus === 'completa') === done) { flt.push(lista[f]); }
+      }
+      lista = flt;
+    }
+    var termo = trim(($('f-produto').value || '').toLowerCase());
+    if (termo) {
+      var flt2 = [];
+      for (var t2 = 0; t2 < lista.length; t2++) {
+        var mm = lista[t2];
+        if ((mm.produto || '').toLowerCase().indexOf(termo) >= 0 || (mm.nome || '').toLowerCase().indexOf(termo) >= 0) { flt2.push(mm); }
+      }
+      lista = flt2;
+    }
+    var ordem = $('f-ordem').value;
+    lista.sort(function(a, b) {
+      var da = a.criado_em ? new Date(a.criado_em).getTime() : 0;
+      var db = b.criado_em ? new Date(b.criado_em).getTime() : 0;
+      if (ordem === 'antigas') { return da - db; }
+      if (ordem === 'progresso') {
+        var pa = progresso(a), pb = progresso(b);
+        if (pa === pb) { return db - da; }
+        return (pa === 100 ? 1 : 0) - (pb === 100 ? 1 : 0);
+      }
+      return db - da;
+    });
+    $('contador').textContent = '(' + lista.length + ')';
+    var el = $('lista');
+    if (!todasMissoes.length) {
+      el.innerHTML = '<div class="vazio"><div class="big">.</div>Nenhuma missão ainda.<br><br><a id="linkCriar">Criar a primeira missão</a></div>';
+      var lc = $('linkCriar');
+      if (lc) { lc.onclick = function() { abrirCriar(); }; }
+      return;
+    }
+    if (!lista.length) {
+      el.innerHTML = '<div class="vazio">Nenhuma missão com esse filtro.</div>';
+      return;
+    }
+    var html = '<div class="grid">';
+    for (var li = 0; li < lista.length; li++) {
+      var m = lista[li];
+      var s = stats(m);
+      var completa = s[1] > 0 && s[0] === s[1];
+      html += '<div class="missao-card ' + (completa ? 'completa' : 'andamento') + '" data-missao="' + m.id + '">';
+      html += '<button class="missao-del" data-delmis="' + m.id + '">X</button>';
+      html += '<div class="missao-head"><div class="missao-nome">' + esc(m.nome || m.produto || '') + '</div></div>';
+      html += '<div class="missao-sub">' + esc(linhaMeta(m)) + '</div>';
+      html += '<span class="missao-status ' + (completa ? 'completa' : 'andamento') + '">' + (completa ? 'Completa' : 'Andamento') + '</span>';
+      html += '<div class="missao-progresso"><b>' + s[0] + '/' + s[1] + '</b> ganchos concluidos</div>';
+      html += '<div class="barra"><div class="barra-fill ' + (completa ? 'completa' : 'andamento') + '" style="width:' + s[2] + '%"></div></div>';
+      html += '<div class="missao-data">' + fmtData(m.criado_em);
+      if (m.nome) { html += ' <span class="missao-chip-prod">' + esc(m.produto || '') + '</span>'; }
+      html += '</div></div>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+    var cards = el.querySelectorAll('[data-missao]');
+    for (var ci = 0; ci < cards.length; ci++) {
+      (function(card) {
+        card.onclick = function() { abrirDetalhe(card.getAttribute('data-missao')); };
+      })(cards[ci]);
+    }
+    var dels = el.querySelectorAll('[data-delmis]');
+    for (var di = 0; di < dels.length; di++) {
+      (function(btn) {
+        btn.onclick = function(e) {
+          if (e && e.stopPropagation) { e.stopPropagation(); }
+          excluirMissao(btn.getAttribute('data-delmis'));
+        };
+      })(dels[di]);
+    }
+  }
+
+  function abrirDetalhe(id) {
+    var m = null;
+    for (var i = 0; i < todasMissoes.length; i++) { if (String(todasMissoes[i].id) === String(id)) { m = todasMissoes[i]; } }
+    if (!m) return;
+    detalheId = id;
+    missaoAtual = m;
+    $('d-titulo').textContent = m.nome || m.produto || '';
+    $('d-nome').value = m.nome || '';
+    $('d-produto').value = m.produto || '';
+    $('d-cenario').value = m.cenario || '';
+    $('d-figurino').value = m.figurino || '';
+    $('d-descricao').value = m.descricao_cena || '';
+    abrirModal('modal-detalhe');
+    renderDetalhe();
+  }
+
+  function salvarMissao() {
+    if (!detalheId) return;
+    var patch = {
+      nome: trim($('d-nome').value),
+      produto: trim($('d-produto').value),
+      cenario: trim($('d-cenario').value),
+      figurino: trim($('d-figurino').value),
+      descricao_cena: trim($('d-descricao').value),
+      atualizado_em: new Date().toISOString()
+    };
+    if (!patch.produto) { alert('Informe o produto'); return; }
+    var path = '/rest/v1/missions?id=eq.' + encodeURIComponent(detalheId) + '&user_id=eq.' + encodeURIComponent(userId);
+    xhr('PATCH', path, patch, { Prefer: 'return=minimal' }, function(err) {
+      if (err) { mostrarErro('Erro: ' + err.message); return; }
+      for (var i = 0; i < todasMissoes.length; i++) {
+        if (String(todasMissoes[i].id) === String(detalheId)) {
+          for (var k in patch) { if (patch.hasOwnProperty(k)) { todasMissoes[i][k] = patch[k]; } }
+          missaoAtual = todasMissoes[i];
+        }
+      }
+      $('d-titulo').textContent = patch.nome || patch.produto;
+      renderLista();
+    });
+  }
+
+  function duplicarMissao() {
+    if (!missaoAtual) return;
+    if (!confirm('Duplicar a missao "' + (missaoAtual.produto || '') + '"? Cria uma copia com todos os ganchos.')) return;
+    var copiaGanchos = [];
+    var gs = missaoAtual.ganchos || [];
+    for (var i = 0; i < gs.length; i++) {
+      copiaGanchos.push({ texto: gs[i].texto, concluido: false, concluido_em: null });
+    }
+    var body = {
+      user_id: userId,
+      nome: missaoAtual.nome || '',
+      produto: missaoAtual.produto,
+      cenario: missaoAtual.cenario || '',
+      figurino: missaoAtual.figurino || '',
+      descricao_cena: missaoAtual.descricao_cena || '',
+      ganchos: copiaGanchos
+    };
+    xhr('POST', '/rest/v1/missions', body, { Prefer: 'return=representation' }, function(err, rows) {
+      if (err) { mostrarErro('Erro: ' + err.message); return; }
+      fecharModal('modal-detalhe');
+      carregarMissoes();
+      if (rows && rows.length && rows[0].id) {
+        setTimeout(function() { abrirDetalhe(rows[0].id); }, 300);
+      }
+    });
+  }
+
+  function renderDetalhe() {
+    if (!missaoAtual) return;
+    var s = stats(missaoAtual);
+    var completa = s[1] > 0 && s[0] === s[1];
+    $('d-contador').textContent = s[0] + '/' + s[1] + ' concluidos';
+    $('d-pct').textContent = s[2] + '%';
+    var barra = $('d-barra');
+    barra.style.width = s[2] + '%';
+    barra.className = 'barra-fill ' + (completa ? 'completa' : 'andamento');
+    var el = $('d-lista');
+    var gs = missaoAtual.ganchos || [];
+    if (!gs.length) {
+      el.innerHTML = '<div class="gancho-vazio">Nenhum gancho ainda. Adicione no campo abaixo.</div>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < gs.length; i++) {
+      html += '<div class="gancho-item">';
+      html += '<input type="checkbox" class="gancho-check" data-gk="' + i + '"' + (gs[i].concluido ? ' checked' : '') + '>';
+      html += '<span class="gancho-texto' + (gs[i].concluido ? ' concluido' : '') + '">' + esc(gs[i].texto) + '</span>';
+      html += '<button class="gancho-del" data-grm="' + i + '">X</button>';
+      html += '</div>';
+    }
+    el.innerHTML = html;
+    var checks = el.querySelectorAll('[data-gk]');
+    for (var ci = 0; ci < checks.length; ci++) {
+      (function(box) {
+        box.onchange = function() { toggleGancho(parseInt(box.getAttribute('data-gk'), 10), box.checked); };
+      })(checks[ci]);
+    }
+    var rms = el.querySelectorAll('[data-grm]');
+    for (var ri = 0; ri < rms.length; ri++) {
+      (function(btn) {
+        btn.onclick = function() { removerGancho(parseInt(btn.getAttribute('data-grm'), 10)); };
+      })(rms[ri]);
+    }
+  }
+
+  function toggleGancho(idx, val) {
+    var g = missaoAtual.ganchos[idx];
+    if (!g) return;
+    g.concluido = val;
+    g.concluido_em = val ? new Date().toISOString() : null;
+    persistirDetalhe();
+  }
+
+  function adicionarGancho() {
+    var input = $('d-novo');
+    var texto = trim(input.value);
+    if (!texto) return;
+    if (!missaoAtual.ganchos) { missaoAtual.ganchos = []; }
+    missaoAtual.ganchos.push({ texto: texto, concluido: false, concluido_em: null });
+    input.value = '';
+    persistirDetalhe();
+  }
+
+  function removerGancho(idx) {
+    missaoAtual.ganchos.splice(idx, 1);
+    persistirDetalhe();
+  }
+
+  function persistirDetalhe() {
+    if (!detalheId) return;
+    var body = { ganchos: missaoAtual.ganchos, atualizado_em: new Date().toISOString() };
+    var path = '/rest/v1/missions?id=eq.' + encodeURIComponent(detalheId) + '&user_id=eq.' + encodeURIComponent(userId);
+    xhr('PATCH', path, body, { Prefer: 'return=minimal' }, function(err) {
+      if (err) { mostrarErro('Erro: ' + err.message); return; }
+      renderDetalhe();
+      for (var i = 0; i < todasMissoes.length; i++) {
+        if (String(todasMissoes[i].id) === String(detalheId)) { todasMissoes[i].ganchos = missaoAtual.ganchos; }
+      }
+      renderLista();
+    });
+  }
+
+  function abrirCriar() {
+    $('c-nome').value = '';
+    $('c-ganchos').value = '';
+    $('c-cenario').value = '';
+    $('c-figurino').value = '';
+    $('c-descricao').value = '';
+    $('c-busca').value = '';
+    ganchosSel = {};
+    renderChips();
+    renderCatalogo();
+    abrirModal('modal-criar');
+  }
+
+  function criarMissao() {
+    var produtoId = $('c-produto').value;
+    var nome = trim($('c-nome').value);
+    var cenario = trim($('c-cenario').value);
+    var figurino = trim($('c-figurino').value);
+    var descricaoCena = trim($('c-descricao').value);
+    var linhasRaw = ($('c-ganchos').value || '').split('\n');
+    var produtoNome = '';
+    for (var pi = 0; pi < produtosDbCache.length; pi++) {
+      if (String(produtosDbCache[pi].id) === String(produtoId)) { produtoNome = produtosDbCache[pi].nome; }
+    }
+    if (!produtoNome) { alert('Selecione um produto'); return; }
+    var ganchos = [];
+    for (var id in ganchosSel) {
+      if (!ganchosSel.hasOwnProperty(id)) { continue; }
+      for (var gi = 0; gi < ganchosCatalogo.length; gi++) {
+        if (String(ganchosCatalogo[gi].id) === String(id)) {
+          ganchos.push({ texto: ganchosCatalogo[gi].texto, concluido: false, concluido_em: null });
+        }
+      }
+    }
+    for (var li = 0; li < linhasRaw.length; li++) {
+      var t = trim(linhasRaw[li]);
+      if (t) { ganchos.push({ texto: t, concluido: false, concluido_em: null }); }
+    }
+    var body = { user_id: userId, produto: produtoNome, nome: nome, cenario: cenario, figurino: figurino, descricao_cena: descricaoCena, ganchos: ganchos };
+    xhr('POST', '/rest/v1/missions', body, { Prefer: 'return=representation' }, function(err, rows) {
+      if (err) { mostrarErro('Erro: ' + err.message); return; }
+      fecharModal('modal-criar');
+      carregarMissoes();
+      if (rows && rows.length && rows[0].id) {
+        setTimeout(function() { abrirDetalhe(rows[0].id); }, 300);
+      }
+    });
+  }
+
+  function abrirInfoProduto(origem) {
+    var body = $('info-produto-body');
+    body.innerHTML = '<p style="color:#888;font-size:.85rem;padding:1.5rem 0;text-align:center">Carregando...</p>';
+    abrirModal('modal-produto-info');
+    if (origem === 'criar') {
+      var id = $('c-produto').value;
+      if (!id) { fecharModal('modal-produto-info'); mostrarErro('Selecione um produto primeiro'); return; }
+      var q = '/rest/v1/produtos?select=*&user_id=eq.' + encodeURIComponent(userId) + '&id=eq.' + encodeURIComponent(id);
+      xhr('GET', q, null, null, function(err, rows) {
+        if (err || !rows || !rows.length) { fecharModal('modal-produto-info'); mostrarErro('Produto nao encontrado no banco'); return; }
+        mostrarInfoProduto(rows[0]);
+      });
+    } else {
+      var nome = trim($('d-produto').value);
+      if (!nome) { fecharModal('modal-produto-info'); mostrarErro('Informe o produto da missao'); return; }
+      var q2 = '/rest/v1/produtos?select=*&user_id=eq.' + encodeURIComponent(userId) + '&nome=ilike.*' + encodeURIComponent(nome) + '*&limit=1';
+      xhr('GET', q2, null, null, function(err, rows) {
+        if (err || !rows || !rows.length) { fecharModal('modal-produto-info'); mostrarErro('Produto nao encontrado no banco'); return; }
+        mostrarInfoProduto(rows[0]);
+      });
+    }
+  }
+
+  function mostrarInfoProduto(p) {
+    $('info-produto-nome').textContent = p.nome || 'Produto';
+    renderInfoProduto($('info-produto-body'), p);
+  }
+
+  function renderInfoProduto(body, p) {
+    var html = '';
+    if (p.descricao) { html += '<div class="pi-desc">' + esc(p.descricao) + '</div>'; }
+    for (var ci = 0; ci < INFO_CAMPOS.length; ci++) {
+      var campo = INFO_CAMPOS[ci][0];
+      var titulo = INFO_CAMPOS[ci][1];
+      var raw = p[campo] || '';
+      var itens = [];
+      if (raw instanceof Array) {
+        for (var ai = 0; ai < raw.length; ai++) { if (typeof raw[ai] === 'string' && trim(raw[ai])) { itens.push(trim(raw[ai])); } }
+      } else {
+        var parts = String(raw).split('\n');
+        for (var pi2 = 0; pi2 < parts.length; pi2++) { if (trim(parts[pi2])) { itens.push(trim(parts[pi2])); } }
+      }
+      if (!itens.length) { continue; }
+      html += '<div class="pi-secao"><div class="pi-titulo">' + titulo + '</div>';
+      if (campo === 'objecoes') {
+        for (var oi = 0; oi < itens.length; oi++) {
+          var pp = itens[oi].split(' | ');
+          var pergunta = trim(pp[0] || '');
+          var resposta = trim(pp[1] || '');
+          html += '<div class="pi-obj"><b>' + esc(pergunta) + '</b>';
+          if (resposta) { html += '<span>' + esc(resposta) + '</span>'; }
+          html += '</div>';
+        }
+      } else {
+        html += '<ul>';
+        for (var ui = 0; ui < itens.length; ui++) { html += '<li>' + esc(itens[ui]) + '</li>'; }
+        html += '</ul>';
+      }
+      html += '</div>';
+    }
+    if (!html) { html = '<p style="color:#999;padding:1rem 0">Sem informacoes cadastradas para este produto.</p>'; }
+    body.innerHTML = html;
+  }
+
+  function excluirMissao(id) {
+    if (!confirm('Excluir esta missao?')) return;
+    var path = '/rest/v1/missions?id=eq.' + encodeURIComponent(id) + '&user_id=eq.' + encodeURIComponent(userId);
+    xhr('DELETE', path, null, { Prefer: 'return=minimal' }, function(err) {
+      if (err) { mostrarErro('Erro: ' + err.message); return; }
+      carregarMissoes();
+    });
+  }
+
+  $('btnLogin').addEventListener('click', function() { fazerLogin(); });
+  $('btnNovaMissao').addEventListener('click', function() { abrirCriar(); });
+  $('btnSalvarMissao').addEventListener('click', function() { salvarMissao(); });
+  $('btnDuplicar').addEventListener('click', function() { duplicarMissao(); });
+  $('btnFecharDetalhe').addEventListener('click', function() { fecharModal('modal-detalhe'); });
+  $('btnAddGancho').addEventListener('click', function() { adicionarGancho(); });
+  $('btnFecharCriar').addEventListener('click', function() { fecharModal('modal-criar'); });
+  $('btnCancelarCriar').addEventListener('click', function() { fecharModal('modal-criar'); });
+  $('btnCriarMissao').addEventListener('click', function() { criarMissao(); });
+  $('btnNovoGancho').addEventListener('click', function() { abrirNovoGancho(); });
+  $('btnSalvarNG').addEventListener('click', function() { salvarNovoGancho(); });
+  $('btnFecharNG').addEventListener('click', function() { fecharModal('modal-novo-gancho'); });
+  $('btnCancelarNG').addEventListener('click', function() { fecharModal('modal-novo-gancho'); });
+  $('btnFecharInfo').addEventListener('click', function() { fecharModal('modal-produto-info'); });
+  $('f-produto').addEventListener('input', function() { renderLista(); });
+  $('f-ordem').addEventListener('change', function() { renderLista(); });
+  $('c-busca').addEventListener('input', function() { renderCatalogo(); });
+  $('ng-categoria').addEventListener('change', function() { ngCategoriaToggle(); });
+
+  var chips = document.querySelectorAll('.chip-filtro');
+  for (var chi = 0; chi < chips.length; chi++) {
+    (function(b) { b.addEventListener('click', function() { setStatus(b.getAttribute('data-status')); }); })(chips[chi]);
+  }
+
+  var overlays = document.querySelectorAll('.modal-overlay');
+  for (var oi = 0; oi < overlays.length; oi++) {
+    (function(o) {
+      o.addEventListener('click', function(e) { if (e.target === o) { o.className = 'modal-overlay'; } });
+    })(overlays[oi]);
+  }
+
+  checarSessao(function(u) {
+    if (u && userId) { mostrarApp(); iniciar(); }
+    else { mostrarLogin(); }
+  });
+})();
+</script>
+</body>
+</html>
