@@ -31,6 +31,7 @@
   .btn:active { background: #222; }
   .btn.back { padding-left: .6rem; }
   .btn:disabled { opacity: .5; }
+  .btn.primary { background: #e63946; border-color: #e63946; }
 
   main { padding: .8rem 1rem 3rem; padding-top: 110px; max-width: 940px; margin: 0 auto; width: 100%; }
 
@@ -47,7 +48,8 @@
     -webkit-flex-direction: column; flex-direction: column; gap: .3rem;
   }
   .control-group label { font-size: .65rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .06em; }
-  .control-group select, .control-group input[type="date"] {
+  .control-group select, .control-group input[type="date"],
+  .control-group input[type="email"], .control-group input[type="password"] {
     background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px;
     padding: .4rem .6rem; color: #fff; font-size: .78rem; font-weight: 600; font-family: inherit;
   }
@@ -166,6 +168,12 @@
     padding: .5rem .9rem; border-radius: 10px; font-size: .75rem; font-weight: 700;
   }
   .toast-bar.vis { -webkit-transform: translateX(-50%) translateY(0); transform: translateX(-50%) translateY(0); }
+
+  .login-box { background: #151515; border: 1px solid #242424; border-radius: 14px; padding: 1rem; margin-bottom: 1rem; }
+  .login-box h2 { font-size: .95rem; font-weight: 800; margin: 0 0 .8rem; }
+  .login-box .control-group { margin-bottom: .6rem; }
+  .login-box input { width: 100%; max-width: 320px; }
+  .login-err { color: #ff9b9b; font-size: .72rem; font-weight: 700; margin-top: .5rem; display: none; }
 </style>
 </head>
 <body>
@@ -187,7 +195,21 @@
     <span id="bannerTxt">Carregando...</span>
   </div>
 
-  <div class="controls">
+  <div class="login-box" id="loginBox" style="display:none">
+    <h2>Entrar</h2>
+    <div class="control-group">
+      <label>E-mail</label>
+      <input type="email" id="loginEmail" autocomplete="username">
+    </div>
+    <div class="control-group">
+      <label>Senha</label>
+      <input type="password" id="loginPass" autocomplete="current-password">
+    </div>
+    <button class="btn primary" id="btnLogin">Entrar</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+
+  <div class="controls" id="controlsBox" style="display:none">
     <div class="control-group">
       <label>Comecar em</label>
       <input type="date" id="startDate">
@@ -221,23 +243,26 @@
 <div class="toast-bar" id="toast"></div>
 
 <script src="config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 (function() {
   var SUPABASE_URL = (window.SUPABASE_URL || '').trim();
   var SUPABASE_ANON_KEY = (window.SUPABASE_ANON_KEY || '').trim();
-  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     document.getElementById('bannerTxt').textContent = 'Configuracao ausente — verifique o config.js';
     return;
   }
 
-  var HORAS = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+  var TOKEN_KEY = 'oct_ipad_token';
+  var USER_KEY = 'oct_ipad_user';
+  var HORAS = [];
+  for (var _h = 0; _h < 24; _h++) { HORAS.push(_h); }
   var diasSemana = ['Domingo','Segunda','Terca','Quarta','Quinta','Sexta','Sabado'];
   var meses = ['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
-  var slots = new Map();
+  var slots = {};
   var modo = 'atuais';
+  var token = null;
+  var userId = null;
 
   function $(id) { return document.getElementById(id); }
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -254,8 +279,88 @@
     t.style.color = erro ? '#ff9b9b' : '#9be69b';
     t.textContent = msg;
     t.className = 'toast-bar vis';
-    clearTimeout(_toastTimer);
+    if (_toastTimer) { try { clearTimeout(_toastTimer); } catch (e) {} }
     _toastTimer = setTimeout(function() { t.className = 'toast-bar'; }, 2600);
+  }
+
+  function xhr(method, path, body, cb) {
+    var x = new XMLHttpRequest();
+    x.open(method, SUPABASE_URL + path, true);
+    x.setRequestHeader('apikey', SUPABASE_ANON_KEY);
+    x.setRequestHeader('Content-Type', 'application/json');
+    if (token) { x.setRequestHeader('Authorization', 'Bearer ' + token); }
+    x.onreadystatechange = function() {
+      if (x.readyState !== 4) { return; }
+      var data = null;
+      try { data = x.responseText ? JSON.parse(x.responseText) : null; } catch (e) { data = null; }
+      if (x.status >= 200 && x.status < 300) { cb(null, data); }
+      else {
+        var msg = 'HTTP ' + x.status;
+        if (data && data.msg) { msg = data.msg; }
+        else if (data && data.message) { msg = data.message; }
+        else if (data && data.error_description) { msg = data.error_description; }
+        cb(new Error(msg), data);
+      }
+    };
+    x.onerror = function() { cb(new Error('Falha de rede')); };
+    x.send(body ? JSON.stringify(body) : null);
+  }
+
+  function checarSessao(cb) {
+    try { token = window.localStorage.getItem(TOKEN_KEY) || null; } catch (e) { token = null; }
+    try { userId = window.localStorage.getItem(USER_KEY) || null; } catch (e) { userId = null; }
+    if (!token) { cb(null); return; }
+    xhr('GET', '/auth/v1/user', null, function(err, u) {
+      if (err) {
+        token = null; userId = null;
+        try { window.localStorage.removeItem(TOKEN_KEY); window.localStorage.removeItem(USER_KEY); } catch (e2) {}
+        cb(null); return;
+      }
+      if (u && u.id) { userId = u.id; }
+      cb(u);
+    });
+  }
+
+  function fazerLogin() {
+    var email = ($('loginEmail').value || '').trim();
+    var pass = $('loginPass').value || '';
+    var errBox = $('loginErr');
+    errBox.style.display = 'none';
+    if (!email || !pass) { errBox.textContent = 'Informe e-mail e senha.'; errBox.style.display = 'block'; return; }
+    var btn = $('btnLogin');
+    btn.disabled = true;
+    xhr('POST', '/auth/v1/token?grant_type=password', { email: email, password: pass }, function(err, res) {
+      btn.disabled = false;
+      if (err || !res || !res.access_token) {
+        var m = 'Login falhou.';
+        if (res && res.error_description) { m = res.error_description; }
+        else if (res && res.msg) { m = res.msg; }
+        else if (err && err.message) { m = 'Login falhou: ' + err.message; }
+        errBox.textContent = m; errBox.style.display = 'block';
+        return;
+      }
+      token = res.access_token;
+      userId = (res.user && res.user.id) ? res.user.id : null;
+      try {
+        window.localStorage.setItem(TOKEN_KEY, token);
+        if (userId) { window.localStorage.setItem(USER_KEY, userId); }
+      } catch (e) {}
+      mostrarApp();
+      fmtToast('Login OK. Carregando dias...');
+      carregar();
+    });
+  }
+
+  function mostrarLogin() {
+    $('loginBox').style.display = 'block';
+    $('controlsBox').style.display = 'none';
+    $('bannerTxt').textContent = 'Faca login para ver sua programacao.';
+  }
+
+  function mostrarApp() {
+    $('loginBox').style.display = 'none';
+    $('controlsBox').style.display = 'block';
+    $('bannerTxt').innerHTML = compostarMeta();
   }
 
   function slotHTML(s) {
@@ -263,6 +368,7 @@
   }
 
   function gerar() {
+    if (!token || !userId) { mostrarLogin(); fmtToast('Faca login primeiro.', true); return; }
     var start = $('startDate').value;
     if (!start) { fmtToast('Escolha a data inicial.', true); return; }
     var inicio = parseChave(start);
@@ -271,41 +377,67 @@
     var btn = $('btnGerar');
     btn.disabled = true;
 
-    sb.auth.getUser().then(function(res) {
-      var user = res.data && res.data.user;
-      if (!user) throw new Error('Login necessario — acesse pela pagina principal.');
-      var linhas = [];
-      for (var i = 0; i < qtd; i++) {
-        var d = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate() + i);
-        var cj = chaveDia(d);
-        HORAS.forEach(function(h) {
-          for (var s = 0; s < porHora; s++) {
-            linhas.push({ user_id: user.id, schedule_date: cj, hour: h, slot_index: s, ativo: false, status: 'agendado' });
-          }
-        });
+    var linhas = [];
+    for (var i = 0; i < qtd; i++) {
+      var d = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate() + i);
+      var cj = chaveDia(d);
+      for (var hi = 0; hi < HORAS.length; hi++) {
+        for (var s = 0; s < porHora; s++) {
+          linhas.push({ user_id: userId, schedule_date: cj, hour: HORAS[hi], slot_index: s, ativo: false, status: 'agendado' });
+        }
       }
-      if (!linhas.length) throw new Error('Nada para gerar.');
-      return sb.from('post_schedule').upsert(linhas, { onConflict: 'user_id,schedule_date,hour,slot_index', ignoreDuplicates: true });
-    }).then(function(res) {
-      if (res && res.error) throw res.error;
-      fmtToast('Dias enviados ao banco. Recarregando...');
-      return carregar();
-    }).catch(function(e) {
-      console.error(e);
-      fmtToast('Erro: ' + (e.message || 'desconhecido'), true);
-    }).then(function() { btn.disabled = false; });
+    }
+    if (!linhas.length) { btn.disabled = false; fmtToast('Nada para gerar.', true); return; }
+
+    var x = new XMLHttpRequest();
+    x.open('POST', SUPABASE_URL + '/rest/v1/post_schedule', true);
+    x.setRequestHeader('apikey', SUPABASE_ANON_KEY);
+    x.setRequestHeader('Authorization', 'Bearer ' + token);
+    x.setRequestHeader('Content-Type', 'application/json');
+    x.setRequestHeader('Prefer', 'resolution=ignore-duplicates,return=minimal');
+    x.onreadystatechange = function() {
+      if (x.readyState !== 4) { return; }
+      btn.disabled = false;
+      if (x.status >= 200 && x.status < 300) {
+        fmtToast('Dias enviados ao banco. Recarregando...');
+        carregar();
+      } else {
+        fmtToast('Erro ao gerar: HTTP ' + x.status, true);
+      }
+    };
+    x.onerror = function() { btn.disabled = false; fmtToast('Falha de rede ao gerar.', true); };
+    x.send(JSON.stringify(linhas));
+  }
+
+  function slotKeys() {
+    var out = [];
+    for (var k in slots) { if (slots.hasOwnProperty(k)) { out.push(k); } }
+    return out;
+  }
+
+  function slotVals() {
+    var out = [];
+    var ks = slotKeys();
+    for (var i = 0; i < ks.length; i++) { out.push(slots[ks[i]]); }
+    return out;
   }
 
   function desenhar() {
     var container = $('dias');
-    var keys = Array.from(slots.keys());
+    var keys = slotKeys();
     var diaSet = {};
-    keys.forEach(function(k) { diaSet[k.split('|')[0]] = 1; });
-    var todas = Object.keys(diaSet).sort();
+    for (var i = 0; i < keys.length; i++) { diaSet[keys[i].split('|')[0]] = 1; }
+    var todas = [];
+    for (var cj0 in diaSet) { if (diaSet.hasOwnProperty(cj0)) { todas.push(cj0); } }
+    todas.sort();
     var diaAtual = chaveDia(hoje());
 
     if (modo === 'analise') { desenharAnalise(container, todas); return; }
-    var dias = todas.filter(function(cj) { return modo === 'passadas' ? cj < diaAtual : cj >= diaAtual; });
+    var dias = [];
+    for (var di = 0; di < todas.length; di++) {
+      var cjF = todas[di];
+      if (modo === 'passadas' ? cjF < diaAtual : cjF >= diaAtual) { dias.push(cjF); }
+    }
 
     if (!dias.length) {
       container.innerHTML = '<div class="cx-vazia"><div class="icon">.</div>' + (modo === 'passadas' ? 'Nenhuma data passada no banco.' : 'Nenhum dia a partir de hoje. Configure e clique em "Gerar dias".') + '</div>';
@@ -313,21 +445,28 @@
     }
 
     var html = '';
-    dias.forEach(function(cj) {
+    for (var gi = 0; gi < dias.length; gi++) {
+      var cj = dias[gi];
       var d = parseChave(cj);
       var ehHoje = cj === diaAtual;
       var passado = cj < diaAtual;
-      var vals = keys.filter(function(k) { return k.indexOf(cj + '|') === 0; }).map(function(k) { return slots.get(k); });
+      var vals = [];
+      for (var vi = 0; vi < keys.length; vi++) {
+        if (keys[vi].indexOf(cj + '|') === 0) { vals.push(slots[keys[vi]]); }
+      }
       var total = vals.length;
-      var agendados = vals.filter(function(s) { return s.ativo; }).length;
+      var agendados = 0;
+      for (var ai = 0; ai < vals.length; ai++) { if (vals[ai].ativo) { agendados++; } }
 
       var horasHTML = '';
-      HORAS.forEach(function(h) {
-        var ss = vals.filter(function(s) { return s.hora === h; });
+      for (var hlo = 0; hlo < HORAS.length; hlo++) {
+        var h = HORAS[hlo];
+        var ss = [];
+        for (var si = 0; si < vals.length; si++) { if (vals[si].hora === h) { ss.push(vals[si]); } }
         horasHTML += '<div class="hour-block"><div class="hour-label">' + pad(h) + 'h</div><div class="slot-row">';
-        ss.forEach(function(s) { horasHTML += slotHTML(s); });
+        for (var sj = 0; sj < ss.length; sj++) { horasHTML += slotHTML(ss[sj]); }
         horasHTML += '</div></div>';
-      });
+      }
 
       html += '<div class="day-card">';
       html += '<div class="day-header">';
@@ -342,7 +481,7 @@
       html += '</div>';
       html += '<div class="hours-grid">' + horasHTML + '</div>';
       html += '</div>';
-    });
+    }
 
     container.innerHTML = html;
     vincularSlots();
@@ -356,19 +495,45 @@
     }
     var tMeta = 0, tAg = 0;
     var cards = '';
-    dias.forEach(function(cj) {
-      var vals = Array.from(slots.values()).filter(function(s) { return s.chaveDia === cj; });
-      var meta = vals.length;
-      var ag = vals.filter(function(s) { return s.ativo; }).length;
+    for (var i = 0; i < dias.length; i++) {
+      var cj = dias[i];
+      var vals = slotVals();
+      var meta = 0, ag = 0;
+      for (var vi = 0; vi < vals.length; vi++) {
+        if (vals[vi].chaveDia === cj) { meta++; if (vals[vi].ativo) { ag++; } }
+      }
       tMeta += meta; tAg += ag;
       var pct = meta ? Math.round(ag * 100 / meta) : 0;
       var d = parseChave(cj);
       cards += '<div class="analise-card"><div class="analise-top"><span class="analise-data">' + diasSemana[d.getDay()] + ', ' + d.getDate() + ' de ' + meses[d.getMonth()] + '</span>';
       cards += '<span class="analise-num">Meta <b>' + meta + '</b> · Agendados <b>' + ag + '</b> · <b>' + pct + '%</b></span></div>';
       cards += '<div class="barra"><i style="width:' + pct + '%"></i></div></div>';
-    });
+    }
     var pctG = tMeta ? Math.round(tAg * 100 / tMeta) : 0;
     container.innerHTML = '<div class="analise-geral"><span>Dias <b>' + dias.length + '</b></span><span>Meta total <b>' + tMeta + '</b></span><span>Agendados <b>' + tAg + '</b></span><span>Concluido <b>' + pctG + '%</b></span></div>' + cards;
+  }
+
+  function salvarSlot(s, inp) {
+    var x = new XMLHttpRequest();
+    x.open('POST', SUPABASE_URL + '/rest/v1/post_schedule', true);
+    x.setRequestHeader('apikey', SUPABASE_ANON_KEY);
+    x.setRequestHeader('Authorization', 'Bearer ' + token);
+    x.setRequestHeader('Content-Type', 'application/json');
+    x.setRequestHeader('Prefer', 'resolution=merge-duplicates,return=minimal');
+    x.onreadystatechange = function() {
+      if (x.readyState !== 4) { return; }
+      if (x.status < 200 || x.status >= 300) {
+        s.ativo = !inp.checked;
+        inp.checked = s.ativo;
+        fmtToast('Erro ao salvar: HTTP ' + x.status, true);
+      }
+    };
+    x.onerror = function() {
+      s.ativo = !inp.checked;
+      inp.checked = s.ativo;
+      fmtToast('Falha de rede ao salvar.', true);
+    };
+    x.send(JSON.stringify({ user_id: userId, schedule_date: s.chaveDia, hour: s.hora, slot_index: s.idx, ativo: s.ativo, status: 'agendado' }));
   }
 
   function vincularSlots() {
@@ -376,34 +541,25 @@
     for (var i = 0; i < inputs.length; i++) {
       (function(inp) {
         inp.addEventListener('change', function() {
-          var parts = inp.dataset.chave.split('|');
+          var parts = inp.getAttribute('data-chave').split('|');
           var cj = parts[0], h = +parts[1], idx = +parts[2];
           var k = cj + '|' + h + '|' + idx;
-          var s = slots.get(k);
+          var s = slots[k];
           if (!s) return;
           s.ativo = inp.checked;
-          var card = inp.closest('.day-card');
+          var card = inp.parentNode;
+          while (card && (!card.className || card.className.indexOf('day-card') < 0)) { card = card.parentNode; }
           var agEl = card ? card.querySelector('[data-agendado]') : null;
           if (agEl) {
             var c = 0;
-            slots.forEach(function(v) { if (v.chaveDia === cj && v.ativo) c++; });
+            var ks = slotKeys();
+            for (var qi = 0; qi < ks.length; qi++) {
+              var v = slots[ks[qi]];
+              if (v.chaveDia === cj && v.ativo) { c++; }
+            }
             agEl.textContent = c;
           }
-          sb.auth.getUser().then(function(res) {
-            var user = res.data && res.data.user;
-            if (!user) throw new Error('Login necessario.');
-            return sb.from('post_schedule').upsert({
-              user_id: user.id, schedule_date: s.chaveDia, hour: s.hora,
-              slot_index: s.idx, ativo: s.ativo, status: 'agendado'
-            }, { onConflict: 'user_id,schedule_date,hour,slot_index' });
-          }).then(function(res) {
-            if (res && res.error) throw res.error;
-          }).catch(function(e) {
-            console.error(e);
-            s.ativo = !inp.checked;
-            inp.checked = s.ativo;
-            fmtToast('Erro ao salvar: ' + (e.message || 'desconhecido'), true);
-          });
+          salvarSlot(s, inp);
         });
       })(inputs[i]);
     }
@@ -411,59 +567,60 @@
     var dels = document.querySelectorAll('[data-excluir-dia]');
     for (var j = 0; j < dels.length; j++) {
       (function(btn) {
-        btn.addEventListener('click', function() { excluirDia(btn.dataset.excluirDia); });
+        btn.addEventListener('click', function() { excluirDia(btn.getAttribute('data-excluir-dia')); });
       })(dels[j]);
     }
   }
 
   function excluirDia(cj) {
     if (!confirm('Excluir o dia ' + cj + '?')) return;
-    sb.auth.getUser().then(function(res) {
-      var user = res.data && res.data.user;
-      if (!user) throw new Error('Login necessario.');
-      return sb.from('post_schedule').delete().eq('user_id', user.id).eq('schedule_date', cj);
-    }).then(function(res) {
-      if (res && res.error) throw res.error;
-      fmtToast('Dia ' + cj + ' excluido.');
-      return carregar();
-    }).catch(function(e) {
-      console.error(e);
-      fmtToast('Erro ao excluir: ' + (e.message || 'desconhecido'), true);
-    });
+    if (!token || !userId) { mostrarLogin(); return; }
+    var x = new XMLHttpRequest();
+    x.open('DELETE', SUPABASE_URL + '/rest/v1/post_schedule?user_id=eq.' + encodeURIComponent(userId) + '&schedule_date=eq.' + encodeURIComponent(cj), true);
+    x.setRequestHeader('apikey', SUPABASE_ANON_KEY);
+    x.setRequestHeader('Authorization', 'Bearer ' + token);
+    x.setRequestHeader('Prefer', 'return=minimal');
+    x.onreadystatechange = function() {
+      if (x.readyState !== 4) { return; }
+      if (x.status >= 200 && x.status < 300) {
+        fmtToast('Dia ' + cj + ' excluido.');
+        carregar();
+      } else {
+        fmtToast('Erro ao excluir: HTTP ' + x.status, true);
+      }
+    };
+    x.onerror = function() { fmtToast('Falha de rede ao excluir.', true); };
+    x.send(null);
   }
 
   function carregar() {
-    return sb.auth.getUser().then(function(res) {
-      var user = res.data && res.data.user;
-      if (!user) {
-        slots.clear();
-        desenhar();
-        $('dias').innerHTML = '<div class="cx-vazia"><div class="icon">!</div>Faca login pela pagina principal primeiro.<br><a href="index.html" class="btn" style="margin-top:.8rem;display:inline-flex">Ir para login</a></div>';
+    if (!token || !userId) { mostrarLogin(); return; }
+    var q = '/rest/v1/post_schedule?select=schedule_date,hour,slot_index,ativo&user_id=eq.' + encodeURIComponent(userId) + '&order=schedule_date.asc&order=hour.asc&order=slot_index.asc';
+    xhr('GET', q, null, function(err, rows) {
+      if (err) {
+        fmtToast('Erro ao carregar: ' + err.message, true);
         return;
       }
-      return sb.from('post_schedule').select('schedule_date, hour, slot_index, ativo').eq('user_id', user.id).order('schedule_date').order('hour').order('slot_index');
-    }).then(function(res) {
-      if (!res) return;
-      if (res.error) throw res.error;
-      slots.clear();
-      (res.data || []).forEach(function(r) {
-        var k = r.schedule_date + '|' + r.hour + '|' + r.slot_index;
-        slots.set(k, { chaveDia: r.schedule_date, hora: r.hour, idx: r.slot_index, ativo: r.ativo !== false });
-      });
+      slots = {};
+      if (rows) {
+        for (var i = 0; i < rows.length; i++) {
+          var r = rows[i];
+          var k = r.schedule_date + '|' + r.hour + '|' + r.slot_index;
+          slots[k] = { chaveDia: r.schedule_date, hora: r.hour, idx: r.slot_index, ativo: r.ativo !== false };
+        }
+      }
       desenhar();
-    }).catch(function(e) {
-      console.error('carregar:', e);
-      fmtToast('Erro ao carregar: ' + (e.message || 'desconhecido'), true);
     });
   }
 
   $('btnGerar').addEventListener('click', function() { gerar(); });
+  $('btnLogin').addEventListener('click', function() { fazerLogin(); });
 
   var modoBtns = document.querySelectorAll('[data-modo]');
   for (var m = 0; m < modoBtns.length; m++) {
     (function(b) {
       b.addEventListener('click', function() {
-        modo = b.dataset.modo;
+        modo = b.getAttribute('data-modo');
         for (var x = 0; x < modoBtns.length; x++) {
           modoBtns[x].className = modoBtns[x] === b ? 'modo-btn ativo' : 'modo-btn';
         }
@@ -478,7 +635,15 @@
     var t = new Date();
     $('startDate').value = chaveDia(t);
   }
-  carregar();
+
+  checarSessao(function(u) {
+    if (u && userId) { mostrarApp(); carregar(); }
+    else { slots = {}; desenharVazio(); mostrarLogin(); }
+  });
+
+  function desenharVazio() {
+    $('dias').innerHTML = '<div class="cx-vazia"><div class="icon">.</div>Faca login para ver sua programacao.</div>';
+  }
 })();
 </script>
 </body>
