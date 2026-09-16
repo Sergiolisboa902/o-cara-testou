@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+var ua = navigator.userAgent;
+if (/iPad/.test(ua) && /OS [1-9]_/.test(ua)) { window.location.replace('agendamento-ipad.html'); }
+</script>
 <title>📅 Programação — O Cara Testou</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
