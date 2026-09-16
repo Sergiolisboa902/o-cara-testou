@@ -435,7 +435,12 @@
   function carregar() {
     return sb.auth.getUser().then(function(res) {
       var user = res.data && res.data.user;
-      if (!user) { slots.clear(); desenhar(); fmtToast('Faca login pela pagina principal.', true); return; }
+      if (!user) {
+        slots.clear();
+        desenhar();
+        $('dias').innerHTML = '<div class="cx-vazia"><div class="icon">!</div>Faca login pela pagina principal primeiro.<br><a href="index.html" class="btn" style="margin-top:.8rem;display:inline-flex">Ir para login</a></div>';
+        return;
+      }
       return sb.from('post_schedule').select('schedule_date, hour, slot_index, ativo').eq('user_id', user.id).order('schedule_date').order('hour').order('slot_index');
     }).then(function(res) {
       if (!res) return;
